@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sonority.UPnP", "Sonority.UPnP\Sonority.UPnP.csproj", "{92D84E05-3E96-441A-8DFF-F28F5F3401F7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sonority.ESE", "Sonority.ESE\Sonority.ESE.vcproj", "{69460E43-5C5B-4028-A2E7-2B0E6C634536}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 3
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs03.codeplex.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Sonority.UPnP\\Sonority.UPnP.csproj
+		SccProjectName1 = Sonority.UPnP
+		SccLocalPath1 = Sonority.UPnP
+		SccProjectUniqueName2 = Sonority.ESE\\Sonority.ESE.vcproj
+		SccProjectName2 = Sonority.ESE
+		SccLocalPath2 = Sonority.ESE
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{92D84E05-3E96-441A-8DFF-F28F5F3401F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92D84E05-3E96-441A-8DFF-F28F5F3401F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92D84E05-3E96-441A-8DFF-F28F5F3401F7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{92D84E05-3E96-441A-8DFF-F28F5F3401F7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{92D84E05-3E96-441A-8DFF-F28F5F3401F7}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{92D84E05-3E96-441A-8DFF-F28F5F3401F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92D84E05-3E96-441A-8DFF-F28F5F3401F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92D84E05-3E96-441A-8DFF-F28F5F3401F7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{92D84E05-3E96-441A-8DFF-F28F5F3401F7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{92D84E05-3E96-441A-8DFF-F28F5F3401F7}.Release|Win32.ActiveCfg = Release|Any CPU
+		{69460E43-5C5B-4028-A2E7-2B0E6C634536}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{69460E43-5C5B-4028-A2E7-2B0E6C634536}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{69460E43-5C5B-4028-A2E7-2B0E6C634536}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{69460E43-5C5B-4028-A2E7-2B0E6C634536}.Debug|Win32.ActiveCfg = Debug|Win32
+		{69460E43-5C5B-4028-A2E7-2B0E6C634536}.Debug|Win32.Build.0 = Debug|Win32
+		{69460E43-5C5B-4028-A2E7-2B0E6C634536}.Release|Any CPU.ActiveCfg = Release|Win32
+		{69460E43-5C5B-4028-A2E7-2B0E6C634536}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{69460E43-5C5B-4028-A2E7-2B0E6C634536}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{69460E43-5C5B-4028-A2E7-2B0E6C634536}.Release|Win32.ActiveCfg = Release|Win32
+		{69460E43-5C5B-4028-A2E7-2B0E6C634536}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
