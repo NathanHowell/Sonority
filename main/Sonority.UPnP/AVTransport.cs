@@ -21,8 +21,11 @@
 //
 
 using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
+using System.Xml.XPath;
 using UPNPLib;
 
 namespace Sonority.UPnP
@@ -72,141 +75,70 @@ namespace Sonority.UPnP
         public string RecQualityMode;
     }
 
-    public class AVTransport
+    public class AVTransport : INotifyPropertyChanged
     {
         public AVTransport(UPnPService service)
         {
             avTransportService = service;
+            avTransportService.AddCallback(new AVTransportCallback(this));
         }
 
-#if BROKEN
-        public string TransportState
+        internal void OnStateVariableChanged(string stateVariable, object value)
         {
-            get
+            System.Reflection.FieldInfo fi = typeof(AVTransport).GetField(stateVariable);
+            if (fi == null)
             {
-                return QueryStateString("TransportState");
+                Console.Error.WriteLine("Field not found: {0}", stateVariable);
+                return;
             }
+
+            if (fi.FieldType == typeof(UInt32))
+            {
+                value = Convert.ToUInt32(value);
+            }
+            else if (fi.FieldType == typeof(String))
+            {
+                value = Convert.ToString(value);
+            }
+
+            fi.SetValue(this, value);
+            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(stateVariable));
         }
 
-        public string TransportStatus
-        {
-            get
-            {
-                return QueryStateString("TransportStatus");
-            }
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        public string PlaybackStorageMedium
-        {
-            get
-            {
-                return QueryStateString("PlaybackStorageMedium");
-            }
-        }
-
-        public string RecordStorageMedium
-        {
-            get
-            {
-                return QueryStateString("RecordStorageMedium");
-            }
-        }
-
-        public string PossiblePlaybackStorageMedia
-        {
-            get
-            {
-                return QueryStateString("PossiblePlaybackStorageMedia");
-            }
-        }
-
-        public string PossibleRecordStorageMedia
-        {
-            get
-            {
-                return QueryStateString("PossibleRecordStorageMedia");
-            }
-        }
-
-        public string CurrentPlayMode
-        {
-            get
-            {
-                return QueryStateString("CurrentPlayMode");
-            }
-        }
-
-        public string TransportPlaySpeed
-        {
-            get
-            {
-                return QueryStateString("TransportPlaySpeed");
-            }
-        }
-
-        public string RecordMediumWriteStatus
-        {
-            get
-            {
-                return QueryStateString("RecordMediumWriteStatus");
-            }
-        }
-
-        public string CurrentRecordQualityMode
-        {
-            get
-            {
-                return QueryStateString("CurrentRecordQualityMode");
-            }
-        }
-
-        public string PossibleRecordQualityModes
-        {
-            get
-            {
-                return QueryStateString("PossibleRecordQualityModes");
-            }
-        }
-
-        public uint NumberOfTracks
-        {
-            get
-            {
-                return QueryStateUInt32("NumberOfTracks");
-            }
-        }
-
-        public uint CurrentTrack
-        {
-            get
-            {
-                return QueryStateUInt32("CurrentTrack");
-            }
-        }
-
-        public string CurrentTrackDuration
-        {
-            get
-            {
-                return QueryStateString("CurrentTrackDuration");
-            }
-        }
-
-        public string CurrentMediaDuration
-        {
-            get
-            {
-                return QueryStateString("CurrentMediaDuration");
-            }
-        }
-
-        public string CurrentTrackMetaData
-        {
-            get
-            {
-                return QueryStateString("CurrentTrackMetaData");
-            }
-        }
+        public readonly uint InstanceID = 0;
+        public string TransportState = String.Empty;
+        public string TransportStatus = String.Empty;
+        public string PlaybackStorageMedium = String.Empty;
+        public string RecordStorageMedium = String.Empty;
+        public string PossiblePlaybackStorageMedia = String.Empty;
+        public string PossibleRecordStorageMedia = String.Empty;
+        public string CurrentPlayMode = String.Empty;
+        public string TransportPlaySpeed = String.Empty;
+        public string RecordMediumWriteStatus = String.Empty;
+        public string CurrentRecordQualityMode = String.Empty;
+        public string PossibleRecordQualityModes = String.Empty;
+        public uint NumberOfTracks = 0u;
+        public uint CurrentTrack = 0u;
+        public string CurrentTrackDuration = String.Empty;
+        public string CurrentMediaDuration = String.Empty;
+        public string CurrentTrackMetaData = String.Empty;
+        public string CurrentSection = String.Empty;
+        public string CurrentTrackURI = String.Empty;
+        public string NextTrackURI = String.Empty;
+        public string NextTrackMetaData = String.Empty;
+        public string EnqueuedTransportURI = String.Empty;
+        public string EnqueuedTransportURIMetaData = String.Empty;
+        public string AVTransportURI = String.Empty;
+        public string AVTransportURIMetaData = String.Empty;
+        public string CurrentTransportActions = String.Empty;
+        public string SleepTimerGeneration = String.Empty;
+        public string AlarmRunning = String.Empty;
+        public string SnoozeRunning = String.Empty;
+        public string RestartPending = String.Empty;
+        public string NextAVTransportURI = String.Empty;
+        public string NextAVTransportURIMetaData = String.Empty;
 
         private string QueryStateString(string variableName)
         {
@@ -217,12 +149,11 @@ namespace Sonority.UPnP
         {
             return Convert.ToUInt32(avTransportService.QueryStateVariable(variableName));
         }
-#endif
 
         // required
         public void SetAVTransportUri(string currentUri, string currentUriMetadata)
         {
-            Array inArgs = new object[] { instanceID, currentUri, currentUriMetadata };
+            Array inArgs = new object[] { InstanceID, currentUri, currentUriMetadata };
             object outArgs = null;
             object results = avTransportService.InvokeAction("SetAVTransportURI", inArgs, ref outArgs);
         }
@@ -230,7 +161,7 @@ namespace Sonority.UPnP
         // optional
         public void SetNextAVTransportUri(string currentUri, string currentUriMetadata)
         {
-            Array inArgs = new object[] { instanceID, currentUri, currentUriMetadata };
+            Array inArgs = new object[] { InstanceID, currentUri, currentUriMetadata };
             object outArgs = null;
             object results = avTransportService.InvokeAction("SetNextAVTransportURI", inArgs, ref outArgs);
         }
@@ -238,7 +169,7 @@ namespace Sonority.UPnP
         // required
         public MediaInfo GetMediaInfo()
         {
-            Array inArgs = new object[] { instanceID };
+            Array inArgs = new object[] { InstanceID };
             object outArgs = null;
             object results = avTransportService.InvokeAction("GetMediaInfo", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -259,7 +190,7 @@ namespace Sonority.UPnP
         // required
         public TransportInfo GetTransportInfo()
         {
-            Array inArgs = new object[] { instanceID };
+            Array inArgs = new object[] { InstanceID };
             object outArgs = null;
             object results = avTransportService.InvokeAction("GetTransportInfo", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -274,7 +205,7 @@ namespace Sonority.UPnP
         // required
         public PositionInfo GetPositionInfo()
         {
-            Array inArgs = new object[] { instanceID };
+            Array inArgs = new object[] { InstanceID };
             object outArgs = null;
             object results = avTransportService.InvokeAction("GetPositionInfo", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -294,7 +225,7 @@ namespace Sonority.UPnP
         // required
         public DeviceCapabilities GetDeviceCapabilities()
         {
-            Array inArgs = new object[] { instanceID };
+            Array inArgs = new object[] { InstanceID };
             object outArgs = null;
             object results = avTransportService.InvokeAction("GetDeviceCapabilities", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -309,7 +240,7 @@ namespace Sonority.UPnP
         // required
         public TransportSettings GetTransportSettings()
         {
-            Array inArgs = new object[] { instanceID };
+            Array inArgs = new object[] { InstanceID };
             object outArgs = null;
             object results = avTransportService.InvokeAction("GetTransportSettings", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -323,7 +254,7 @@ namespace Sonority.UPnP
         // required
         public void Stop()
         {
-            Array inArgs = new object[] { instanceID };
+            Array inArgs = new object[] { InstanceID };
             object outArgs = null;
             object results = avTransportService.InvokeAction("Stop", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -332,7 +263,7 @@ namespace Sonority.UPnP
         // required
         public void Play(string speed)
         {
-            Array inArgs = new object[] { instanceID, speed };
+            Array inArgs = new object[] { InstanceID, speed };
             object outArgs = null;
             object results = avTransportService.InvokeAction("Play", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -341,7 +272,7 @@ namespace Sonority.UPnP
         // optional
         public void Pause()
         {
-            Array inArgs = new object[] { instanceID };
+            Array inArgs = new object[] { InstanceID };
             object outArgs = null;
             object results = avTransportService.InvokeAction("Pause", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -350,7 +281,7 @@ namespace Sonority.UPnP
         // optional
         public void Record()
         {
-            Array inArgs = new object[] { instanceID };
+            Array inArgs = new object[] { InstanceID };
             object outArgs = null;
             object results = avTransportService.InvokeAction("Record", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -359,7 +290,7 @@ namespace Sonority.UPnP
         // required
         public void Seek(string unit, string target)
         {
-            Array inArgs = new object[] { instanceID, unit, target };
+            Array inArgs = new object[] { InstanceID, unit, target };
             object outArgs = null;
             object results = avTransportService.InvokeAction("Seek", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -368,7 +299,7 @@ namespace Sonority.UPnP
         // required
         public void Next()
         {
-            Array inArgs = new object[] { instanceID };
+            Array inArgs = new object[] { InstanceID };
             object outArgs = null;
             object results = avTransportService.InvokeAction("Next", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -377,7 +308,7 @@ namespace Sonority.UPnP
         // required
         public void Previous()
         {
-            Array inArgs = new object[] { instanceID };
+            Array inArgs = new object[] { InstanceID };
             object outArgs = null;
             object results = avTransportService.InvokeAction("Previous", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -386,7 +317,7 @@ namespace Sonority.UPnP
         // optional
         public void SetPlayMode(string newPlayMode)
         {
-            Array inArgs = new object[] { instanceID, newPlayMode };
+            Array inArgs = new object[] { InstanceID, newPlayMode };
             object outArgs = null;
             object results = avTransportService.InvokeAction("SetPlayMode", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -401,7 +332,7 @@ namespace Sonority.UPnP
         // optional
         public string GetCurrentTransportActions()
         {
-            Array inArgs = new object[] { instanceID };
+            Array inArgs = new object[] { InstanceID };
             object outArgs = null;
             object results = avTransportService.InvokeAction("GetCurrentTransportActions", inArgs, ref outArgs);
             object[] outArray = (object[])outArgs;
@@ -409,6 +340,5 @@ namespace Sonority.UPnP
         }
 
         private UPnPService avTransportService;
-        private static uint instanceID = 0;
     }
 }
