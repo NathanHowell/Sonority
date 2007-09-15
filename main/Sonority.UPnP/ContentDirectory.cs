@@ -23,6 +23,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -31,13 +32,54 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class ContentDirectory
+    public enum BrowseFlags
+    {
+        BrowseDirectChildren,
+        BrowseMetadata,
+    }
+
+    public class ContentDirectory : INotifyPropertyChanged
     {
         internal ContentDirectory(UPnPService service)
         {
             directoryService = service;
+            service.AddCallback(new ContentDirectoryCallback(this));
         }
 
+        internal void OnStateVariableChanged(string stateVariable, object value)
+        {
+            System.Reflection.FieldInfo fi = this.GetType().GetField(stateVariable);
+            if (fi == null)
+            {
+                Console.Error.WriteLine("Field not found: {0}", stateVariable);
+                return;
+            }
+
+            if (fi.FieldType == typeof(UInt32))
+            {
+                value = Convert.ToUInt32(value);
+            }
+            else if (fi.FieldType == typeof(String))
+            {
+                value = Convert.ToString(value);
+            }
+
+            fi.SetValue(this, value);
+            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(stateVariable));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public uint SystemUpdateID = 0;
+        public string ContainerUpdateIDs = String.Empty;
+        public string ShareListRefreshStat = String.Empty;
+        public string ShareIndexInProgress = String.Empty;
+        public string ShareIndexLastError = String.Empty;
+        public string UserRadioUpdateID = String.Empty;
+        public string MasterRadioUpdateID = String.Empty;
+        public string SavedQueuesUpdateID = String.Empty;
+        public string ShareListUpdateID = String.Empty;
+        
         public string GetSearchCapabilities()
         {
             return InvokeAction("GetSearchCapabilities");
@@ -53,9 +95,9 @@ namespace Sonority.UPnP
             return InvokeAction("GetSystemUpdateID");
         }
 
-        public IEnumerable<XPathNavigator> Browse(string objectID, string browseFlag, string filter, string sortCriteria)
+        public IEnumerable<XPathNavigator> Browse(string objectID, BrowseFlags browseFlag, string filter, string sortCriteria)
         {
-            Array inArgs = new object[] { objectID, browseFlag, filter, 0u, 256u, sortCriteria };
+            Array inArgs = new object[] { objectID, browseFlag.ToString(), filter, 0u, 256u, sortCriteria };
             object[] outArray = { "", 0u, uint.MaxValue, 0u };
 
             for (uint i = 0; i < (uint)outArray[2]; i += (uint)outArray[1])

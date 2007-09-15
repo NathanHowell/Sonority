@@ -85,7 +85,7 @@ namespace Sonority.UPnP
 
         internal void OnStateVariableChanged(string stateVariable, object value)
         {
-            System.Reflection.FieldInfo fi = typeof(AVTransport).GetField(stateVariable);
+            System.Reflection.FieldInfo fi = this.GetType().GetField(stateVariable);
             if (fi == null)
             {
                 Console.Error.WriteLine("Field not found: {0}", stateVariable);

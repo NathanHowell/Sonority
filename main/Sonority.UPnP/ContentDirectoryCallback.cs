@@ -28,42 +28,28 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    internal class AVTransportCallback : IUPnPServiceCallback
+    internal class ContentDirectoryCallback : IUPnPServiceCallback
     {
-        public AVTransportCallback(AVTransport outer)
+        public ContentDirectoryCallback(ContentDirectory outer)
         {
             connection = new WeakReference(outer);
         }
 
         public void ServiceInstanceDied(UPnPService pus)
         {
-            AVTransport avTransport = (AVTransport)connection.Target;
-            if (avTransport == null)
-            {
-                return;
-            }
         }
 
         public void StateVariableChanged(UPnPService pus, string pcwszStateVarName, object vaValue)
         {
-            AVTransport avTransport = (AVTransport)connection.Target;
-            if (avTransport == null)
+            ContentDirectory contentDirectory = (ContentDirectory)connection.Target;
+            if (contentDirectory == null)
             {
                 return;
             }
 
-            XPathDocument doc = new XPathDocument(new StringReader((string)vaValue));
-            XPathNavigator nav = doc.CreateNavigator();
-
-            foreach (XPathNavigator node in nav.Select(eventExpression))
-            {
-                XPathNavigator val = node.SelectSingleNode(valExpression);
-                avTransport.OnStateVariableChanged(node.LocalName, val.Value);
-            }
+            contentDirectory.OnStateVariableChanged(pcwszStateVarName, vaValue);
         }
 
-        private static readonly XPathExpression eventExpression = XPathExpression.Compile("/avt:Event/avt:InstanceID[@val='0']/*", Namespaces.Manager);
-        private static readonly XPathExpression valExpression = XPathExpression.Compile("@val", Namespaces.Manager);
         private WeakReference connection;
     }
 }
