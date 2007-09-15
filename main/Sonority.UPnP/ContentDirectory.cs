@@ -33,17 +33,6 @@ namespace Sonority.UPnP
 {
     public class ContentDirectory
     {
-        static ContentDirectory()
-        {
-            nameTable = new NameTable();
-            namespaceManager = new XmlNamespaceManager(nameTable);
-            namespaceManager.AddNamespace("didl", "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/");
-            namespaceManager.AddNamespace("upnp", "urn:schemas-upnp-org:metadata-1-0/upnp/");
-            namespaceManager.AddNamespace("r", "urn:schemas-rinconnetworks-com:metadata-1-0/");
-            namespaceManager.AddNamespace("dc", "http://purl.org/dc/elements/1.1/");
-            didlItemsExpression = XPathExpression.Compile("/didl:DIDL-Lite/didl:item", namespaceManager);
-        }
-
         internal ContentDirectory(UPnPService service)
         {
             directoryService = service;
@@ -105,10 +94,7 @@ namespace Sonority.UPnP
             return Convert.ToString(((object[])outArgs).GetValue(0));
         }
 
-        private static XmlNameTable nameTable;
-        private static XmlNamespaceManager namespaceManager;
-        private static XPathExpression didlItemsExpression;
-
+        private static readonly XPathExpression didlItemsExpression = XPathExpression.Compile("/didl:DIDL-Lite/didl:item", Namespaces.Manager);
         private UPnPService directoryService;
     }
 }

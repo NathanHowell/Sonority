@@ -38,7 +38,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AVTransport.cs" />
+    <Compile Include="AVTransportCallback.cs" />
     <Compile Include="ContentDirectory.cs" />
+    <Compile Include="Namespaces.cs" />
     <Compile Include="UPnP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ZonePlayer.cs" />

@@ -21,7 +21,9 @@
 //
 
 using System;
+using System.IO;
 using System.Xml;
+using System.Xml.XPath;
 using UPNPLib;
 
 namespace Sonority.UPnP
@@ -50,19 +52,18 @@ namespace Sonority.UPnP
                 return;
             }
 
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml((string)vaValue);
+            XPathDocument doc = new XPathDocument(new StringReader((string)vaValue));
+            XPathNavigator nav = doc.CreateNavigator();
 
-            XmlNamespaceManager nm = new XmlNamespaceManager(doc.NameTable);
-            nm.AddNamespace("avt", "urn:schemas-upnp-org:metadata-1-0/AVT/");
-            nm.AddNamespace("r", "urn:schemas-rinconnetworks-com:metadata-1-0/");
-
-            foreach (XmlNode node in doc.SelectNodes(String.Format("/avt:Event/avt:InstanceID[@val='{0}']/*", avTransport.InstanceID), nm))
+            foreach (XPathNavigator node in nav.Select(eventExpression))
             {
-                avTransport.OnStateVariableChanged(node.LocalName, node.SelectSingleNode("@val").Value);
+                XPathNavigator val = node.SelectSingleNode(valExpression);
+                avTransport.OnStateVariableChanged(node.LocalName, val.Value);
             }
         }
 
+        private static readonly XPathExpression eventExpression = XPathExpression.Compile("/avt:Event/avt:InstanceID[@val='0']/*", Namespaces.Manager);
+        private static readonly XPathExpression valExpression = XPathExpression.Compile("@val", Namespaces.Manager);
         private WeakReference avTransportRef;
     }
 }
