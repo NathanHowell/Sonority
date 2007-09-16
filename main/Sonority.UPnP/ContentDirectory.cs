@@ -55,16 +55,7 @@ namespace Sonority.UPnP
                 return;
             }
 
-            if (fi.FieldType == typeof(UInt32))
-            {
-                value = Convert.ToUInt32(value);
-            }
-            else if (fi.FieldType == typeof(String))
-            {
-                value = Convert.ToString(value);
-            }
-
-            fi.SetValue(this, value);
+            fi.SetValue(this, Convert.ChangeType(value, fi.FieldType));
             PropertyChanged.Invoke(this, new PropertyChangedEventArgs(stateVariable));
         }
 
@@ -72,7 +63,7 @@ namespace Sonority.UPnP
 
         public uint SystemUpdateID = 0;
         public string ContainerUpdateIDs = String.Empty;
-        public string ShareListRefreshStat = String.Empty;
+        public string ShareListRefreshState = String.Empty;
         public string ShareIndexInProgress = String.Empty;
         public string ShareIndexLastError = String.Empty;
         public string UserRadioUpdateID = String.Empty;
@@ -116,7 +107,12 @@ namespace Sonority.UPnP
                 XPathDocument doc = new XPathDocument(new StringReader(resultXml));
                 XPathNavigator nav = doc.CreateNavigator();
 
-                foreach (XPathNavigator node in nav.Select(didlItemsExpression))
+                foreach (XPathNavigator node in nav.Select(containersExpression))
+                {
+                    yield return node;
+                }
+
+                foreach (XPathNavigator node in nav.Select(itemsExpression))
                 {
                     yield return node;
                 }
@@ -136,7 +132,8 @@ namespace Sonority.UPnP
             return Convert.ToString(((object[])outArgs).GetValue(0));
         }
 
-        private static readonly XPathExpression didlItemsExpression = XPathExpression.Compile("/didl:DIDL-Lite/didl:item", Namespaces.Manager);
+        private static readonly XPathExpression itemsExpression = XPathExpression.Compile("/didl:DIDL-Lite/didl:item", Namespaces.Manager);
+        private static readonly XPathExpression containersExpression = XPathExpression.Compile("/didl:DIDL-Lite/didl:container", Namespaces.Manager);
         private UPnPService directoryService;
     }
 }

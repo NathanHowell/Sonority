@@ -92,16 +92,7 @@ namespace Sonority.UPnP
                 return;
             }
 
-            if (fi.FieldType == typeof(UInt32))
-            {
-                value = Convert.ToUInt32(value);
-            }
-            else if (fi.FieldType == typeof(String))
-            {
-                value = Convert.ToString(value);
-            }
-
-            fi.SetValue(this, value);
+            fi.SetValue(this, Convert.ChangeType(value, fi.FieldType));
             PropertyChanged.Invoke(this, new PropertyChangedEventArgs(stateVariable));
         }
 
