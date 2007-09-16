@@ -80,6 +80,7 @@ namespace Sonority.UPnP
         public AVTransport(UPnPService service)
         {
             avTransportService = service;
+            StateVariables.Initialize(this, service);
             avTransportService.AddCallback(new AVTransportCallback(this));
         }
 
@@ -88,18 +89,9 @@ namespace Sonority.UPnP
             // do something
         }
 
-        // TODO: remove dupe code
         void IUPnPServiceCallback.StateVariableChanged(UPnPService pus, string stateVariable, object value)
         {
-            string fieldName = String.Format("_{0}", stateVariable);
-            FieldInfo fi = this.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-            if (fi == null)
-            {
-                Console.Error.WriteLine("Field not found: {0}", fieldName);
-                return;
-            }
-
-            fi.SetValue(this, Convert.ChangeType(value, fi.FieldType));
+            StateVariables.Changed(this, pus, stateVariable, value);
             PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
         }
 

@@ -66,11 +66,11 @@ namespace Sonority.UPnP
             }
         }
 
-        public UPnPService DeviceProperties
+        public DeviceProperties DeviceProperties
         {
             get
             {
-                return _device.Services["urn:upnp-org:serviceId:DeviceProperties"];
+                return new DeviceProperties(_device.Services["urn:upnp-org:serviceId:DeviceProperties"]);
             }
         }
 
@@ -82,11 +82,11 @@ namespace Sonority.UPnP
             }
         }
 
-        public UPnPService RenderingControl
+        public RenderingControl RenderingControl
         {
             get
             {
-                return MediaRenderer.Services["urn:upnp-org:serviceId:RenderingControl"];
+                return new RenderingControl(MediaRenderer.Services["urn:upnp-org:serviceId:RenderingControl"]);
             }
         }
 

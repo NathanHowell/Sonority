@@ -42,9 +42,13 @@
     <Compile Include="AVTransportCallback.cs" />
     <Compile Include="ContentDirectory.cs" />
     <Compile Include="ContentDirectory.Properties.cs" />
+    <Compile Include="DeviceProperties.cs" />
+    <Compile Include="RenderingControl.cs" />
+    <Compile Include="RenderingControl.Properties.cs" />
     <Compile Include="ServiceCallback.cs" />
     <Compile Include="Discover.cs" />
     <Compile Include="DeviceFinderCallback.cs" />
+    <Compile Include="StateVariables.cs" />
     <Compile Include="XPath.cs" />
     <Compile Include="UPnP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
