@@ -28,26 +28,16 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    internal class AVTransportCallback : IUPnPServiceCallback
+    internal class AVTransportCallback : ServiceCallback
     {
-        public AVTransportCallback(AVTransport outer)
+        public AVTransportCallback(IUPnPServiceCallback outer) : base(outer)
         {
-            connection = new WeakReference(outer);
         }
 
-        public void ServiceInstanceDied(UPnPService pus)
+        public override void StateVariableChanged(UPnPService pus, string pcwszStateVarName, object vaValue)
         {
-            AVTransport avTransport = (AVTransport)connection.Target;
-            if (avTransport == null)
-            {
-                return;
-            }
-        }
-
-        public void StateVariableChanged(UPnPService pus, string pcwszStateVarName, object vaValue)
-        {
-            AVTransport avTransport = (AVTransport)connection.Target;
-            if (avTransport == null)
+            IUPnPServiceCallback callback = (IUPnPServiceCallback)connection.Target;
+            if (callback == null)
             {
                 return;
             }
@@ -55,15 +45,11 @@ namespace Sonority.UPnP
             XPathDocument doc = new XPathDocument(new StringReader((string)vaValue));
             XPathNavigator nav = doc.CreateNavigator();
 
-            foreach (XPathNavigator node in nav.Select(eventExpression))
+            foreach (XPathNavigator node in nav.Select(XPath.Expressions.EventElements))
             {
-                XPathNavigator val = node.SelectSingleNode(valExpression);
-                avTransport.OnStateVariableChanged(node.LocalName, val.Value);
+                XPathNavigator val = node.SelectSingleNode(XPath.Expressions.ValueAttributes);
+                callback.StateVariableChanged(pus, node.LocalName, val.Value);
             }
         }
-
-        private static readonly XPathExpression eventExpression = XPathExpression.Compile("/avt:Event/avt:InstanceID[@val='0']/*", Namespaces.Manager);
-        private static readonly XPathExpression valExpression = XPathExpression.Compile("@val", Namespaces.Manager);
-        private WeakReference connection;
     }
 }

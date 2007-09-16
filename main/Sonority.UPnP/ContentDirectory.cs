@@ -25,6 +25,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.XPath;
@@ -38,39 +39,36 @@ namespace Sonority.UPnP
         BrowseMetadata,
     }
 
-    public class ContentDirectory : INotifyPropertyChanged
+    public partial class ContentDirectory : IUPnPServiceCallback, INotifyPropertyChanged
     {
         internal ContentDirectory(UPnPService service)
         {
             directoryService = service;
-            service.AddCallback(new ContentDirectoryCallback(this));
+            service.AddCallback(new ServiceCallback(this));
         }
 
-        internal void OnStateVariableChanged(string stateVariable, object value)
+        void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
         {
-            System.Reflection.FieldInfo fi = this.GetType().GetField(stateVariable);
+            // ignore for now
+        }
+
+        // TODO: remove dupe code
+        void IUPnPServiceCallback.StateVariableChanged(UPnPService pus, string stateVariable, object value)
+        {
+            string fieldName = String.Format("_{0}", stateVariable);
+            FieldInfo fi = this.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             if (fi == null)
             {
-                Console.Error.WriteLine("Field not found: {0}", stateVariable);
+                Console.Error.WriteLine("Field not found: {0}", fieldName);
                 return;
             }
 
             fi.SetValue(this, Convert.ChangeType(value, fi.FieldType));
-            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(stateVariable));
+            PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public uint SystemUpdateID = 0;
-        public string ContainerUpdateIDs = String.Empty;
-        public string ShareListRefreshState = String.Empty;
-        public string ShareIndexInProgress = String.Empty;
-        public string ShareIndexLastError = String.Empty;
-        public string UserRadioUpdateID = String.Empty;
-        public string MasterRadioUpdateID = String.Empty;
-        public string SavedQueuesUpdateID = String.Empty;
-        public string ShareListUpdateID = String.Empty;
-        
         public string GetSearchCapabilities()
         {
             return InvokeAction("GetSearchCapabilities");
@@ -107,12 +105,12 @@ namespace Sonority.UPnP
                 XPathDocument doc = new XPathDocument(new StringReader(resultXml));
                 XPathNavigator nav = doc.CreateNavigator();
 
-                foreach (XPathNavigator node in nav.Select(containersExpression))
+                foreach (XPathNavigator node in nav.Select(XPath.Expressions.ContainerElements))
                 {
                     yield return node;
                 }
 
-                foreach (XPathNavigator node in nav.Select(itemsExpression))
+                foreach (XPathNavigator node in nav.Select(XPath.Expressions.ItemsElements))
                 {
                     yield return node;
                 }
@@ -132,8 +130,6 @@ namespace Sonority.UPnP
             return Convert.ToString(((object[])outArgs).GetValue(0));
         }
 
-        private static readonly XPathExpression itemsExpression = XPathExpression.Compile("/didl:DIDL-Lite/didl:item", Namespaces.Manager);
-        private static readonly XPathExpression containersExpression = XPathExpression.Compile("/didl:DIDL-Lite/didl:container", Namespaces.Manager);
         private UPnPService directoryService;
     }
 }

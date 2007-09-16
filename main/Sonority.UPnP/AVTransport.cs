@@ -23,9 +23,9 @@
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
-using System.Text;
+using System.Reflection;
 using System.Xml;
-using System.Xml.XPath;
+//using System.Xml.XPath;
 using UPNPLib;
 
 namespace Sonority.UPnP
@@ -75,7 +75,7 @@ namespace Sonority.UPnP
         public string RecQualityMode;
     }
 
-    public class AVTransport : INotifyPropertyChanged
+    public partial class AVTransport : IUPnPServiceCallback, INotifyPropertyChanged
     {
         public AVTransport(UPnPService service)
         {
@@ -83,53 +83,27 @@ namespace Sonority.UPnP
             avTransportService.AddCallback(new AVTransportCallback(this));
         }
 
-        internal void OnStateVariableChanged(string stateVariable, object value)
+        void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
         {
-            System.Reflection.FieldInfo fi = this.GetType().GetField(stateVariable);
+            // do something
+        }
+
+        // TODO: remove dupe code
+        void IUPnPServiceCallback.StateVariableChanged(UPnPService pus, string stateVariable, object value)
+        {
+            string fieldName = String.Format("_{0}", stateVariable);
+            FieldInfo fi = this.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             if (fi == null)
             {
-                Console.Error.WriteLine("Field not found: {0}", stateVariable);
+                Console.Error.WriteLine("Field not found: {0}", fieldName);
                 return;
             }
 
             fi.SetValue(this, Convert.ChangeType(value, fi.FieldType));
-            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(stateVariable));
+            PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public readonly uint InstanceID = 0;
-        public string TransportState = String.Empty;
-        public string TransportStatus = String.Empty;
-        public string PlaybackStorageMedium = String.Empty;
-        public string RecordStorageMedium = String.Empty;
-        public string PossiblePlaybackStorageMedia = String.Empty;
-        public string PossibleRecordStorageMedia = String.Empty;
-        public string CurrentPlayMode = String.Empty;
-        public string TransportPlaySpeed = String.Empty;
-        public string RecordMediumWriteStatus = String.Empty;
-        public string CurrentRecordQualityMode = String.Empty;
-        public string PossibleRecordQualityModes = String.Empty;
-        public uint NumberOfTracks = 0u;
-        public uint CurrentTrack = 0u;
-        public string CurrentTrackDuration = String.Empty;
-        public string CurrentMediaDuration = String.Empty;
-        public string CurrentTrackMetaData = String.Empty;
-        public string CurrentSection = String.Empty;
-        public string CurrentTrackURI = String.Empty;
-        public string NextTrackURI = String.Empty;
-        public string NextTrackMetaData = String.Empty;
-        public string EnqueuedTransportURI = String.Empty;
-        public string EnqueuedTransportURIMetaData = String.Empty;
-        public string AVTransportURI = String.Empty;
-        public string AVTransportURIMetaData = String.Empty;
-        public string CurrentTransportActions = String.Empty;
-        public string SleepTimerGeneration = String.Empty;
-        public string AlarmRunning = String.Empty;
-        public string SnoozeRunning = String.Empty;
-        public string RestartPending = String.Empty;
-        public string NextAVTransportURI = String.Empty;
-        public string NextAVTransportURIMetaData = String.Empty;
 
         private string QueryStateString(string variableName)
         {

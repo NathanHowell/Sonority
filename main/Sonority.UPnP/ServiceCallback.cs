@@ -21,23 +21,42 @@
 //
 
 using System;
+using System.IO;
 using System.Xml;
+using System.Xml.XPath;
+using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    internal static class Namespaces
+    internal class ServiceCallback : IUPnPServiceCallback
     {
-        static Namespaces()
+        public ServiceCallback(IUPnPServiceCallback outer)
         {
-            Manager = new XmlNamespaceManager(Table);
-            Manager.AddNamespace("didl",    "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/");
-            Manager.AddNamespace("upnp",    "urn:schemas-upnp-org:metadata-1-0/upnp/");
-            Manager.AddNamespace("r",       "urn:schemas-rinconnetworks-com:metadata-1-0/");
-            Manager.AddNamespace("avt",     "urn:schemas-upnp-org:metadata-1-0/AVT/");
-            Manager.AddNamespace("dc",      "http://purl.org/dc/elements/1.1/");
+            connection = new WeakReference(outer);
         }
 
-        public static readonly XmlNameTable Table = new NameTable();
-        public static readonly XmlNamespaceManager Manager;
+        void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
+        {
+            IUPnPServiceCallback callback = (IUPnPServiceCallback)connection.Target;
+            if (callback == null)
+            {
+                return;
+            }
+
+            callback.ServiceInstanceDied(pus);
+        }
+
+        public virtual void StateVariableChanged(UPnPService pus, string pcwszStateVarName, object vaValue)
+        {
+            IUPnPServiceCallback callback = (IUPnPServiceCallback)connection.Target;
+            if (callback == null)
+            {
+                return;
+            }
+
+            callback.StateVariableChanged(pus, pcwszStateVarName, vaValue);
+        }
+
+        protected WeakReference connection;
     }
 }

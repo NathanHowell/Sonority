@@ -31,19 +31,22 @@ namespace Sonority.UPnP
     {
         public ZonePlayer(string uniqueDeviceName)
         {
-            udn = uniqueDeviceName;
             UPnPDeviceFinder finder = new UPnPDeviceFinderClass();
-            device = finder.FindByUDN(uniqueDeviceName);
+            _device = finder.FindByUDN(uniqueDeviceName);
         }
 
-        private UPnPDevice device;
-        private string udn;
+        public ZonePlayer(UPnPDevice device)
+        {
+            _device = device;
+        }
+
+        private UPnPDevice _device;
 
         public UPnPDevice MediaServer
         {
             get
             {
-                return device.Children[String.Format("{0}_MS", udn)];
+                return _device.Children[String.Format("{0}_MS", _device.UniqueDeviceName)];
             }
         }
 
@@ -51,7 +54,7 @@ namespace Sonority.UPnP
         {
             get
             {
-                return device.Children[String.Format("{0}_MR", udn)];
+                return _device.Children[String.Format("{0}_MR", _device.UniqueDeviceName)];
             }
         }
 
@@ -59,7 +62,7 @@ namespace Sonority.UPnP
         {
             get
             {
-                return device.Services["urn:upnp-org:serviceId:AudioIn"];
+                return _device.Services["urn:upnp-org:serviceId:AudioIn"];
             }
         }
 
@@ -67,7 +70,7 @@ namespace Sonority.UPnP
         {
             get
             {
-                return device.Services["urn:upnp-org:serviceId:DeviceProperties"];
+                return _device.Services["urn:upnp-org:serviceId:DeviceProperties"];
             }
         }
 
@@ -92,6 +95,14 @@ namespace Sonority.UPnP
             get
             {
                 return new ContentDirectory(MediaServer.Services["urn:upnp-org:serviceId:ContentDirectory"]);
+            }
+        }
+
+        public string UniqueDeviceName
+        {
+            get
+            {
+                return _device.UniqueDeviceName;
             }
         }
     }

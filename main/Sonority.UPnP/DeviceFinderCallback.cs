@@ -21,33 +21,49 @@
 //
 
 using System;
-using System.IO;
-using System.Xml;
-using System.Xml.XPath;
+using System.Collections.Generic;
 using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    internal class ContentDirectoryCallback : IUPnPServiceCallback
+    internal class DeviceFinderCallback : IUPnPDeviceFinderCallback
     {
-        public ContentDirectoryCallback(ContentDirectory outer)
+        public DeviceFinderCallback(IUPnPDeviceFinderCallback outer)
         {
             connection = new WeakReference(outer);
         }
 
-        public void ServiceInstanceDied(UPnPService pus)
+        public void DeviceAdded(int lFindData, UPnPDevice pDevice)
         {
-        }
-
-        public void StateVariableChanged(UPnPService pus, string pcwszStateVarName, object vaValue)
-        {
-            ContentDirectory contentDirectory = (ContentDirectory)connection.Target;
-            if (contentDirectory == null)
+            IUPnPDeviceFinderCallback callback = (IUPnPDeviceFinderCallback)connection.Target;
+            if (callback == null)
             {
                 return;
             }
 
-            contentDirectory.OnStateVariableChanged(pcwszStateVarName, vaValue);
+            callback.DeviceAdded(lFindData, pDevice);
+        }
+
+        public void DeviceRemoved(int lFindData, string bstrUDN)
+        {
+            IUPnPDeviceFinderCallback callback = (IUPnPDeviceFinderCallback)connection.Target;
+            if (callback == null)
+            {
+                return;
+            }
+
+            callback.DeviceRemoved(lFindData, bstrUDN);
+        }
+
+        public void SearchComplete(int lFindData)
+        {
+            IUPnPDeviceFinderCallback callback = (IUPnPDeviceFinderCallback)connection.Target;
+            if (callback == null)
+            {
+                return;
+            }
+
+            callback.SearchComplete(lFindData);
         }
 
         private WeakReference connection;
