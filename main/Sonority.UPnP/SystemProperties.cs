@@ -21,24 +21,41 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    internal static class UPnP
+    public class SystemProperties
     {
-        public static object[] InvokeAction(UPnPService service, string actionName, params object[] args)
+        internal SystemProperties(UPnPService service)
         {
-            Array inArgs = args;
-            object outArgs = null;
-            object results = service.InvokeAction(actionName, inArgs, ref outArgs);
-            return (object[])outArgs;
+            _service = service;
         }
 
-        public static T InvokeAction<T>(UPnPService service, string actionName, params object[] args)
+        // TODO: figure out more state variables
+        public string R_AudioInEncodeType = String.Empty;
+
+        void SetString(string name, string value)
         {
-            return (T)Convert.ChangeType(InvokeAction(service, actionName, args).GetValue(0), typeof(T));
+            UPnP.InvokeAction(_service, "SetString", name, value);
         }
 
+        string GetString(string name)
+        {
+            return UPnP.InvokeAction<String>(_service, "GetString", name);
+        }
+
+        // methods we don't care about:
+        // ProvisionTrialAccount
+        // ProvisionCredentialedTrialAccount
+        // MigrateTrialAccount
+        // AddAccount
+        // RemoveAccount
+        // EditAccountPassword
+        // CreateStubAccounts
+
+        private UPnPService _service;
     }
 }

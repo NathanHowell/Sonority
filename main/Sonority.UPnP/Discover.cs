@@ -31,12 +31,12 @@ namespace Sonority.UPnP
     {
         public Discover()
         {
-            findData = finder.CreateAsyncFind("urn:schemas-upnp-org:device:ZonePlayer:1", 0, new DeviceFinderCallback(this));
+            _findData = _finder.CreateAsyncFind("urn:schemas-upnp-org:device:ZonePlayer:1", 0, new DeviceFinderCallback(this));
         }
 
         ~Discover()
         {
-            finder.CancelAsyncFind(findData);
+            _finder.CancelAsyncFind(_findData);
         }
 
         public void Dispose()
@@ -44,11 +44,9 @@ namespace Sonority.UPnP
             throw new Exception("The method or operation is not implemented.");
         }
 
-        UPnPDeviceFinder finder = new UPnPDeviceFinderClass();
-
         public void Start()
         {
-            finder.StartAsyncFind(findData);
+            _finder.StartAsyncFind(_findData);
         }
 
         void IUPnPDeviceFinderCallback.DeviceAdded(int lFindData, UPnPDevice pDevice)
@@ -76,9 +74,10 @@ namespace Sonority.UPnP
             }
         }
 
+        private UPnPDeviceFinder _finder = new UPnPDeviceFinderClass();
         private List<ZonePlayer> _zonePlayers = new List<ZonePlayer>();
-        public event PropertyChangedEventHandler PropertyChanged;
+        private int _findData;
 
-        private int findData;
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
     }
 }

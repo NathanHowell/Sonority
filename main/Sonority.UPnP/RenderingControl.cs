@@ -30,7 +30,7 @@ namespace Sonority.UPnP
     {
         internal RenderingControl(UPnPService service)
         {
-            renderingControlService = service;
+            _service = service;
             StateVariables.Initialize(this, service);
             service.AddCallback(new ServiceCallback(this));
         }
@@ -46,7 +46,7 @@ namespace Sonority.UPnP
             PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         string ListPresets()
         {
@@ -58,6 +58,6 @@ namespace Sonority.UPnP
             throw new NotImplementedException();
         }
 
-        private UPnPService renderingControlService;
+        private UPnPService _service;
     }
 }

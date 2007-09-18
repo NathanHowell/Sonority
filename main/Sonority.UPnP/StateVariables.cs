@@ -27,6 +27,11 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
+    [AttributeUsage(AttributeTargets.Field)]
+    internal class EventedAttribute : Attribute
+    {
+    }
+
     // TODO: add field attributes
     internal static class StateVariables
     {
@@ -74,6 +79,11 @@ namespace Sonority.UPnP
             }
 
             fi.SetValue(target, Convert.ChangeType(value, fi.FieldType));
+        }
+
+        private static bool IsEvented(FieldInfo fi)
+        {
+            return fi.GetCustomAttributes(typeof(EventedAttribute), true).Length > 0;
         }
     }
 }

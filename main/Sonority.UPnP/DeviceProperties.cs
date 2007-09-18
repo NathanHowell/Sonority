@@ -37,12 +37,12 @@ namespace Sonority.UPnP
     {
         internal DeviceProperties(UPnPService service)
         {
-            devicePropertiesService = service;
+            _service = service;
             StateVariables.Initialize(this, service);
             service.AddCallback(new ServiceCallback(this));
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
         {
@@ -65,6 +65,6 @@ namespace Sonority.UPnP
         internal bool _Invisible = false;
         internal string _SettingsReplicationState = String.Empty;
 
-        private UPnPService devicePropertiesService;
+        private UPnPService _service;
     }
 }
