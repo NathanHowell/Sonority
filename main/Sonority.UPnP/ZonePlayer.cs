@@ -22,7 +22,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading;
 using UPNPLib;
 
 namespace Sonority.UPnP
@@ -31,33 +31,38 @@ namespace Sonority.UPnP
     {
         public ZonePlayer(string uniqueDeviceName)
         {
-            UPnPDeviceFinder finder = new UPnPDeviceFinderClass();
-            _device = finder.FindByUDN(uniqueDeviceName);
+            _device = FindByUDN(uniqueDeviceName);
             Initialize();
         }
 
         public ZonePlayer(UPnPDevice device)
         {
-            _device = device;
+            // hack/fix to prevent DisconnectedContext MDA due to the upnp callback threads
+            // calling CoUninit and nuking this STA on return. create a new instance instead
+            if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
+            {
+                _device = FindByUDN(device.UniqueDeviceName);
+            }
+            else
+            {
+                _device = device;
+            }
+
             Initialize();
         }
 
-        // lazy construction is better but do it this way until the MDA ContextDisconnect crash gets tracked down
+        private static UPnPDevice FindByUDN(string uniqueDeviceName)
+        {
+            UPnPDeviceFinder finder = new UPnPDeviceFinderClass();
+            return finder.FindByUDN(uniqueDeviceName);
+        }
+
         private void Initialize()
         {
-            _mediaServer = _device.Children[String.Format("{0}_MS", _device.UniqueDeviceName)];
-            _mediaRenderer = _device.Children[String.Format("{0}_MR", _device.UniqueDeviceName)];
-
-            _audioIn = _device.Services["urn:upnp-org:serviceId:AudioIn"];
             _alarmClock = _device.Services["urn:upnp-org:serviceId:AlarmClock"];
-            _deviceProperties = new DeviceProperties(_device.Services["urn:upnp-org:serviceId:DeviceProperties"]);
-            _systemProperties = new SystemProperties(_device.Services["urn:upnp-org:serviceId:SystemProperties"]);
             _zoneGroupTopology = _device.Services["urn:upnp-org:serviceId:ZoneGroupTopology"];
             _groupManagment = _device.Services["urn:upnp-org:serviceId:GroupManagement"];
 
-            _avTransport = new AVTransport(MediaRenderer.Services["urn:upnp-org:serviceId:AVTransport"]);
-            _renderingControl = new RenderingControl(MediaRenderer.Services["urn:upnp-org:serviceId:RenderingControl"]);
-            _contentDirectory = new ContentDirectory(MediaServer.Services["urn:upnp-org:serviceId:ContentDirectory"]);
         }
 
         private void DumpServices()
@@ -69,14 +74,98 @@ namespace Sonority.UPnP
             }
         }
 
-        public UPnPDevice MediaServer { get { return _mediaServer; } }
-        public UPnPDevice MediaRenderer { get { return _mediaRenderer; } }
-        public UPnPService AudioIn { get { return _audioIn; } }
-        public SystemProperties SystemProperties { get { return _systemProperties; } }
-        public DeviceProperties DeviceProperties { get { return _deviceProperties; } }
-        public AVTransport AVTransport { get { return _avTransport; } }
-        public RenderingControl RenderingControl { get { return _renderingControl; } }
-        public ContentDirectory ContentDirectory { get { return _contentDirectory; } }
+        public UPnPDevice MediaServer
+        {
+            get
+            {
+                if (_mediaServer == null)
+                {
+                    _mediaServer = _device.Children[String.Format("{0}_MS", _device.UniqueDeviceName)];
+                }
+                return _mediaServer;
+            }
+        }
+
+        public UPnPDevice MediaRenderer
+        {
+            get
+            {
+                if (_mediaRenderer == null)
+                {
+                    _mediaRenderer = _device.Children[String.Format("{0}_MR", _device.UniqueDeviceName)];
+                }
+                return _mediaRenderer;
+            }
+        }
+
+        public UPnPService AudioIn
+        {
+            get
+            {
+                if (_audioIn == null)
+                {
+                    _audioIn = _device.Services["urn:upnp-org:serviceId:AudioIn"];
+                }
+                return _audioIn;
+            }
+        }
+
+        public SystemProperties SystemProperties
+        {
+            get
+            {
+                if (_systemProperties == null)
+                {
+                    _systemProperties = new SystemProperties(_device.Services["urn:upnp-org:serviceId:SystemProperties"]);
+                }
+                return _systemProperties;
+            }
+        }
+        public DeviceProperties DeviceProperties
+        {
+            get
+            {
+                if (_deviceProperties == null)
+                {
+                    _deviceProperties = new DeviceProperties(_device.Services["urn:upnp-org:serviceId:DeviceProperties"]);
+                }
+                return _deviceProperties;
+            }
+        }
+        public AVTransport AVTransport
+        {
+            get
+            {
+                if (_avTransport == null)
+                {
+                    _avTransport = new AVTransport(MediaRenderer.Services["urn:upnp-org:serviceId:AVTransport"]);
+                }
+                return _avTransport;
+            }
+        }
+        public RenderingControl RenderingControl
+        {
+            get
+            {
+                if (_renderingControl == null)
+                {
+                    _renderingControl = new RenderingControl(MediaRenderer.Services["urn:upnp-org:serviceId:RenderingControl"]);
+                }
+                return _renderingControl;
+            }
+        }
+        public ContentDirectory ContentDirectory
+        {
+            get
+            {
+                if (_contentDirectory == null)
+                {
+                    _contentDirectory = new ContentDirectory(MediaServer.Services["urn:upnp-org:serviceId:ContentDirectory"]);
+                }
+                return _contentDirectory;
+            }
+        }
+
         public string UniqueDeviceName { get { return _device.UniqueDeviceName; } }
 
         private UPnPDevice _device;

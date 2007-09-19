@@ -22,6 +22,7 @@
 
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Xml;
 using System.Xml.XPath;
 using UPNPLib;
@@ -36,19 +37,26 @@ namespace Sonority.UPnP
 
         public override void StateVariableChanged(UPnPService pus, string pcwszStateVarName, object vaValue)
         {
-            IUPnPServiceCallback callback = (IUPnPServiceCallback)connection.Target;
-            if (callback == null)
+            try
             {
-                return;
+                IUPnPServiceCallback callback = (IUPnPServiceCallback)connection.Target;
+                if (callback == null)
+                {
+                    return;
+                }
+
+                XPathDocument doc = new XPathDocument(new StringReader((string)vaValue));
+                XPathNavigator nav = doc.CreateNavigator();
+
+                foreach (XPathNavigator node in nav.Select(XPath.Expressions.EventElements))
+                {
+                    XPathNavigator val = node.SelectSingleNode(XPath.Expressions.ValueAttributes);
+                    callback.StateVariableChanged(pus, node.LocalName, val.Value);
+                }
             }
-
-            XPathDocument doc = new XPathDocument(new StringReader((string)vaValue));
-            XPathNavigator nav = doc.CreateNavigator();
-
-            foreach (XPathNavigator node in nav.Select(XPath.Expressions.EventElements))
+            finally
             {
-                XPathNavigator val = node.SelectSingleNode(XPath.Expressions.ValueAttributes);
-                callback.StateVariableChanged(pus, node.LocalName, val.Value);
+                Marshal.ReleaseComObject(pus);
             }
         }
     }

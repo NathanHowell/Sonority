@@ -21,9 +21,7 @@
 //
 
 using System;
-using System.IO;
-using System.Xml;
-using System.Xml.XPath;
+using System.Runtime.InteropServices;
 using UPNPLib;
 
 namespace Sonority.UPnP
@@ -37,24 +35,38 @@ namespace Sonority.UPnP
 
         void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
         {
-            IUPnPServiceCallback callback = (IUPnPServiceCallback)connection.Target;
-            if (callback == null)
+            try
             {
-                return;
-            }
+                IUPnPServiceCallback callback = (IUPnPServiceCallback)connection.Target;
+                if (callback == null)
+                {
+                    return;
+                }
 
-            callback.ServiceInstanceDied(pus);
+                callback.ServiceInstanceDied(pus);
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(pus);
+            }
         }
 
         public virtual void StateVariableChanged(UPnPService pus, string pcwszStateVarName, object vaValue)
         {
-            IUPnPServiceCallback callback = (IUPnPServiceCallback)connection.Target;
-            if (callback == null)
+            try
             {
-                return;
-            }
+                IUPnPServiceCallback callback = (IUPnPServiceCallback)connection.Target;
+                if (callback == null)
+                {
+                    return;
+                }
 
-            callback.StateVariableChanged(pus, pcwszStateVarName, vaValue);
+                callback.StateVariableChanged(pus, pcwszStateVarName, vaValue);
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(pus);
+            }
         }
 
         protected WeakReference connection;

@@ -21,7 +21,7 @@
 //
 
 using System;
-using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UPNPLib;
 
 namespace Sonority.UPnP
@@ -35,13 +35,20 @@ namespace Sonority.UPnP
 
         public void DeviceAdded(int lFindData, UPnPDevice pDevice)
         {
-            IUPnPDeviceFinderCallback callback = (IUPnPDeviceFinderCallback)connection.Target;
-            if (callback == null)
+            try
             {
-                return;
-            }
+                IUPnPDeviceFinderCallback callback = (IUPnPDeviceFinderCallback)connection.Target;
+                if (callback == null)
+                {
+                    return;
+                }
 
-            callback.DeviceAdded(lFindData, pDevice);
+                callback.DeviceAdded(lFindData, pDevice);
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(pDevice);
+            }
         }
 
         public void DeviceRemoved(int lFindData, string bstrUDN)

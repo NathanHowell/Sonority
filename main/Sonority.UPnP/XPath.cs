@@ -26,7 +26,7 @@ using System.Xml.XPath;
 
 namespace Sonority.XPath
 {
-    internal static class Globals
+    public static class Globals
     {
         static Globals()
         {
@@ -42,7 +42,7 @@ namespace Sonority.XPath
         public static readonly XmlNamespaceManager Manager;
     }
 
-    internal static class Expressions
+    public static class Expressions
     {
         public static readonly XPathExpression EventElements = XPathExpression.Compile("/avt:Event/avt:InstanceID[@val='0']/*", XPath.Globals.Manager);
         public static readonly XPathExpression ValueAttributes = XPathExpression.Compile("@val", XPath.Globals.Manager);
