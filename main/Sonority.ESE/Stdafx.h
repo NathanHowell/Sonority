@@ -23,3 +23,4 @@
 #pragma once
 #include <windows.h>
 #include <esent.h>
+#include <vcclr.h>
