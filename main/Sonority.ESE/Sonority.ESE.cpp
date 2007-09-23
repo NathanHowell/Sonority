@@ -31,37 +31,40 @@ using namespace System::Text;
 using namespace System::Xml;
 using namespace System::Xml::XPath;
 
-ref class JetException : Exception
+public ref class JetException : Exception
 {
 public:
 	JetException(JET_ERR err) : _err(err)
 	{
 	}
 
-	/*
 	virtual String^ ToString() override
 	{
-		// Msjter40.dll
-		// call JetErrFormattedMessage ?
-		return "JetException";
-	}
-	*/
-
-	static void ThrowOnError(JET_ERR err)
-	{
-		if (err != JET_errSuccess)
+		JET_API_PTR err = _err;
+		CHAR errString[1024];
+		if (JetGetSystemParameter(NULL, NULL, JET_paramErrorToString, &err, errString, sizeof(errString)) == JET_errSuccess)
 		{
-			throw gcnew JetException(err);
+			return gcnew String(errString);
+		}
+		else
+		{
+			return __super::ToString();
 		}
 	}
 
 private:
+	JET_INSTANCE _instance;
+	JET_SESID _sesid;
 	JET_ERR _err;
 };
 
 JET_ERR JetCall(JET_ERR err)
 {
-	JetException::ThrowOnError(err);
+	if (err != JET_errSuccess)
+	{
+		throw gcnew JetException(err);
+	}
+
 	return err;
 }
 
@@ -98,10 +101,15 @@ public:
 			_column->columnid = columnid;
 		}
 
-		JetException::ThrowOnError(err);
+		(err);
 	}
 
 	~JetColumn()
+	{
+		(*this).!JetColumn();
+	}
+
+	!JetColumn()
 	{
 		JetCloseTable(_sesid, _tableid);
 
@@ -142,7 +150,17 @@ protected:
 
 		_tableid = tableid;
 
-		JetException::ThrowOnError(err);
+		JetCall(err);
+	}
+
+	~JetTableHelper()
+	{
+		this->!JetTableHelper();
+	}
+
+	!JetTableHelper()
+	{
+		JetCloseTable(_sesid, _tableid);
 	}
 
 	JetColumn^ GetColumn(
@@ -162,6 +180,29 @@ protected:
 			0);
 	}
 
+	template <size_t N>
+	void EnsureIndex(LPCSTR indexName, const char (&key)[N], JET_GRBIT grbit)
+	{
+		JET_INDEXCREATE indexCreate = { 0 };
+		indexCreate.cbStruct = sizeof(indexCreate);
+		indexCreate.szIndexName = const_cast<char *>(indexName);
+		indexCreate.szKey = const_cast<char *>(key);
+		indexCreate.cbKey = N;
+		indexCreate.grbit = grbit;
+		indexCreate.ulDensity = 90;
+		indexCreate.lcid = 0;
+		indexCreate.cbKeyMost = JET_cbKeyMostMin;
+		JET_ERR err = JetCreateIndex2(
+			_sesid,
+			_tableid,
+			&indexCreate,
+			1);
+		if (err != JET_errIndexDuplicate && err != JET_errIndexHasPrimary)
+		{
+			JetCall(err);
+		}
+	}
+
 	static array<Byte>^ HashString(String^ str)
 	{
 		MD5CryptoServiceProvider hash;
@@ -170,7 +211,7 @@ protected:
 		return hash.Hash;
 	}
 
-internal:
+protected:
 	JET_SESID _sesid;
 	JET_DBID _dbid;
 	JET_TABLEID _tableid;
@@ -188,26 +229,15 @@ internal:
 		_updateID = GetColumn("UpdateID", JET_coltypUnsignedLong, 0, JET_bitColumnNotNULL);
 		_updateDateTime = GetColumn("UpdateDateTime", JET_coltypDateTime, sizeof(DATE), JET_bitColumnNotNULL);
 		_metaData = GetColumn("MetaData", JET_coltypLongBinary, 4 * 1024, JET_bitColumnNotNULL);
+		EnsureIndex(ObjectIndex, "+ObjectID\0", JET_bitIndexPrimary | JET_bitIndexUnique | JET_bitIndexDisallowTruncation | JET_bitIndexLazyFlush);
+	}
 
-		JET_INDEXCREATE indexCreate = { 0 };
-		CHAR objectIndexKey[] = "+ObjectID\0";
-		indexCreate.cbStruct = sizeof(indexCreate);
-		indexCreate.szIndexName = const_cast<char *>(ObjectIndex);
-		indexCreate.szKey = objectIndexKey;
-		indexCreate.cbKey = ARRAYSIZE(objectIndexKey);
-		indexCreate.grbit = JET_bitIndexPrimary | JET_bitIndexUnique | JET_bitIndexDisallowTruncation;
-		indexCreate.ulDensity = 90;
-		indexCreate.lcid = 0;
-		indexCreate.cbKeyMost = JET_cbKeyMostMin;
-		JET_ERR err = JetCreateIndex2(
-			_sesid,
-			_tableid,
-			&indexCreate,
-			1);
-		if (err != JET_errIndexDuplicate && err != JET_errIndexHasPrimary)
-		{
-			JetException::ThrowOnError(err);
-		}
+	~BrowseTable()
+	{
+		delete _objectID;
+		delete _updateID;
+		delete _updateDateTime;
+		delete _metaData;
 	}
 
 	void UpdateRecord(String^ objectID, String^ parentID, UInt32 updateID, XPathNavigator^ metaData)
@@ -228,10 +258,13 @@ internal:
 			Console::WriteLine("Adding: {0}", objectID);
 
 			// use XPathNavigator::WriteSubtree to promote metadata namespaces?
-			String^ outerXml = metaData->OuterXml;
+			StringBuilder outerXml;
+			XmlWriter^ writer = XmlWriter::Create(%outerXml);
+			metaData->WriteSubtree(writer);
+			writer->Flush();
 			MemoryStream stream(512);
 			GZipStream gzip(%stream, CompressionMode::Compress);
-			gzip.Write(Encoding::UTF8->GetBytes(outerXml), 0, outerXml->Length);
+			gzip.Write(Encoding::UTF8->GetBytes(outerXml.ToString()), 0, outerXml.Length);
 			gzip.Flush();
 
 			array<Byte>^ compressedMetaData = stream.GetBuffer();
@@ -256,7 +289,7 @@ internal:
 		else
 		{
 			Console::WriteLine("Skipping: {0}", objectID);
-			JetException::ThrowOnError(err);
+			JetCall(err);
 		}
 	}
 
@@ -281,26 +314,15 @@ internal:
 		_parentID = GetColumn("ParentID", JET_coltypBinary, 16, JET_bitColumnNotNULL);
 		_updateID = GetColumn("UpdateID", JET_coltypUnsignedLong, 0, JET_bitColumnNotNULL);
 		_updateDateTime = GetColumn("UpdateDateTime", JET_coltypDateTime, 0, JET_bitColumnNotNULL);
+		EnsureIndex(ParentIndex, "+ParentID\0+ObjectID\0", JET_bitIndexPrimary | JET_bitIndexUnique | JET_bitIndexDisallowTruncation | JET_bitIndexLazyFlush);
+	}
 
-		JET_INDEXCREATE indexCreate[1] = { 0 };
-		CHAR parentIndexKey[] = "+ParentID\0+ObjectID\0";
-		indexCreate[0].cbStruct = sizeof(indexCreate[0]);
-		indexCreate[0].szIndexName = const_cast<char *>(ParentIndex);
-		indexCreate[0].szKey = parentIndexKey;
-		indexCreate[0].cbKey = ARRAYSIZE(parentIndexKey);
-		indexCreate[0].grbit = JET_bitIndexPrimary | JET_bitIndexUnique | JET_bitIndexDisallowTruncation;
-		indexCreate[0].ulDensity = 90;
-		indexCreate[0].lcid = 0;
-		indexCreate[0].cbKeyMost = JET_cbKeyMostMin;
-		JET_ERR err = JetCreateIndex2(
-			_sesid,
-			_tableid,
-			indexCreate,
-			ARRAYSIZE(indexCreate));
-		if (err != JET_errIndexDuplicate && err != JET_errIndexHasPrimary)
-		{
-			JetException::ThrowOnError(err);
-		}
+	~RelationsTable()
+	{
+		delete _objectID;
+		delete _parentID;
+		delete _updateID;
+		delete _updateDateTime;
 	}
 
 	void UpdateRecord(String^ objectID, String^ parentID, UInt32 updateID)
@@ -338,7 +360,7 @@ internal:
 		else
 		{
 			Console::WriteLine("Skipping: {0} -> {1}", objectID, parentID);
-			JetException::ThrowOnError(err);
+			JetCall(err);
 		}
 	}
 
@@ -362,6 +384,9 @@ public:
 		err = JetCall(JetSetSystemParameterW(&instance, NULL, JET_paramBaseName, 0, L"sns"));
 		err = JetCall(JetSetSystemParameterW(&instance, NULL, JET_paramCircularLog, TRUE, NULL));
 		err = JetCall(JetSetSystemParameterW(&instance, NULL, JET_paramLogFileSize, 1024, NULL));
+		err = JetCall(JetSetSystemParameterW(&instance, NULL, JET_paramLegacyFileNames , 0, NULL));
+		err = JetCall(JetSetSystemParameterW(&instance, NULL, JET_paramCheckpointDepthMax, 1 * 1024 * 1024, NULL));
+		err = JetCall(JetSetSystemParameterW(&instance, NULL, JET_paramEnableIndexChecking, TRUE, NULL));
 		err = JetCall(JetInit2(&instance, JET_bitTruncateLogsAfterRecovery));
 		_instance = instance;
 
@@ -369,20 +394,20 @@ public:
 		err = JetCall(JetBeginSessionW(_instance, &sesid, NULL, NULL));
 		_sesid = sesid;
 
-		err = JetAttachDatabase(_sesid, "snstags.edb", 0);
+		err = JetAttachDatabase(_sesid, s_fileName, JET_bitDbDeleteCorruptIndexes);
 		if (err != JET_errFileNotFound)
 		{
 			JET_DBID dbid;
-			err = JetCall(JetOpenDatabase(_sesid, "snstags.edb", NULL, &dbid, 0));
+			err = JetCall(JetOpenDatabase(_sesid, s_fileName, NULL, &dbid, 0));
 			_dbid = dbid;
 		}
 		else // (err == JET_errFileNotFound)
 		{
 			JET_DBID dbid;
-			err = JetCall(JetCreateDatabase(_sesid, "snstags.edb", NULL, &dbid, JET_bitDbOverwriteExisting));
+			err = JetCall(JetCreateDatabase(_sesid, s_fileName, NULL, &dbid, JET_bitDbOverwriteExisting));
 			_dbid = dbid;
 		}
-		JetException::ThrowOnError(err);
+		JetCall(err);
 
 		err = JetCall(JetBeginTransaction(_sesid));
 
@@ -433,4 +458,6 @@ private:
 
 	BrowseTable^ _browse;
 	RelationsTable^ _relations;
+
+	static LPCSTR s_fileName = "snstags.edb";
 };
