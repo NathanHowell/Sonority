@@ -20,9 +20,44 @@
 // DEALINGS IN THE SOFTWARE.
 //
 
-#pragma once
-#include <windows.h>
-#include <esent.h>
-#include <vcclr.h>
+#include "stdafx.h"
+#include "JetException.h"
 
 using namespace System;
+using namespace System::IO;
+using namespace System::IO::Compression;
+using namespace System::Security::Cryptography;
+using namespace System::Text;
+using namespace System::Xml;
+using namespace System::Xml::XPath;
+
+JetException::JetException(
+	JET_ERR err) :
+	_err(err)
+{
+}
+
+String^
+JetException::ToString()
+{
+	JET_API_PTR err = _err;
+	CHAR errString[1024];
+	if (JetGetSystemParameter(NULL, NULL, JET_paramErrorToString, &err, errString, sizeof(errString)) == JET_errSuccess)
+	{
+		return gcnew String(errString);
+	}
+	else
+	{
+		return __super::ToString();
+	}
+}
+
+JET_ERR JetCall(JET_ERR err)
+{
+	if (err != JET_errSuccess)
+	{
+		throw gcnew JetException(err);
+	}
+
+	return err;
+}

@@ -21,8 +21,28 @@
 //
 
 #pragma once
-#include <windows.h>
-#include <esent.h>
-#include <vcclr.h>
 
-using namespace System;
+ref class JetColumn
+{
+public:
+	JetColumn(
+		JET_SESID sesid,
+		JET_DBID dbid,
+		JET_TABLEID tableid,
+		LPCSTR columnName,
+		JET_COLTYP columnType,
+		UInt32 maxLength,
+		JET_GRBIT grbit,
+		UInt32 codePage);
+	~JetColumn();
+	!JetColumn();
+
+	JET_COLUMNDEF* operator ->();
+
+private:
+	JET_SESID _sesid;
+	JET_DBID _dbid;
+	JET_TABLEID _tableid;
+
+	JET_COLUMNDEF* _column;
+};

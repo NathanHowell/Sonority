@@ -21,8 +21,26 @@
 //
 
 #pragma once
-#include <windows.h>
-#include <esent.h>
-#include <vcclr.h>
+#include "BrowseTable.h"
+#include "RelationsTable.h"
 
-using namespace System;
+using System::Xml::XPath::XPathNavigator;
+
+public ref class SonorityStorage
+{
+public:
+	SonorityStorage();
+	~SonorityStorage();
+
+	void AddRecord(String^ objectID, String^ parentID, UInt32 updateID, XPathNavigator^ metaData);
+
+private:
+	JET_INSTANCE _instance;
+	JET_SESID _sesid;
+	JET_DBID _dbid;
+
+	BrowseTable^ _browse;
+	RelationsTable^ _relations;
+
+	static LPCSTR s_fileName = "snstags.edb";
+};

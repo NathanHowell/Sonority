@@ -21,8 +21,51 @@
 //
 
 #pragma once
-#include <windows.h>
-#include <esent.h>
-#include <vcclr.h>
+#include "JetColumn.h"
 
-using namespace System;
+ref class JetTableHelper
+{
+protected:
+	JetTableHelper(
+		JET_SESID sesid,
+		JET_DBID dbid,
+		LPCSTR tableName);
+	~JetTableHelper();
+	!JetTableHelper();
+
+	JetColumn^ GetColumn(
+		LPCSTR columnName,
+		JET_COLTYP columnType,
+		UInt32 maxLength,
+		JET_GRBIT grbit);
+
+	template <size_t N>
+	void EnsureIndex(LPCSTR indexName, const char (&key)[N], JET_GRBIT grbit)
+	{
+		JET_INDEXCREATE indexCreate = { 0 };
+		indexCreate.cbStruct = sizeof(indexCreate);
+		indexCreate.szIndexName = const_cast<char *>(indexName);
+		indexCreate.szKey = const_cast<char *>(key);
+		indexCreate.cbKey = N;
+		indexCreate.grbit = grbit;
+		indexCreate.ulDensity = 90;
+		indexCreate.lcid = 0;
+		indexCreate.cbKeyMost = JET_cbKeyMostMin;
+		JET_ERR err = JetCreateIndex2(
+			_sesid,
+			_tableid,
+			&indexCreate,
+			1);
+		if (err != JET_errIndexDuplicate && err != JET_errIndexHasPrimary)
+		{
+			JetCall(err);
+		}
+	}
+
+	static array<Byte>^ HashString(String^ str);
+
+protected:
+	JET_SESID _sesid;
+	JET_DBID _dbid;
+	JET_TABLEID _tableid;
+};

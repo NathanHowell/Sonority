@@ -21,8 +21,25 @@
 //
 
 #pragma once
-#include <windows.h>
-#include <esent.h>
-#include <vcclr.h>
+#include "JetTableHelper.h"
 
-using namespace System;
+using System::Xml::XPath::XPathNavigator;
+
+ref class BrowseTable : JetTableHelper
+{
+internal:
+	BrowseTable(
+		JET_SESID sesid,
+		JET_DBID dbid);
+	~BrowseTable();
+
+	void UpdateRecord(String^ objectID, String^ parentID, UInt32 updateID, XPathNavigator^ metaData);
+
+internal:
+	JetColumn^ _objectID;
+	JetColumn^ _updateID;
+	JetColumn^ _updateDateTime;
+	JetColumn^ _metaData;
+
+	static LPCSTR ObjectIndex = "ObjectIndex";
+};

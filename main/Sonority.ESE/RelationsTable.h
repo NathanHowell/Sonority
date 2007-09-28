@@ -21,8 +21,24 @@
 //
 
 #pragma once
-#include <windows.h>
-#include <esent.h>
-#include <vcclr.h>
+#include "JetTableHelper.h"
 
-using namespace System;
+ref class RelationsTable : JetTableHelper
+{
+internal:
+	RelationsTable(
+		JET_SESID sesid,
+		JET_DBID dbid);
+	~RelationsTable();
+
+	void UpdateRecord(String^ objectID, String^ parentID, UInt32 updateID);
+
+internal:
+	JetColumn^ _objectID;
+	JetColumn^ _parentID;
+	JetColumn^ _updateID;
+	JetColumn^ _valid;
+	JetColumn^ _updateDateTime;
+
+	static LPCSTR ParentIndex = "ParentIndex";
+};

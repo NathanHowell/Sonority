@@ -21,3 +21,17 @@
 //
 
 #pragma once
+
+public ref class JetException : Exception
+{
+public:
+	JetException(JET_ERR err);
+	virtual String^ ToString() override;
+
+private:
+	JET_INSTANCE _instance;
+	JET_SESID _sesid;
+	JET_ERR _err;
+};
+
+JET_ERR JetCall(JET_ERR err);

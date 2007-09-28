@@ -192,7 +192,23 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Sonority.ESE.cpp"
+				RelativePath=".\BrowseTable.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\JetColumn.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\JetException.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\JetTableHelper.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RelationsTable.cpp"
 				>
 			</File>
 			<File
@@ -215,6 +231,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\Storage.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -222,15 +242,35 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\BrowseTable.h"
+				>
+			</File>
+			<File
+				RelativePath=".\JetColumn.h"
+				>
+			</File>
+			<File
+				RelativePath=".\JetException.h"
+				>
+			</File>
+			<File
+				RelativePath=".\JetTableHelper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RelationsTable.h"
+				>
+			</File>
+			<File
 				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Sonority.ESE.h"
+				RelativePath=".\Stdafx.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Stdafx.h"
+				RelativePath=".\Storage.h"
 				>
 			</File>
 		</Filter>
