@@ -1,0 +1,29 @@
+﻿<Window x:Class="wpf.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="wpf" Height="382" Width="776"
+    >
+  <DockPanel>
+    <TabControl Name="tabControl1" DockPanel.Dock="Left">
+      <TabControl.ContentTemplate>
+        <DataTemplate>
+          <StackPanel>
+            <ListView ItemsSource="{Binding Path=Queue}"/>
+          </StackPanel>
+        </DataTemplate>
+      </TabControl.ContentTemplate>
+      <TabControl.ItemTemplate>
+        <DataTemplate>
+          <StackPanel>
+            <TextBlock Text="{Binding Path=DeviceProperties.ZoneName}"/>
+            <TextBlock Text=" "/>
+            <TextBlock Text="{Binding Path=AVTransport.TransportState}"/>
+          </StackPanel>
+        </DataTemplate>
+      </TabControl.ItemTemplate>
+    </TabControl>
+    <TreeView Name="contentDirectoryTree" DockPanel.Dock="Right">
+      <TreeViewItem Name="Testing"/>
+    </TreeView>
+  </DockPanel>
+</Window>

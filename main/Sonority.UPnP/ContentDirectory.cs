@@ -23,10 +23,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Windows.Threading;
 using System.Xml;
 using System.Xml.XPath;
 using UPNPLib;
@@ -39,6 +41,40 @@ namespace Sonority.UPnP
         BrowseMetadata,
     }
 
+    public class QueueItem : IComparable<QueueItem>, IComparable
+    {
+        public QueueItem(XPathNavigator node)
+        {
+            _res = node.SelectSingleNode("didl:res", XPath.Globals.Manager).Value;
+        }
+
+        int IComparable<QueueItem>.CompareTo(QueueItem other)
+        {
+            return String.Compare(_res, other._res);
+        }
+
+        int IComparable.CompareTo(object obj)
+        {
+            IComparable<QueueItem> that = this;
+            return that.CompareTo((QueueItem)obj);
+        }
+
+        public string Res
+        {
+            get
+            {
+                return _res;
+            }
+        }
+
+        public override string ToString()
+        {
+            return System.Web.HttpUtility.UrlDecode(_res);
+        }
+
+        string _res;
+    }
+
     public partial class ContentDirectory : IUPnPServiceCallback, INotifyPropertyChanged
     {
         internal ContentDirectory(UPnPService service)
@@ -46,6 +82,51 @@ namespace Sonority.UPnP
             _service = service;
             StateVariables.Initialize(this, service);
             service.AddCallback(new ServiceCallback(this));
+            this.PropertyChanged += new PropertyChangedEventHandler(ContainerUpdateIDs_PropertyChanged);
+        }
+
+        // maybe there is some way to detect items moving within the queue otherwise need to implement
+        // longest common subsequence or do a O(n*n) search
+        public void UpdateQueue()
+        {
+            int index = 0;
+            foreach (XPathNavigator node in Browse("Q:0", BrowseFlags.BrowseDirectChildren, "*", ""))
+            {
+                QueueItem qi = new QueueItem(node);
+
+                if (index < _queue.Count)
+                {
+                    if (_queue[index].Res != qi.Res)
+                    {
+                        _queue.RemoveAt(index);
+                        _queue.Insert(index, qi);
+                    }
+                }
+                else
+                {
+                    _queue.Insert(index, qi);
+                }
+
+                index++;
+            }
+
+            while (index < _queue.Count)
+            {
+                _queue.RemoveAt(index);
+            }
+        }
+
+        void ContainerUpdateIDs_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "ContainerUpdateIDs")
+            {
+                return;
+            }
+
+            if (ContainerUpdateIDs.Contains("Q:0,") == false)
+            {
+                return;
+            }
         }
 
         void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
@@ -88,7 +169,7 @@ namespace Sonority.UPnP
 
         public IEnumerable<XPathNavigator> Browse(string objectId, BrowseFlags browseFlag, string filter, string sortCriteria)
         {
-            object[] inArgs = { objectId, browseFlag.ToString(), filter, 0u, 256u, sortCriteria };
+            object[] inArgs = { objectId, browseFlag.ToString(), filter, 0u, 256u * 4, sortCriteria };
             object[] outArray = { "", 0u, uint.MaxValue, 0u };
 
             for (uint i = 0; i < (uint)outArray[2]; i += (uint)outArray[1])
@@ -153,6 +234,15 @@ namespace Sonority.UPnP
             throw new NotImplementedException();
         }
 
+        public ObservableCollection<QueueItem> Queue
+        {
+            get
+            {
+                return _queue;
+            }
+        }
+
         private UPnPService _service;
+        private ObservableCollection<QueueItem> _queue = new ObservableCollection<QueueItem>();
     }
 }

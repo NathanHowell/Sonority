@@ -22,6 +22,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Xml;
+using System.Xml.XPath;
 using System.Threading;
 using UPNPLib;
 
@@ -62,6 +65,7 @@ namespace Sonority.UPnP
             _alarmClock = _device.Services["urn:upnp-org:serviceId:AlarmClock"];
             _zoneGroupTopology = _device.Services["urn:upnp-org:serviceId:ZoneGroupTopology"];
             _groupManagment = _device.Services["urn:upnp-org:serviceId:GroupManagement"];
+            AVTransport.ToString();
 
         }
 
@@ -163,6 +167,14 @@ namespace Sonority.UPnP
                     _contentDirectory = new ContentDirectory(MediaServer.Services["urn:upnp-org:serviceId:ContentDirectory"]);
                 }
                 return _contentDirectory;
+            }
+        }
+
+        public ObservableCollection<QueueItem> Queue
+        {
+            get
+            {
+                return ContentDirectory.Queue;
             }
         }
 

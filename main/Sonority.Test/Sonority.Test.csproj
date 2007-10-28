@@ -4,11 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{92D84E05-3E96-441A-8DFF-F28F5F3401F7}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{FBD55FF4-4BD9-43C2-9C2C-5603D184A804}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sonority.UPnP</RootNamespace>
-    <AssemblyName>Sonority.UPnP</AssemblyName>
+    <RootNamespace>Sonority.Test</RootNamespace>
+    <AssemblyName>Sonority.Test</AssemblyName>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
@@ -39,23 +39,18 @@
     <Reference Include="WindowsBase, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AVTransport.cs" />
-    <Compile Include="AVTransport.Properties.cs" />
-    <Compile Include="AVTransportCallback.cs" />
-    <Compile Include="ContentDirectory.cs" />
-    <Compile Include="ContentDirectory.Properties.cs" />
-    <Compile Include="DeviceProperties.cs" />
-    <Compile Include="RenderingControl.cs" />
-    <Compile Include="RenderingControl.Properties.cs" />
-    <Compile Include="ServiceCallback.cs" />
-    <Compile Include="Discover.cs" />
-    <Compile Include="DeviceFinderCallback.cs" />
-    <Compile Include="StateVariables.cs" />
-    <Compile Include="SystemProperties.cs" />
-    <Compile Include="XPath.cs" />
-    <Compile Include="UPnP.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ZonePlayer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sonority.ESE\Sonority.ESE.vcproj">
+      <Project>{69460E43-5C5B-4028-A2E7-2B0E6C634536}</Project>
+      <Name>Sonority.ESE</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sonority.UPnP\Sonority.UPnP.csproj">
+      <Project>{92D84E05-3E96-441A-8DFF-F28F5F3401F7}</Project>
+      <Name>Sonority.UPnP</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="UPNPLib">

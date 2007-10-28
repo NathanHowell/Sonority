@@ -21,13 +21,15 @@
 //
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class Discover : IUPnPDeviceFinderCallback, IDisposable, INotifyPropertyChanged
+    public class Discover : IUPnPDeviceFinderCallback, IDisposable, INotifyPropertyChanged, IEnumerable<ZonePlayer>
     {
         public Discover()
         {
@@ -57,7 +59,21 @@ namespace Sonority.UPnP
 
         void IUPnPDeviceFinderCallback.DeviceRemoved(int lFindData, string bstrUDN)
         {
-            _zonePlayers.RemoveAll(delegate(ZonePlayer zp) { return zp.UniqueDeviceName == bstrUDN; });
+            ZonePlayer found = null;
+            foreach (ZonePlayer zp in _zonePlayers)
+            {
+                if (zp.UniqueDeviceName == bstrUDN)
+                {
+                    found = zp;
+                    break;
+                }
+            }
+
+            if (found != null)
+            {
+                _zonePlayers.Remove(found);
+            }
+
             PropertyChanged(this, new PropertyChangedEventArgs("ZonePlayers"));
         }
 
@@ -66,7 +82,7 @@ namespace Sonority.UPnP
             // do something?
         }
 
-        public List<ZonePlayer> ZonePlayers
+        public ObservableCollection<ZonePlayer> ZonePlayers
         {
             get
             {
@@ -75,9 +91,23 @@ namespace Sonority.UPnP
         }
 
         private UPnPDeviceFinder _finder = new UPnPDeviceFinderClass();
-        private List<ZonePlayer> _zonePlayers = new List<ZonePlayer>();
+        private ObservableCollection<ZonePlayer> _zonePlayers = new ObservableCollection<ZonePlayer>();
         private int _findData;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+        IEnumerator<ZonePlayer> IEnumerable<ZonePlayer>.GetEnumerator()
+        {
+            foreach (ZonePlayer zp in _zonePlayers)
+            {
+                yield return zp;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            IEnumerable<ZonePlayer> e = this;
+            return e.GetEnumerator();
+        }
     }
 }
