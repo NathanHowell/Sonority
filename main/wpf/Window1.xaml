@@ -7,8 +7,16 @@
     <TabControl Name="tabControl1" DockPanel.Dock="Left">
       <TabControl.ContentTemplate>
         <DataTemplate>
-          <StackPanel>
-            <ListView ItemsSource="{Binding Path=Queue}"/>
+          <StackPanel x:Name="foo">
+            <ScrollViewer>
+              <ListView ItemsSource="{Binding Path=Queue}">
+                <ListView.View>
+                  <GridView AllowsColumnReorder="true">
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Res}" Header="Resource" />
+                  </GridView>
+                </ListView.View>
+              </ListView>
+            </ScrollViewer>
           </StackPanel>
         </DataTemplate>
       </TabControl.ContentTemplate>
@@ -22,8 +30,5 @@
         </DataTemplate>
       </TabControl.ItemTemplate>
     </TabControl>
-    <TreeView Name="contentDirectoryTree" DockPanel.Dock="Right">
-      <TreeViewItem Name="Testing"/>
-    </TreeView>
   </DockPanel>
 </Window>

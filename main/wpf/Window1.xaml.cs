@@ -35,8 +35,17 @@ namespace wpf
         {
             Console.WriteLine("Changed: {0}.{1} -> {2}", sender.GetType().Name, e.PropertyName, sender.GetType().GetProperty(e.PropertyName).GetValue(sender, null));
             Discover disc = (Discover)sender;
-            disc.ZonePlayers[disc.ZonePlayers.Count - 1].ContentDirectory.UpdateQueue();
-            disc.ZonePlayers[disc.ZonePlayers.Count - 1].ContentDirectory.PropertyChanged += new PropertyChangedEventHandler(ContentDirectory_PropertyChanged);
+            //disc.ZonePlayers[disc.ZonePlayers.Count - 1].ContentDirectory.UpdateQueue();
+            //disc.ZonePlayers[disc.ZonePlayers.Count - 1].ContentDirectory.PropertyChanged += new PropertyChangedEventHandler(ContentDirectory_PropertyChanged);
+            //disc.ZonePlayers[disc.ZonePlayers.Count - 1].AVTransport.PropertyChanged += new PropertyChangedEventHandler(AVTransport_PropertyChanged);
+        }
+
+        void AVTransport_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "CurrentTrack")
+            {
+                Console.WriteLine(tabControl1.Items[0]);
+            }
         }
 
         void ContentDirectory_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -54,7 +63,7 @@ namespace wpf
 
             Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate
             {
-                cd.UpdateQueue();
+                //cd.UpdateQueue();
             });
         }
 

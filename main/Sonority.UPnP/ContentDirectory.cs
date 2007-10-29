@@ -82,51 +82,6 @@ namespace Sonority.UPnP
             _service = service;
             StateVariables.Initialize(this, service);
             service.AddCallback(new ServiceCallback(this));
-            this.PropertyChanged += new PropertyChangedEventHandler(ContainerUpdateIDs_PropertyChanged);
-        }
-
-        // maybe there is some way to detect items moving within the queue otherwise need to implement
-        // longest common subsequence or do a O(n*n) search
-        public void UpdateQueue()
-        {
-            int index = 0;
-            foreach (XPathNavigator node in Browse("Q:0", BrowseFlags.BrowseDirectChildren, "*", ""))
-            {
-                QueueItem qi = new QueueItem(node);
-
-                if (index < _queue.Count)
-                {
-                    if (_queue[index].Res != qi.Res)
-                    {
-                        _queue.RemoveAt(index);
-                        _queue.Insert(index, qi);
-                    }
-                }
-                else
-                {
-                    _queue.Insert(index, qi);
-                }
-
-                index++;
-            }
-
-            while (index < _queue.Count)
-            {
-                _queue.RemoveAt(index);
-            }
-        }
-
-        void ContainerUpdateIDs_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName != "ContainerUpdateIDs")
-            {
-                return;
-            }
-
-            if (ContainerUpdateIDs.Contains("Q:0,") == false)
-            {
-                return;
-            }
         }
 
         void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
@@ -234,15 +189,6 @@ namespace Sonority.UPnP
             throw new NotImplementedException();
         }
 
-        public ObservableCollection<QueueItem> Queue
-        {
-            get
-            {
-                return _queue;
-            }
-        }
-
         private UPnPService _service;
-        private ObservableCollection<QueueItem> _queue = new ObservableCollection<QueueItem>();
     }
 }

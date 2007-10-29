@@ -24,8 +24,9 @@ using System;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Xml;
-//using System.Xml.XPath;
+using System.Windows.Threading;
 using UPNPLib;
 
 namespace Sonority.UPnP
@@ -75,13 +76,17 @@ namespace Sonority.UPnP
         public string RecQualityMode;
     }
 
-    public partial class AVTransport : IUPnPServiceCallback, INotifyPropertyChanged
+    public partial class AVTransport : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
     {
         public AVTransport(UPnPService service)
         {
             _service = service;
-            StateVariables.Initialize(this, service);
             _service.AddCallback(new AVTransportCallback(this));
+
+            Dispatcher.BeginInvoke(DispatcherPriority.DataBind, (ThreadStart)delegate
+            {
+                StateVariables.Initialize(this, service);
+            });
         }
 
         void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)

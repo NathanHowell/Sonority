@@ -23,14 +23,16 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Xml;
 using System.Xml.XPath;
 using System.Threading;
+using System.Windows.Threading;
 using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class ZonePlayer
+    public class ZonePlayer : DispatcherObject, IComparable<ZonePlayer>, IComparable
     {
         public ZonePlayer(string uniqueDeviceName)
         {
@@ -62,11 +64,7 @@ namespace Sonority.UPnP
 
         private void Initialize()
         {
-            _alarmClock = _device.Services["urn:upnp-org:serviceId:AlarmClock"];
-            _zoneGroupTopology = _device.Services["urn:upnp-org:serviceId:ZoneGroupTopology"];
-            _groupManagment = _device.Services["urn:upnp-org:serviceId:GroupManagement"];
-            AVTransport.ToString();
-
+            BeginUpdateQueue();
         }
 
         private void DumpServices()
@@ -170,15 +168,126 @@ namespace Sonority.UPnP
             }
         }
 
-        public ObservableCollection<QueueItem> Queue
+        public UPnPService AlarmClock
         {
             get
             {
-                return ContentDirectory.Queue;
+                if (_alarmClock == null)
+                {
+                    _alarmClock = _device.Services["urn:upnp-org:serviceId:AlarmClock"];
+                }
+                return _alarmClock;
+            }
+        }
+
+        public UPnPService ZoneGroupTopology
+        {
+            get
+            {
+                if (_zoneGroupTopology == null)
+                {
+                    _zoneGroupTopology = _device.Services["urn:upnp-org:serviceId:ZoneGroupTopology"];
+                }
+                return _zoneGroupTopology;
+            }
+        }
+
+        public UPnPService GroupManagement
+        {
+            get
+            {
+                if (_groupManagment == null)
+                {
+                    _groupManagment = _device.Services["urn:upnp-org:serviceId:GroupManagement"];
+                }
+                return _groupManagment;
             }
         }
 
         public string UniqueDeviceName { get { return _device.UniqueDeviceName; } }
+
+        private void BeginUpdateQueue()
+        {
+            Dispatcher.BeginInvoke(DispatcherPriority.DataBind, new ThreadStart(UpdateQueue));
+        }
+
+        // maybe there is some way to detect items moving within the queue otherwise need to implement
+        // longest common subsequence or do a O(n*n) search
+        private void UpdateQueue()
+        {
+            int index = 0;
+            foreach (XPathNavigator node in ContentDirectory.Browse("Q:0", BrowseFlags.BrowseDirectChildren, "*", ""))
+            {
+                QueueItem qi = new QueueItem(node);
+
+                if (index < _queue.Count)
+                {
+                    if (_queue[index].Res != qi.Res)
+                    {
+                        _queue.RemoveAt(index);
+                        _queue.Insert(index, qi);
+                    }
+                }
+                else
+                {
+                    _queue.Insert(index, qi);
+                }
+
+                index++;
+            }
+
+            while (index < _queue.Count)
+            {
+                _queue.RemoveAt(index);
+            }
+        }
+
+        private void ContainerUpdateIDs_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "ContainerUpdateIDs")
+            {
+                return;
+            }
+
+            if (ContentDirectory.ContainerUpdateIDs.Contains("Q:0,") == false)
+            {
+                return;
+            }
+
+            BeginUpdateQueue();
+        }
+
+        public ObservableCollection<QueueItem> Queue
+        {
+            get
+            {
+                return _queue;
+            }
+        }
+
+        private ObservableCollection<QueueItem> _queue = new ObservableCollection<QueueItem>();
+
+        int IComparable.CompareTo(object obj)
+        {
+            IComparable<ZonePlayer> that = this;
+            return that.CompareTo((ZonePlayer)obj);
+        }
+
+        int IComparable<ZonePlayer>.CompareTo(ZonePlayer other)
+        {
+            return String.Compare(UniqueDeviceName, other.UniqueDeviceName);
+        }
+
+        public override bool Equals(object obj)
+        {
+            IComparable that = this;
+            return that.CompareTo(obj) == 0;
+        }
+
+        public override int GetHashCode()
+        {
+            return UniqueDeviceName.GetHashCode();
+        }
 
         private UPnPDevice _device;
         private UPnPDevice _mediaServer;
