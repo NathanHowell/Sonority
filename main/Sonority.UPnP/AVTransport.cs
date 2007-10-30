@@ -46,7 +46,7 @@ namespace Sonority.UPnP
 
     public class TransportInfo
     {
-        public string CurrentTransportState;
+        public TransportState CurrentTransportState;
         public string CurrentTransportStatus;
         public string CurrentSpeed;
     }
@@ -74,6 +74,24 @@ namespace Sonority.UPnP
     {
         public string PlayMode;
         public string RecQualityMode;
+    }
+
+    public enum SeekMode
+    {
+        TRACK_NR,
+        REL_TIME,
+        SECTION,
+    }
+
+    // http://x.x.x.x:1400/xml/AVTransport1.xml
+    // PAUSED_PLAYBACK does not show up on the list but Sonos uses this state
+    public enum TransportState
+    {
+        STOPPED,
+        PLAYING,
+        PAUSED_PLAYBACK,
+        PAUSED_PLAYING,
+        TRANSITIONING,
     }
 
     public partial class AVTransport : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
@@ -148,7 +166,7 @@ namespace Sonority.UPnP
             object[] outArray = UPnP.InvokeAction(_service, "GetTransportInfo", InstanceID);
 
             TransportInfo ti = new TransportInfo();
-            ti.CurrentTransportState = Convert.ToString(outArray[0]);
+            ti.CurrentTransportState = (TransportState)Enum.Parse(typeof(TransportState), Convert.ToString(outArray[0]), true);
             ti.CurrentTransportStatus = Convert.ToString(outArray[1]);
             ti.CurrentSpeed = Convert.ToString(outArray[2]);
             return ti;
@@ -201,8 +219,9 @@ namespace Sonority.UPnP
         }
 
         // required
-        public void Play(string speed)
+        public void Play()
         {
+            const string speed = "1";
             UPnP.InvokeAction(_service, "Play", InstanceID, speed);
         }
 
@@ -219,9 +238,9 @@ namespace Sonority.UPnP
         }
 
         // required
-        public void Seek(string unit, string target)
+        public void Seek(SeekMode unit, string target)
         {
-            UPnP.InvokeAction(_service, "Seek", InstanceID, unit, target);
+            UPnP.InvokeAction(_service, "Seek", InstanceID, unit.ToString(), target);
         }
 
         // required
@@ -252,6 +271,12 @@ namespace Sonority.UPnP
         public string GetCurrentTransportActions()
         {
             return UPnP.InvokeAction<String>(_service, "GetCurrentTransportActions", InstanceID);
+        }
+
+        // undocumented?
+        public void RemoveTrackFromQueue(string objectID)
+        {
+            UPnP.InvokeAction(_service, "RemoveTrackFromQueue", InstanceID, objectID);
         }
 
         private UPnPService _service;

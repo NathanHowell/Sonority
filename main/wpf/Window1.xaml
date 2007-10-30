@@ -7,25 +7,25 @@
     <TabControl Name="tabControl1" DockPanel.Dock="Left">
       <TabControl.ContentTemplate>
         <DataTemplate>
-          <StackPanel x:Name="foo">
-            <ScrollViewer>
-              <ListView ItemsSource="{Binding Path=Queue}">
+          <ScrollViewer>
+              <ListView ItemsSource="{Binding Path=Queue}" MouseDoubleClick="ListDoubleClick" KeyDown="ListKeyDown">
                 <ListView.View>
                   <GridView AllowsColumnReorder="true">
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Creator}" Header="Artist" />
                     <GridViewColumn DisplayMemberBinding="{Binding Path=Res}" Header="Resource" />
                   </GridView>
                 </ListView.View>
               </ListView>
-            </ScrollViewer>
-          </StackPanel>
+          </ScrollViewer>
         </DataTemplate>
       </TabControl.ContentTemplate>
       <TabControl.ItemTemplate>
         <DataTemplate>
           <StackPanel>
             <TextBlock Text="{Binding Path=DeviceProperties.ZoneName}"/>
-            <TextBlock Text=" "/>
-            <TextBlock Text="{Binding Path=AVTransport.TransportState}"/>
+            <TextBlock Text="{Binding Path=AVTransport.CurrentTrack}"/>
+            <TextBlock Text="{Binding Path=AVTransport.NumberOfTracks}"/>
+            <Button Content="{Binding Path=AVTransport.TransportState}" Click="ChangeTransportState"/>
           </StackPanel>
         </DataTemplate>
       </TabControl.ItemTemplate>

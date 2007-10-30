@@ -21,13 +21,11 @@ namespace wpf
 
     public partial class Window1 : System.Windows.Window
     {
-
         public Window1()
         {
             InitializeComponent();
 
             this.tabControl1.ItemsSource = _discover.ZonePlayers;
-            _discover.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChanged);
             this.Closed += new EventHandler(Window1_Closed);
         }
 
@@ -36,40 +34,49 @@ namespace wpf
             _discover.Dispose();
         }
 
-        void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        void ListDoubleClick(object sender, MouseButtonEventArgs args)
         {
-            Console.WriteLine("Changed: {0}.{1} -> {2}", sender.GetType().Name, e.PropertyName, sender.GetType().GetProperty(e.PropertyName).GetValue(sender, null));
-            Discover disc = (Discover)sender;
-            //disc.ZonePlayers[disc.ZonePlayers.Count - 1].ContentDirectory.UpdateQueue();
-            //disc.ZonePlayers[disc.ZonePlayers.Count - 1].ContentDirectory.PropertyChanged += new PropertyChangedEventHandler(ContentDirectory_PropertyChanged);
-            //disc.ZonePlayers[disc.ZonePlayers.Count - 1].AVTransport.PropertyChanged += new PropertyChangedEventHandler(AVTransport_PropertyChanged);
+            ListView lv = args.Source as ListView;
+            ZonePlayer zp = lv.DataContext as ZonePlayer;
+
+            // Sonos queues are 1 based, ListView index is 0 based
+            zp.AVTransport.Seek(SeekMode.TRACK_NR, (lv.SelectedIndex+1).ToString());
         }
 
-        void AVTransport_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        void ListKeyDown(object sender, KeyEventArgs args)
         {
-            if (e.PropertyName == "CurrentTrack")
+            if (args.Key == Key.Delete)
             {
-                Console.WriteLine(tabControl1.Items[0]);
+                ListView lv = args.Source as ListView;
+                ZonePlayer zp = lv.DataContext as ZonePlayer;
+
+                // have to make a copy since there will be a callback 
+                // each time the queue is modified
+                QueueItem[] delete = new QueueItem[lv.SelectedItems.Count];
+                lv.SelectedItems.CopyTo(delete, 0);
+                // TODO: reverse numeric sort on queue ID
+                Array.Sort(delete, delegate(QueueItem a, QueueItem b) { return String.CompareOrdinal(a.ItemID, b.ItemID) * -1; });
+
+                foreach (QueueItem qi in delete)
+                {
+                    zp.AVTransport.RemoveTrackFromQueue(qi.ItemID);
+                }
             }
         }
 
-        void ContentDirectory_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        void ChangeTransportState(object sender, RoutedEventArgs args)
         {
-            if (e.PropertyName != "ContainerUpdateIDs")
-            {
-                return;
-            }
+            Button b = sender as Button;
+            ZonePlayer zp = b.DataContext as ZonePlayer;
 
-            ContentDirectory cd = (ContentDirectory)sender;
-            if (cd.ContainerUpdateIDs.Contains("Q:0,") == false)
+            if (zp.AVTransport.TransportState != TransportState.PLAYING)
             {
-                return;
+                zp.AVTransport.Play();
             }
-
-            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (System.Threading.ThreadStart)delegate
+            else
             {
-                //cd.UpdateQueue();
-            });
+                zp.AVTransport.Pause();
+            }
         }
 
         private Discover _discover = new Discover();

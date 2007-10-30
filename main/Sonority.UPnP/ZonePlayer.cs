@@ -32,7 +32,7 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class ZonePlayer : DispatcherObject, IComparable<ZonePlayer>, IComparable
+    public class ZonePlayer : DispatcherObject, IComparable<ZonePlayer>, IComparable, INotifyPropertyChanged
     {
         public ZonePlayer(string uniqueDeviceName)
         {
@@ -65,6 +65,18 @@ namespace Sonority.UPnP
         private void Initialize()
         {
             BeginUpdateQueue();
+            ContentDirectory.PropertyChanged += new PropertyChangedEventHandler(ContainerUpdateIDs_PropertyChanged);
+            Dispatcher.BeginInvoke(DispatcherPriority.DataBind, new ThreadStart(GetDocumentUrl));
+        }
+
+        void GetDocumentUrl()
+        {
+            IUPnPDeviceDocumentAccess blah = _device as IUPnPDeviceDocumentAccess;
+            if (blah != null)
+            {
+                _documentUrl = new Uri(blah.GetDocumentURL(), UriKind.Absolute);
+                PropertyChanged(this, new PropertyChangedEventArgs("DocumentUrl"));
+            }
         }
 
         private void DumpServices()
@@ -205,6 +217,7 @@ namespace Sonority.UPnP
         }
 
         public string UniqueDeviceName { get { return _device.UniqueDeviceName; } }
+        public Uri DocumentUrl { get { return _documentUrl; } }
 
         private void BeginUpdateQueue()
         {
@@ -222,6 +235,7 @@ namespace Sonority.UPnP
 
                 if (index < _queue.Count)
                 {
+                    // shouldn't use resource ID, track can be queued multiple times
                     if (_queue[index].Res != qi.Res)
                     {
                         _queue.RemoveAt(index);
@@ -289,6 +303,8 @@ namespace Sonority.UPnP
             return UniqueDeviceName.GetHashCode();
         }
 
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
         private UPnPDevice _device;
         private UPnPDevice _mediaServer;
         private UPnPDevice _mediaRenderer;
@@ -301,5 +317,6 @@ namespace Sonority.UPnP
         private AVTransport _avTransport;
         private RenderingControl _renderingControl;
         private ContentDirectory _contentDirectory;
+        private Uri _documentUrl;
     }
 }

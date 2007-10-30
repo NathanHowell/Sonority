@@ -27,7 +27,7 @@ namespace Sonority.UPnP
     public partial class AVTransport
     {
         public uint InstanceID { get { return _InstanceID; } }
-        public string TransportState { get { return _TransportState; } }
+        public TransportState TransportState { get { return _TransportState; } }
         public string TransportStatus { get { return _TransportStatus; } }
         public string PlaybackStorageMedium { get { return _PlaybackStorageMedium; } }
         public string RecordStorageMedium { get { return _RecordStorageMedium; }}
@@ -60,7 +60,7 @@ namespace Sonority.UPnP
         public string NextAVTransportURIMetaData { get { return _NextAVTransportURIMetaData; } }
 
         internal const uint _InstanceID = 0;
-        internal string _TransportState = String.Empty;
+        internal TransportState _TransportState = TransportState.TRANSITIONING;
         internal string _TransportStatus = String.Empty;
         internal string _PlaybackStorageMedium = String.Empty;
         internal string _RecordStorageMedium = String.Empty;

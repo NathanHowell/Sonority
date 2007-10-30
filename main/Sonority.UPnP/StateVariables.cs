@@ -78,7 +78,14 @@ namespace Sonority.UPnP
                 return;
             }
 
-            fi.SetValue(target, Convert.ChangeType(value, fi.FieldType));
+            if (fi.FieldType.IsEnum)
+            {
+                fi.SetValue(target, Enum.Parse(fi.FieldType, value.ToString(), true));
+            }
+            else
+            {
+                fi.SetValue(target, Convert.ChangeType(value, fi.FieldType));
+            }
         }
 
         private static bool IsEvented(FieldInfo fi)

@@ -39,6 +39,5 @@ namespace Sonority.UPnP
         {
             return (T)Convert.ChangeType(InvokeAction(service, actionName, args).GetValue(0), typeof(T));
         }
-
     }
 }
