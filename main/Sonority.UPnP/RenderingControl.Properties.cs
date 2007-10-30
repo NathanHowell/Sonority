@@ -21,15 +21,32 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace Sonority.UPnP
 {
     public partial class RenderingControl
     {
+        public uint InstanceID { get { return _InstanceID; } }
         public string LastChange { get { return _LastChange; } }
-        public string PresetNameList { get { return _PresetNameList; } }
+        public Dictionary<Channel, bool> Mute { get { return _Mute; } }
+        public Dictionary<Channel, ushort> Volume { get { return _Volume; } }
+        public short VolumeDB { get { return _VolumeDB; } }
+        public short Bass { get { return _Bass; } }
+        public short Treble { get { return _Treble; } }
+        public Dictionary<Channel, bool> Loudness { get { return _Loudness; } }
+        public bool SupportsOutputFixed { get { return _SupportsOutputFixed; } }
+        public bool OutputFixed { get { return _OutputFixed; } }
 
-        internal string _LastChange = String.Empty;
-        internal string _PresetNameList = String.Empty;
+        private const uint _InstanceID = 0;
+        private string _LastChange = String.Empty;
+        private Dictionary<Channel, bool> _Mute = new Dictionary<Channel, bool>();
+        private Dictionary<Channel, ushort> _Volume = new Dictionary<Channel, ushort>();
+        private short _VolumeDB = 0;
+        private short _Bass = 0;
+        private short _Treble = 0;
+        private Dictionary<Channel, bool> _Loudness = new Dictionary<Channel, bool>();
+        private bool _SupportsOutputFixed = false;
+        private bool _OutputFixed = false;
     }
 }

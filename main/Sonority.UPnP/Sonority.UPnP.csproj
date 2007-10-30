@@ -44,6 +44,9 @@
     <Compile Include="AVTransport.cs" />
     <Compile Include="AVTransport.Properties.cs" />
     <Compile Include="AVTransportCallback.cs" />
+    <Compile Include="ConnectionManager.Properties.cs" />
+    <Compile Include="ConnectionManager.cs" />
+    <Compile Include="QueueItem.cs" />
     <Compile Include="ZoneGroupTopology.Properties.cs" />
     <Compile Include="ContentDirectory.cs" />
     <Compile Include="ContentDirectory.Properties.cs" />

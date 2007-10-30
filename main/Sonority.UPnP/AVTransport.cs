@@ -202,6 +202,18 @@ namespace Sonority.UPnP
             UPnP.InvokeAction(_service, "Pause", InstanceID);
         }
 
+        public void PlayPause()
+        {
+            if (TransportState != TransportState.PLAYING)
+            {
+                Play();
+            }
+            else
+            {
+                Pause();
+            }
+        }
+
         // optional
         public void Record()
         {

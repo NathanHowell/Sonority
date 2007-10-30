@@ -36,14 +36,14 @@ namespace Sonority.UPnP
         public string SavedQueuesUpdateID { get { return _SavedQueuesUpdateID; } }
         public string ShareListUpdateID { get { return _ShareListUpdateID; } }
 
-        internal uint _SystemUpdateID = 0;
-        internal string _ContainerUpdateIDs = String.Empty;
-        internal string _ShareListRefreshState = String.Empty;
-        internal string _ShareIndexInProgress = String.Empty;
-        internal string _ShareIndexLastError = String.Empty;
-        internal string _UserRadioUpdateID = String.Empty;
-        internal string _MasterRadioUpdateID = String.Empty;
-        internal string _SavedQueuesUpdateID = String.Empty;
-        internal string _ShareListUpdateID = String.Empty;
+        private uint _SystemUpdateID = 0;
+        private string _ContainerUpdateIDs = String.Empty;
+        private string _ShareListRefreshState = String.Empty;
+        private string _ShareIndexInProgress = String.Empty;
+        private string _ShareIndexLastError = String.Empty;
+        private string _UserRadioUpdateID = String.Empty;
+        private string _MasterRadioUpdateID = String.Empty;
+        private string _SavedQueuesUpdateID = String.Empty;
+        private string _ShareListUpdateID = String.Empty;
     }
 }

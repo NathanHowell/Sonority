@@ -29,7 +29,7 @@ namespace Sonority.UPnP
         public bool GroupCoordinatorIsLocal { get { return _GroupCoordinatorIsLocal; } }
         public string LocalGroupUUID { get { return _LocalGroupUUID; } }
 
-        bool _GroupCoordinatorIsLocal = false;
-        string _LocalGroupUUID = String.Empty;
+        private bool _GroupCoordinatorIsLocal = false;
+        private string _LocalGroupUUID = String.Empty;
     }
 }

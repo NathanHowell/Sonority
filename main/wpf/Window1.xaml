@@ -8,14 +8,16 @@
       <TabControl.ContentTemplate>
         <DataTemplate>
           <ScrollViewer>
-              <ListView ItemsSource="{Binding Path=Queue}" MouseDoubleClick="ListDoubleClick" KeyDown="ListKeyDown">
-                <ListView.View>
-                  <GridView AllowsColumnReorder="true">
-                    <GridViewColumn DisplayMemberBinding="{Binding Path=Creator}" Header="Artist" />
-                    <GridViewColumn DisplayMemberBinding="{Binding Path=Res}" Header="Resource" />
-                  </GridView>
-                </ListView.View>
-              </ListView>
+            <ListView ItemsSource="{Binding Path=Queue}" VirtualizingStackPanel.IsVirtualizing="True" MouseDoubleClick="ListDoubleClick" KeyDown="ListKeyDown">
+              <ListView.View>
+                <GridView AllowsColumnReorder="true">
+                  <GridViewColumn DisplayMemberBinding="{Binding Path=Artist}" Header="Artist" />
+                  <GridViewColumn DisplayMemberBinding="{Binding Path=Album}" Header="Album" />
+                  <GridViewColumn DisplayMemberBinding="{Binding Path=Title}" Header="Title" />
+                  <GridViewColumn DisplayMemberBinding="{Binding Path=Res}" Header="Resource" />
+                </GridView>
+              </ListView.View>
+            </ListView>
           </ScrollViewer>
         </DataTemplate>
       </TabControl.ContentTemplate>
@@ -30,5 +32,7 @@
         </DataTemplate>
       </TabControl.ItemTemplate>
     </TabControl>
+    <TreeView Name="treeView1" DockPanel.Dock="Right" ItemsSource="{Binding Path=Library}">
+    </TreeView>
   </DockPanel>
 </Window>

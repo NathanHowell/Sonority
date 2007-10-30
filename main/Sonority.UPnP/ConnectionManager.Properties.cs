@@ -21,19 +21,25 @@
 //
 
 using System;
+using System.ComponentModel;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Threading;
+using System.Xml;
+using System.Windows.Threading;
+using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class ZoneGroupTopology
+    public partial class ConnectionManager
     {
-        public string AvailableSoftwareUpdate { get { return _AvailableSoftwareUpdate; } }
-        public string ZoneGroupState { get { return _ZoneGroupState; } }
-        public string ThirdPartyMediaServers { get { return _ThirdPartyMediaServers; } }
-        public string AlarmRunSequence { get { return _AlarmRunSequence; } }
+        public string SourceProtocolInfo { get { return _SourceProtocolInfo; } }
+        public string SinkProtocolInfo { get { return _SinkProtocolInfo; } }
+        public string CurrentConnectionIDs { get { return _CurrentConnectionIDs; } }
 
-        private string _AvailableSoftwareUpdate = String.Empty;
-        private string _ZoneGroupState = String.Empty;
-        private string _ThirdPartyMediaServers = String.Empty;
-        private string _AlarmRunSequence = String.Empty;
+        private string _SourceProtocolInfo = String.Empty;
+        private string _SinkProtocolInfo = String.Empty;
+        private string _CurrentConnectionIDs = String.Empty;
+
     }
 }

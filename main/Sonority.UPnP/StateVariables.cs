@@ -79,7 +79,7 @@ namespace Sonority.UPnP
             FieldInfo fi = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             if (fi == null)
             {
-                Console.Error.WriteLine("Field not found: {0}", fieldName);
+                Console.Error.WriteLine("Field not found: {0}.{1}", target.GetType().Name, fieldName);
                 return;
             }
 

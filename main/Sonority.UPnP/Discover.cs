@@ -25,11 +25,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading;
+using System.Windows.Threading;
 using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class Discover : IUPnPDeviceFinderCallback, IDisposable, INotifyPropertyChanged
+    public class Discover : DispatcherObject, IUPnPDeviceFinderCallback, IDisposable, INotifyPropertyChanged
     {
         public Discover()
         {
@@ -48,8 +50,36 @@ namespace Sonority.UPnP
 
         void IUPnPDeviceFinderCallback.DeviceAdded(int lFindData, UPnPDevice pDevice)
         {
-            _zonePlayers.Add(new ZonePlayer(pDevice));
+            ZonePlayer zp = new ZonePlayer(pDevice);
+            zp.DeviceProperties.PropertyChanged += new PropertyChangedEventHandler(DeviceProperties_PropertyChanged);
+            _zonePlayers.Add(zp);
             PropertyChanged(this, new PropertyChangedEventArgs("ZonePlayers"));
+        }
+
+        void DeviceProperties_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "ZoneName")
+            {
+                return;
+            }
+
+            ZonePlayer[] zonePlayers = new ZonePlayer[_zonePlayers.Count];
+            _zonePlayers.CopyTo(zonePlayers, 0);
+            Array.Sort(zonePlayers, delegate(ZonePlayer a, ZonePlayer b) { return String.CompareOrdinal(a.DeviceProperties.ZoneName, b.DeviceProperties.ZoneName); });
+
+            for (int i = 0; i < zonePlayers.Length; ++i)
+            {
+                for (int j = i; j < _zonePlayers.Count; ++j)
+                {
+                    if (zonePlayers[i] == _zonePlayers[j])
+                    {
+                        Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate
+                        {
+                            _zonePlayers.Move(j, i);
+                        });
+                    }
+                }
+            }
         }
 
         void IUPnPDeviceFinderCallback.DeviceRemoved(int lFindData, string bstrUDN)

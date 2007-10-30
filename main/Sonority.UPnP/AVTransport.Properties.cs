@@ -40,7 +40,7 @@ namespace Sonority.UPnP
         public string PossibleRecordQualityModes { get { return _PossibleRecordQualityModes; } }
         public uint NumberOfTracks { get { return _NumberOfTracks; } }
         public uint CurrentTrack { get { return _CurrentTrack; } }
-        public string CurrentTrackDuration { get { return _CurrentTrackDuration; } }
+        public TimeSpan CurrentTrackDuration { get { return TimeSpan.Parse(_CurrentTrackDuration); } }
         public string CurrentMediaDuration { get { return _CurrentMediaDuration; } }
         public string CurrentTrackMetaData { get { return _CurrentTrackMetaData; } }
         public string CurrentSection { get { return _CurrentSection; } }
@@ -58,38 +58,40 @@ namespace Sonority.UPnP
         public string RestartPending { get { return _RestartPending; } }
         public string NextAVTransportURI { get { return _NextAVTransportURI; } }
         public string NextAVTransportURIMetaData { get { return _NextAVTransportURIMetaData; } }
+        public string LastChange { get { return _LastChange; } }
 
-        internal const uint _InstanceID = 0;
-        internal TransportState _TransportState = TransportState.TRANSITIONING;
-        internal string _TransportStatus = String.Empty;
-        internal string _PlaybackStorageMedium = String.Empty;
-        internal string _RecordStorageMedium = String.Empty;
-        internal string _PossiblePlaybackStorageMedia = String.Empty;
-        internal string _PossibleRecordStorageMedia = String.Empty;
-        internal string _CurrentPlayMode = String.Empty;
-        internal string _TransportPlaySpeed = String.Empty;
-        internal string _RecordMediumWriteStatus = String.Empty;
-        internal string _CurrentRecordQualityMode = String.Empty;
-        internal string _PossibleRecordQualityModes = String.Empty;
-        internal uint _NumberOfTracks = 0u;
-        internal uint _CurrentTrack = 0u;
-        internal string _CurrentTrackDuration = String.Empty;
-        internal string _CurrentMediaDuration = String.Empty;
-        internal string _CurrentTrackMetaData = String.Empty;
-        internal string _CurrentSection = String.Empty;
-        internal string _CurrentTrackURI = String.Empty;
-        internal string _NextTrackURI = String.Empty;
-        internal string _NextTrackMetaData = String.Empty;
-        internal string _EnqueuedTransportURI = String.Empty;
-        internal string _EnqueuedTransportURIMetaData = String.Empty;
-        internal string _AVTransportURI = String.Empty;
-        internal string _AVTransportURIMetaData = String.Empty;
-        internal string _CurrentTransportActions = String.Empty;
-        internal string _SleepTimerGeneration = String.Empty;
-        internal string _AlarmRunning = String.Empty;
-        internal string _SnoozeRunning = String.Empty;
-        internal string _RestartPending = String.Empty;
-        internal string _NextAVTransportURI = String.Empty;
-        internal string _NextAVTransportURIMetaData = String.Empty;
+        private const uint _InstanceID = 0;
+        private TransportState _TransportState = TransportState.TRANSITIONING;
+        private string _TransportStatus = String.Empty;
+        private string _PlaybackStorageMedium = String.Empty;
+        private string _RecordStorageMedium = String.Empty;
+        private string _PossiblePlaybackStorageMedia = String.Empty;
+        private string _PossibleRecordStorageMedia = String.Empty;
+        private string _CurrentPlayMode = String.Empty;
+        private string _TransportPlaySpeed = String.Empty;
+        private string _RecordMediumWriteStatus = String.Empty;
+        private string _CurrentRecordQualityMode = String.Empty;
+        private string _PossibleRecordQualityModes = String.Empty;
+        private uint _NumberOfTracks = 0u;
+        private uint _CurrentTrack = 0u;
+        private string _CurrentTrackDuration = String.Empty;
+        private string _CurrentMediaDuration = String.Empty;
+        private string _CurrentTrackMetaData = String.Empty;
+        private string _CurrentSection = String.Empty;
+        private string _CurrentTrackURI = String.Empty;
+        private string _NextTrackURI = String.Empty;
+        private string _NextTrackMetaData = String.Empty;
+        private string _EnqueuedTransportURI = String.Empty;
+        private string _EnqueuedTransportURIMetaData = String.Empty;
+        private string _AVTransportURI = String.Empty;
+        private string _AVTransportURIMetaData = String.Empty;
+        private string _CurrentTransportActions = String.Empty;
+        private string _SleepTimerGeneration = String.Empty;
+        private string _AlarmRunning = String.Empty;
+        private string _SnoozeRunning = String.Empty;
+        private string _RestartPending = String.Empty;
+        private string _NextAVTransportURI = String.Empty;
+        private string _NextAVTransportURIMetaData = String.Empty;
+        private string _LastChange = String.Empty;
     }
 }

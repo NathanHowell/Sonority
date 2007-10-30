@@ -40,10 +40,12 @@ namespace Sonority.UPnP
         public string Icon { get { return _Icon; } }
         public bool Invisible { get { return _Invisible; } }
         public string SettingsReplicationState { get { return _SettingsReplicationState; } }
+        public bool IsZoneBridge { get { return _IsZoneBridge; } }
 
-        internal string _ZoneName = String.Empty;
-        internal string _Icon = String.Empty;
-        internal bool _Invisible = false;
-        internal string _SettingsReplicationState = String.Empty;
+        private string _ZoneName = String.Empty;
+        private string _Icon = String.Empty;
+        private bool _Invisible = false;
+        private string _SettingsReplicationState = String.Empty;
+        private bool _IsZoneBridge = false;
     }
 }

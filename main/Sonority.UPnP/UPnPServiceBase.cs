@@ -47,6 +47,11 @@ namespace Sonority.UPnP
             PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
         }
 
+        internal void RaisePropertyChangedEvent(PropertyChangedEventArgs e)
+        {
+            PropertyChanged(this, e);
+        }
+
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         protected UPnPService _service;

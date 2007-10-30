@@ -36,6 +36,7 @@ namespace Sonority.XPath
             Manager.AddNamespace("r",       "urn:schemas-rinconnetworks-com:metadata-1-0/");
             Manager.AddNamespace("avt",     "urn:schemas-upnp-org:metadata-1-0/AVT/");
             Manager.AddNamespace("dc",      "http://purl.org/dc/elements/1.1/");
+            Manager.AddNamespace("rcs",     "urn:schemas-upnp-org:metadata-1-0/RCS/");
         }
 
         public static readonly XmlNameTable Table = new NameTable();
@@ -46,6 +47,10 @@ namespace Sonority.XPath
     {
         public static readonly XPathExpression EventElements = XPathExpression.Compile("/avt:Event/avt:InstanceID[@val='0']/*", XPath.Globals.Manager);
         public static readonly XPathExpression ValueAttributes = XPathExpression.Compile("@val", XPath.Globals.Manager);
+        public static readonly XPathExpression ChannelAttributes = XPathExpression.Compile("@channel", XPath.Globals.Manager);
+
+        public static readonly XPathExpression VolumeElements = XPathExpression.Compile("/rcs:Event/rcs:InstanceID[@val='0']/rcs:Volume", XPath.Globals.Manager);
+        public static readonly XPathExpression MuteElements = XPathExpression.Compile("/rcs:Event/rcs:InstanceID[@val='0']/rcs:Mute", XPath.Globals.Manager);
 
         public static readonly XPathExpression ItemsElements = XPathExpression.Compile("/didl:DIDL-Lite/didl:item", XPath.Globals.Manager);
         public static readonly XPathExpression ContainerElements = XPathExpression.Compile("/didl:DIDL-Lite/didl:container", XPath.Globals.Manager);

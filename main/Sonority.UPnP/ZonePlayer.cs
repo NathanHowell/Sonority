@@ -216,6 +216,18 @@ namespace Sonority.UPnP
             }
         }
 
+        public ConnectionManager ConnectionManager
+        {
+            get
+            {
+                if (_connectionManager == null)
+                {
+                    _connectionManager = new ConnectionManager(MediaRenderer.Services["urn:upnp-org:serviceId:ConnectionManager"]);
+                }
+                return _connectionManager;
+            }
+        }
+
         public string UniqueDeviceName { get { return _device.UniqueDeviceName; } }
         public Uri DocumentUrl { get { return _documentUrl; } }
 
@@ -317,6 +329,7 @@ namespace Sonority.UPnP
         private AVTransport _avTransport;
         private RenderingControl _renderingControl;
         private ContentDirectory _contentDirectory;
+        private ConnectionManager _connectionManager;
         private Uri _documentUrl;
     }
 }
