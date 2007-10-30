@@ -26,9 +26,14 @@ namespace wpf
         {
             InitializeComponent();
 
-            this.tabControl1.ItemsSource = disc.ZonePlayers;
-            disc.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChanged);
-            disc.Start();
+            this.tabControl1.ItemsSource = _discover.ZonePlayers;
+            _discover.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChanged);
+            this.Closed += new EventHandler(Window1_Closed);
+        }
+
+        void Window1_Closed(object sender, EventArgs e)
+        {
+            _discover.Dispose();
         }
 
         void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -67,6 +72,6 @@ namespace wpf
             });
         }
 
-        private Discover disc = new Discover();
+        private Discover _discover = new Discover();
     }
 }

@@ -29,26 +29,21 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class Discover : IUPnPDeviceFinderCallback, IDisposable, INotifyPropertyChanged, IEnumerable<ZonePlayer>
+    public class Discover : IUPnPDeviceFinderCallback, IDisposable, INotifyPropertyChanged
     {
         public Discover()
         {
             _findData = _finder.CreateAsyncFind("urn:schemas-upnp-org:device:ZonePlayer:1", 0, new DeviceFinderCallback(this));
+            _finder.StartAsyncFind(_findData);
         }
 
         ~Discover()
         {
-            _finder.CancelAsyncFind(_findData);
         }
 
         public void Dispose()
         {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public void Start()
-        {
-            _finder.StartAsyncFind(_findData);
+            _finder.CancelAsyncFind(_findData);
         }
 
         void IUPnPDeviceFinderCallback.DeviceAdded(int lFindData, UPnPDevice pDevice)
@@ -95,19 +90,5 @@ namespace Sonority.UPnP
         private int _findData;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
-
-        IEnumerator<ZonePlayer> IEnumerable<ZonePlayer>.GetEnumerator()
-        {
-            foreach (ZonePlayer zp in _zonePlayers)
-            {
-                yield return zp;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            IEnumerable<ZonePlayer> e = this;
-            return e.GetEnumerator();
-        }
     }
 }
