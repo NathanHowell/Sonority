@@ -22,21 +22,22 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Xml;
-using System.Xml.XPath;
 using System.Windows.Threading;
 using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class DeviceProperties : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
+    public enum UnresponsiveDeviceActionType
     {
-        internal DeviceProperties(UPnPService service)
+        Remove,
+        VerifyThenRemoveSystemwide,
+    }
+
+    public class ZoneGroupTopology : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
+    {
+        internal ZoneGroupTopology(UPnPService service)
         {
             _service = service;
             StateVariables.Initialize(this, service);
@@ -56,15 +57,58 @@ namespace Sonority.UPnP
             PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
         }
 
-        public string ZoneName { get { return _ZoneName; } }
-        public string Icon { get { return _Icon; } }
-        public bool Invisible { get { return _Invisible; } }
-        public string SettingsReplicationState { get { return _SettingsReplicationState; } }
+        public string CheckForUpdate(string updateType, bool cachedOnly, string version)
+        {
+            return UPnP.InvokeAction<string>(_service, "CheckForUpdate", updateType, cachedOnly, version);
+        }
 
-        internal string _ZoneName = String.Empty;
-        internal string _Icon = String.Empty;
-        internal bool _Invisible = false;
-        internal string _SettingsReplicationState = String.Empty;
+        public void BeginSoftwareUpdate(string updateUrl, uint flags)
+        {
+            UPnP.InvokeAction(_service, "BeginSoftwareUpdate", updateUrl, flags);
+        }
+
+        // Remove || VerifyThenRemoveSystemwide
+        public void ReportUnresponsiveDevice(string deviceUuid, UnresponsiveDeviceActionType desiredAction)
+        {
+            UPnP.InvokeAction(_service, "ReportUnresponsiveDevice", deviceUuid, desiredAction.ToString());
+        }
+
+        public string AvailableSoftwareUpdate
+        {
+            get
+            {
+                return _AvailableSoftwareUpdate;
+            }
+        }
+
+        public string ZoneGroupState
+        {
+            get
+            {
+                return _ZoneGroupState;
+            }
+        }
+
+        public string ThirdPartyMediaServers
+        {
+            get
+            {
+                return _ThirdPartyMediaServers;
+            }
+        }
+
+        public string AlarmRunSequence
+        {
+            get
+            {
+                return _AlarmRunSequence;
+            }
+        }
+
+        internal string _AvailableSoftwareUpdate = String.Empty;
+        internal string _ZoneGroupState = String.Empty;
+        internal string _ThirdPartyMediaServers = String.Empty;
+        internal string _AlarmRunSequence = String.Empty;
 
         private UPnPService _service;
     }

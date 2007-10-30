@@ -120,7 +120,7 @@ namespace Sonority.UPnP
         private string _album_value;
     }
 
-    public partial class ContentDirectory : IUPnPServiceCallback, INotifyPropertyChanged
+    public partial class ContentDirectory : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
     {
         internal ContentDirectory(UPnPService service)
         {

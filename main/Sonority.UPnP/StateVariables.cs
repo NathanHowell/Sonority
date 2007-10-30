@@ -21,50 +21,55 @@
 //
 
 using System;
+using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Windows.Threading;
 using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    [AttributeUsage(AttributeTargets.Field)]
-    internal class EventedAttribute : Attribute
-    {
-    }
-
     // TODO: add field attributes
     internal static class StateVariables
     {
-        public static void Initialize(object target, UPnPService service)
+        // do upnp query on threadpool thread, and then queue results setter on dispatcher thread
+        public static void Initialize<T>(T target, UPnPService service) where T : DispatcherObject, IUPnPServiceCallback
         {
             foreach (FieldInfo fi in target.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
             {
                 if (fi.Name.StartsWith("_"))
                 {
-                    try
-                    {
-                        fi.SetValue(target, Convert.ChangeType(service.QueryStateVariable(fi.Name.Substring(1)), fi.FieldType));
-                    }
-                    catch (COMException e)
-                    {
-                        // this comes back for a reasonable percentage of the variables
-                        const int UPNP_E_DEVICE_ERROR = unchecked((int)0x80040214);
-                        if (e.ErrorCode == UPNP_E_DEVICE_ERROR)
-                            continue;
-
-                        // a few others fail here but they get updated by the service callbacks later...
-                        const int UPNP_E_INVALID_VARIABLE = unchecked((int)0x80040213);
-                        if (e.ErrorCode == UPNP_E_INVALID_VARIABLE)
-                            continue;
-
-                        // dunno about this one
-                        const int UPNP_E_VARIABLE_VALUE_UNKNOWN = unchecked((int)0x80040212);
-                        if (e.ErrorCode == UPNP_E_VARIABLE_VALUE_UNKNOWN)
-                            continue;
-
-                        Console.WriteLine("StateVariable Exception @ {0}: {1}", fi.Name, e.ToString());
-                    }
+                    ThreadPool.UnsafeQueueUserWorkItem(delegate { UpdateField(fi, target, service); }, null);
                 }
+            }
+        }
+
+        static private void UpdateField<T>(FieldInfo fi, T target, UPnPService service) where T : DispatcherObject, IUPnPServiceCallback
+        {
+            try
+            {
+                object stateVariable = Convert.ChangeType(service.QueryStateVariable(fi.Name.Substring(1)), fi.FieldType);
+                target.Dispatcher.BeginInvoke(DispatcherPriority.DataBind, (ThreadStart)delegate { target.StateVariableChanged(service, fi.Name.Substring(1), stateVariable); });
+            }
+            catch (COMException e)
+            {
+                // this comes back for a reasonable percentage of the variables
+                const int UPNP_E_DEVICE_ERROR = unchecked((int)0x80040214);
+                if (e.ErrorCode == UPNP_E_DEVICE_ERROR)
+                    return;
+
+                // a few others fail here but they get updated by the service callbacks later...
+                const int UPNP_E_INVALID_VARIABLE = unchecked((int)0x80040213);
+                if (e.ErrorCode == UPNP_E_INVALID_VARIABLE)
+                    return;
+
+                // dunno about this one
+                const int UPNP_E_VARIABLE_VALUE_UNKNOWN = unchecked((int)0x80040212);
+                if (e.ErrorCode == UPNP_E_VARIABLE_VALUE_UNKNOWN)
+                    return;
+
+                Console.WriteLine("StateVariable Exception @ {0}: {1}", fi.Name, e.ToString());
             }
         }
 
@@ -86,11 +91,6 @@ namespace Sonority.UPnP
             {
                 fi.SetValue(target, Convert.ChangeType(value, fi.FieldType));
             }
-        }
-
-        private static bool IsEvented(FieldInfo fi)
-        {
-            return fi.GetCustomAttributes(typeof(EventedAttribute), true).Length > 0;
         }
     }
 }

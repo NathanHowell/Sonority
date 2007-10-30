@@ -29,7 +29,7 @@ namespace Sonority.UPnP
         public string LastChange { get { return _LastChange; } }
         public string PresetNameList { get { return _PresetNameList; } }
 
-        [Evented] internal string _LastChange = String.Empty;
+        internal string _LastChange = String.Empty;
         internal string _PresetNameList = String.Empty;
     }
 }

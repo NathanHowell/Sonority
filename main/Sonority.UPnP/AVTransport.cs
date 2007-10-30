@@ -100,11 +100,7 @@ namespace Sonority.UPnP
         {
             _service = service;
             _service.AddCallback(new AVTransportCallback(this));
-
-            Dispatcher.BeginInvoke(DispatcherPriority.DataBind, (ThreadStart)delegate
-            {
-                StateVariables.Initialize(this, service);
-            });
+            StateVariables.Initialize(this, service);
         }
 
         void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)

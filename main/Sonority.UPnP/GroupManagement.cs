@@ -22,21 +22,16 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Xml;
-using System.Xml.XPath;
 using System.Windows.Threading;
 using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class DeviceProperties : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
+    public class GroupManagement : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
     {
-        internal DeviceProperties(UPnPService service)
+        internal GroupManagement(UPnPService service)
         {
             _service = service;
             StateVariables.Initialize(this, service);
@@ -56,15 +51,41 @@ namespace Sonority.UPnP
             PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
         }
 
-        public string ZoneName { get { return _ZoneName; } }
-        public string Icon { get { return _Icon; } }
-        public bool Invisible { get { return _Invisible; } }
-        public string SettingsReplicationState { get { return _SettingsReplicationState; } }
+        public void AddMember(string memberID)
+        {
+            UPnP.InvokeAction(_service, "AddMember", memberID);
+            // TODO: out[0] == CurrentTransportSettings
+            // TODO: out[1] == GroupUUIDJoined
+        }
 
-        internal string _ZoneName = String.Empty;
-        internal string _Icon = String.Empty;
-        internal bool _Invisible = false;
-        internal string _SettingsReplicationState = String.Empty;
+        public void RemoveMember(string memberID)
+        {
+            UPnP.InvokeAction(_service, "RemoveMember", memberID);
+        }
+
+        public void ReportTrackBufferingResult(string memberID, int resultCode)
+        {
+            UPnP.InvokeAction(_service, "ReportTrackBufferingResult", memberID, resultCode);
+        }
+
+        public bool GroupCoordinatorIsLocal
+        {
+            get
+            {
+                return _GroupCoordinatorIsLocal;
+            }
+        }
+
+        public string LocalGroupUUID
+        {
+            get
+            {
+                return _LocalGroupUUID;
+            }
+        }
+
+        bool _GroupCoordinatorIsLocal = false;
+        string _LocalGroupUUID = String.Empty;
 
         private UPnPService _service;
     }

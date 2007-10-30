@@ -192,25 +192,25 @@ namespace Sonority.UPnP
             }
         }
 
-        public UPnPService ZoneGroupTopology
+        public ZoneGroupTopology ZoneGroupTopology
         {
             get
             {
                 if (_zoneGroupTopology == null)
                 {
-                    _zoneGroupTopology = _device.Services["urn:upnp-org:serviceId:ZoneGroupTopology"];
+                    _zoneGroupTopology = new ZoneGroupTopology(_device.Services["urn:upnp-org:serviceId:ZoneGroupTopology"]);
                 }
                 return _zoneGroupTopology;
             }
         }
 
-        public UPnPService GroupManagement
+        public GroupManagement GroupManagement
         {
             get
             {
                 if (_groupManagment == null)
                 {
-                    _groupManagment = _device.Services["urn:upnp-org:serviceId:GroupManagement"];
+                    _groupManagment = new GroupManagement(_device.Services["urn:upnp-org:serviceId:GroupManagement"]);
                 }
                 return _groupManagment;
             }
@@ -311,8 +311,8 @@ namespace Sonority.UPnP
         private UPnPService _audioIn;
         private UPnPService _alarmClock;
         private SystemProperties _systemProperties;
-        private UPnPService _zoneGroupTopology;
-        private UPnPService _groupManagment;
+        private ZoneGroupTopology _zoneGroupTopology;
+        private GroupManagement _groupManagment;
         private DeviceProperties _deviceProperties;
         private AVTransport _avTransport;
         private RenderingControl _renderingControl;

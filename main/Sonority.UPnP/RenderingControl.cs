@@ -22,11 +22,12 @@
 
 using System;
 using System.ComponentModel;
+using System.Windows.Threading;
 using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class RenderingControl : IUPnPServiceCallback, INotifyPropertyChanged
+    public partial class RenderingControl : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
     {
         internal RenderingControl(UPnPService service)
         {
