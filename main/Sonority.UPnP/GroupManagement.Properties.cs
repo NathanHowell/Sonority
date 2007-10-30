@@ -21,35 +21,15 @@
 //
 
 using System;
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows.Threading;
-using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class GroupManagement : UPnPServiceBase
+    public partial class GroupManagement
     {
-        internal GroupManagement(UPnPService service) : base(service)
-        {
-        }
+        public bool GroupCoordinatorIsLocal { get { return _GroupCoordinatorIsLocal; } }
+        public string LocalGroupUUID { get { return _LocalGroupUUID; } }
 
-        public void AddMember(string memberID)
-        {
-            UPnP.InvokeAction(_service, "AddMember", memberID);
-            // TODO: out[0] == CurrentTransportSettings
-            // TODO: out[1] == GroupUUIDJoined
-        }
-
-        public void RemoveMember(string memberID)
-        {
-            UPnP.InvokeAction(_service, "RemoveMember", memberID);
-        }
-
-        public void ReportTrackBufferingResult(string memberID, int resultCode)
-        {
-            UPnP.InvokeAction(_service, "ReportTrackBufferingResult", memberID, resultCode);
-        }
+        bool _GroupCoordinatorIsLocal = false;
+        string _LocalGroupUUID = String.Empty;
     }
 }

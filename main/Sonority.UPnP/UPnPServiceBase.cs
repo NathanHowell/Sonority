@@ -21,35 +21,34 @@
 //
 
 using System;
-using System.Collections;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Threading;
 using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class GroupManagement : UPnPServiceBase
+    public class UPnPServiceBase : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
     {
-        internal GroupManagement(UPnPService service) : base(service)
+        internal UPnPServiceBase(UPnPService service)
         {
+            _service = service;
+            StateVariables.Initialize(this, service);
+            service.AddCallback(new ServiceCallback(this));
         }
 
-        public void AddMember(string memberID)
+        void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
         {
-            UPnP.InvokeAction(_service, "AddMember", memberID);
-            // TODO: out[0] == CurrentTransportSettings
-            // TODO: out[1] == GroupUUIDJoined
+            // ignore for now
         }
 
-        public void RemoveMember(string memberID)
+        void IUPnPServiceCallback.StateVariableChanged(UPnPService pus, string stateVariable, object value)
         {
-            UPnP.InvokeAction(_service, "RemoveMember", memberID);
+            StateVariables.Changed(this, pus, stateVariable, value);
+            PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
         }
 
-        public void ReportTrackBufferingResult(string memberID, int resultCode)
-        {
-            UPnP.InvokeAction(_service, "ReportTrackBufferingResult", memberID, resultCode);
-        }
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+        protected UPnPService _service;
     }
 }

@@ -34,38 +34,10 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class DeviceProperties : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
+    public partial class DeviceProperties : UPnPServiceBase
     {
-        internal DeviceProperties(UPnPService service)
+        internal DeviceProperties(UPnPService service) : base(service)
         {
-            _service = service;
-            StateVariables.Initialize(this, service);
-            service.AddCallback(new ServiceCallback(this));
         }
-
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
-
-        void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        void IUPnPServiceCallback.StateVariableChanged(UPnPService pus, string stateVariable, object value)
-        {
-            StateVariables.Changed(this, pus, stateVariable, value);
-            PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
-        }
-
-        public string ZoneName { get { return _ZoneName; } }
-        public string Icon { get { return _Icon; } }
-        public bool Invisible { get { return _Invisible; } }
-        public string SettingsReplicationState { get { return _SettingsReplicationState; } }
-
-        internal string _ZoneName = String.Empty;
-        internal string _Icon = String.Empty;
-        internal bool _Invisible = false;
-        internal string _SettingsReplicationState = String.Empty;
-
-        private UPnPService _service;
     }
 }

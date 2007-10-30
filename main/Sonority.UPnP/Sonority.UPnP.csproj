@@ -39,13 +39,18 @@
     <Reference Include="WindowsBase, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioIn.cs" />
+    <Compile Include="AudioIn.Properties.cs" />
     <Compile Include="AVTransport.cs" />
     <Compile Include="AVTransport.Properties.cs" />
     <Compile Include="AVTransportCallback.cs" />
+    <Compile Include="ZoneGroupTopology.Properties.cs" />
     <Compile Include="ContentDirectory.cs" />
     <Compile Include="ContentDirectory.Properties.cs" />
     <Compile Include="DeviceProperties.cs" />
+    <Compile Include="DeviceProperties.Properties.cs" />
     <Compile Include="GroupManagement.cs" />
+    <Compile Include="GroupManagement.Properties.cs" />
     <Compile Include="RenderingControl.cs" />
     <Compile Include="RenderingControl.Properties.cs" />
     <Compile Include="ServiceCallback.cs" />
@@ -53,6 +58,7 @@
     <Compile Include="DeviceFinderCallback.cs" />
     <Compile Include="StateVariables.cs" />
     <Compile Include="SystemProperties.cs" />
+    <Compile Include="UPnPServiceBase.cs" />
     <Compile Include="XPath.cs" />
     <Compile Include="UPnP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

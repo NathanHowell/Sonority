@@ -94,36 +94,11 @@ namespace Sonority.UPnP
         TRANSITIONING,
     }
 
-    public partial class AVTransport : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
+    public partial class AVTransport : UPnPServiceBase
     {
-        public AVTransport(UPnPService service)
+        public AVTransport(UPnPService service) : base(service)
         {
-            _service = service;
             _service.AddCallback(new AVTransportCallback(this));
-            StateVariables.Initialize(this, service);
-        }
-
-        void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
-        {
-            // do something
-        }
-
-        void IUPnPServiceCallback.StateVariableChanged(UPnPService pus, string stateVariable, object value)
-        {
-            StateVariables.Changed(this, pus, stateVariable, value);
-            PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
-
-        private string QueryStateString(string variableName)
-        {
-            return Convert.ToString(_service.QueryStateVariable(variableName));
-        }
-
-        private uint QueryStateUInt32(string variableName)
-        {
-            return Convert.ToUInt32(_service.QueryStateVariable(variableName));
         }
 
         // required
@@ -274,7 +249,5 @@ namespace Sonority.UPnP
         {
             UPnP.InvokeAction(_service, "RemoveTrackFromQueue", InstanceID, objectID);
         }
-
-        private UPnPService _service;
     }
 }

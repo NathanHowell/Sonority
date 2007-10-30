@@ -21,35 +21,19 @@
 //
 
 using System;
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows.Threading;
-using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class GroupManagement : UPnPServiceBase
+    public partial class ZoneGroupTopology
     {
-        internal GroupManagement(UPnPService service) : base(service)
-        {
-        }
+        public string AvailableSoftwareUpdate { get { return _AvailableSoftwareUpdate; } }
+        public string ZoneGroupState { get { return _ZoneGroupState; } }
+        public string ThirdPartyMediaServers { get { return _ThirdPartyMediaServers; } }
+        public string AlarmRunSequence { get { return _AlarmRunSequence; } }
 
-        public void AddMember(string memberID)
-        {
-            UPnP.InvokeAction(_service, "AddMember", memberID);
-            // TODO: out[0] == CurrentTransportSettings
-            // TODO: out[1] == GroupUUIDJoined
-        }
-
-        public void RemoveMember(string memberID)
-        {
-            UPnP.InvokeAction(_service, "RemoveMember", memberID);
-        }
-
-        public void ReportTrackBufferingResult(string memberID, int resultCode)
-        {
-            UPnP.InvokeAction(_service, "ReportTrackBufferingResult", memberID, resultCode);
-        }
+        internal string _AvailableSoftwareUpdate = String.Empty;
+        internal string _ZoneGroupState = String.Empty;
+        internal string _ThirdPartyMediaServers = String.Empty;
+        internal string _AlarmRunSequence = String.Empty;
     }
 }

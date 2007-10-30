@@ -27,27 +27,11 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class RenderingControl : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
+    public partial class RenderingControl : UPnPServiceBase
     {
-        internal RenderingControl(UPnPService service)
+        internal RenderingControl(UPnPService service) : base(service)
         {
-            _service = service;
-            StateVariables.Initialize(this, service);
-            service.AddCallback(new ServiceCallback(this));
         }
-
-        void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
-        {
-            // ignore for now
-        }
-
-        void IUPnPServiceCallback.StateVariableChanged(UPnPService pus, string stateVariable, object value)
-        {
-            StateVariables.Changed(this, pus, stateVariable, value);
-            PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         string ListPresets()
         {
@@ -58,7 +42,5 @@ namespace Sonority.UPnP
         {
             throw new NotImplementedException();
         }
-
-        private UPnPService _service;
     }
 }

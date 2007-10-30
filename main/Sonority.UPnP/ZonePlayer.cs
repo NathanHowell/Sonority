@@ -112,13 +112,13 @@ namespace Sonority.UPnP
             }
         }
 
-        public UPnPService AudioIn
+        public AudioIn AudioIn
         {
             get
             {
                 if (_audioIn == null)
                 {
-                    _audioIn = _device.Services["urn:upnp-org:serviceId:AudioIn"];
+                    _audioIn = new AudioIn(_device.Services["urn:upnp-org:serviceId:AudioIn"]);
                 }
                 return _audioIn;
             }
@@ -308,7 +308,7 @@ namespace Sonority.UPnP
         private UPnPDevice _device;
         private UPnPDevice _mediaServer;
         private UPnPDevice _mediaRenderer;
-        private UPnPService _audioIn;
+        private AudioIn _audioIn;
         private UPnPService _alarmClock;
         private SystemProperties _systemProperties;
         private ZoneGroupTopology _zoneGroupTopology;

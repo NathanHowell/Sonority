@@ -120,27 +120,11 @@ namespace Sonority.UPnP
         private string _album_value;
     }
 
-    public partial class ContentDirectory : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
+    public partial class ContentDirectory : UPnPServiceBase
     {
-        internal ContentDirectory(UPnPService service)
+        internal ContentDirectory(UPnPService service) : base(service)
         {
-            _service = service;
-            StateVariables.Initialize(this, service);
-            service.AddCallback(new ServiceCallback(this));
         }
-
-        void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
-        {
-            // ignore for now
-        }
-
-        void IUPnPServiceCallback.StateVariableChanged(UPnPService pus, string stateVariable, object value)
-        {
-            StateVariables.Changed(this, pus, stateVariable, value);
-            PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         public string GetSearchCapabilities()
         {
@@ -233,7 +217,5 @@ namespace Sonority.UPnP
         {
             throw new NotImplementedException();
         }
-
-        private UPnPService _service;
     }
 }

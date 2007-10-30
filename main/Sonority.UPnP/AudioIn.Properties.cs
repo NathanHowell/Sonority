@@ -21,35 +21,21 @@
 //
 
 using System;
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows.Threading;
-using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class GroupManagement : UPnPServiceBase
+    public partial class AudioIn
     {
-        internal GroupManagement(UPnPService service) : base(service)
-        {
-        }
+        public string AudioInputName { get { return _AudioInputName; } }
+        public string Icon { get { return _Icon; } }
+        public bool LineInConnected { get { return _LineInConnected; } }
+        public int LeftLineInLevel { get { return _LeftLineInLevel; } }
+        public int RightLineInLevel { get { return _RightLineInLevel; } }
 
-        public void AddMember(string memberID)
-        {
-            UPnP.InvokeAction(_service, "AddMember", memberID);
-            // TODO: out[0] == CurrentTransportSettings
-            // TODO: out[1] == GroupUUIDJoined
-        }
-
-        public void RemoveMember(string memberID)
-        {
-            UPnP.InvokeAction(_service, "RemoveMember", memberID);
-        }
-
-        public void ReportTrackBufferingResult(string memberID, int resultCode)
-        {
-            UPnP.InvokeAction(_service, "ReportTrackBufferingResult", memberID, resultCode);
-        }
+        private string _AudioInputName = String.Empty;
+        private string _Icon = String.Empty;
+        private bool _LineInConnected = false;
+        private int _LeftLineInLevel = 0;
+        private int _RightLineInLevel = 0;
     }
 }

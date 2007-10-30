@@ -35,26 +35,10 @@ namespace Sonority.UPnP
         VerifyThenRemoveSystemwide,
     }
 
-    public class ZoneGroupTopology : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
+    public partial class ZoneGroupTopology : UPnPServiceBase
     {
-        internal ZoneGroupTopology(UPnPService service)
+        internal ZoneGroupTopology(UPnPService service) : base(service)
         {
-            _service = service;
-            StateVariables.Initialize(this, service);
-            service.AddCallback(new ServiceCallback(this));
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged = delegate { };
-
-        void IUPnPServiceCallback.ServiceInstanceDied(UPnPService pus)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        void IUPnPServiceCallback.StateVariableChanged(UPnPService pus, string stateVariable, object value)
-        {
-            StateVariables.Changed(this, pus, stateVariable, value);
-            PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
         }
 
         public string CheckForUpdate(string updateType, bool cachedOnly, string version)
@@ -72,44 +56,5 @@ namespace Sonority.UPnP
         {
             UPnP.InvokeAction(_service, "ReportUnresponsiveDevice", deviceUuid, desiredAction.ToString());
         }
-
-        public string AvailableSoftwareUpdate
-        {
-            get
-            {
-                return _AvailableSoftwareUpdate;
-            }
-        }
-
-        public string ZoneGroupState
-        {
-            get
-            {
-                return _ZoneGroupState;
-            }
-        }
-
-        public string ThirdPartyMediaServers
-        {
-            get
-            {
-                return _ThirdPartyMediaServers;
-            }
-        }
-
-        public string AlarmRunSequence
-        {
-            get
-            {
-                return _AlarmRunSequence;
-            }
-        }
-
-        internal string _AvailableSoftwareUpdate = String.Empty;
-        internal string _ZoneGroupState = String.Empty;
-        internal string _ThirdPartyMediaServers = String.Empty;
-        internal string _AlarmRunSequence = String.Empty;
-
-        private UPnPService _service;
     }
 }
