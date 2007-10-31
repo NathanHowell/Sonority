@@ -47,6 +47,8 @@
     <Compile Include="ConnectionManager.Properties.cs" />
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="QueueItem.cs" />
+    <Compile Include="ZoneGroup.cs" />
+    <Compile Include="ZoneGroupMember.cs" />
     <Compile Include="ZoneGroupTopology.Properties.cs" />
     <Compile Include="ContentDirectory.cs" />
     <Compile Include="ContentDirectory.Properties.cs" />

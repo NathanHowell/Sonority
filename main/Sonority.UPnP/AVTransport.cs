@@ -229,13 +229,19 @@ namespace Sonority.UPnP
         // required
         public void Next()
         {
-            UPnP.InvokeAction(_service, "Next", InstanceID);
+            if (CurrentTrack < this.NumberOfTracks)
+            {
+                UPnP.InvokeAction(_service, "Next", InstanceID);
+            }
         }
 
         // required
         public void Previous()
         {
-            UPnP.InvokeAction(_service, "Previous", InstanceID);
+            if (CurrentTrack > 1)
+            {
+               UPnP.InvokeAction(_service, "Previous", InstanceID);
+            }
         }
 
         // optional

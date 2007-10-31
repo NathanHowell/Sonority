@@ -25,6 +25,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.XPath;
+using System.Web;
 using UPNPLib;
 
 namespace Sonority.UPnP
@@ -112,6 +113,21 @@ namespace Sonority.UPnP
             get
             {
                 return Convert.ToInt32(_item_id.Substring(_item_parentID.Length + 1));
+            }
+        }
+
+        public Uri AlbumArt
+        {
+            get
+            {
+                if (_albumArtUri_value != null)
+                {
+                    return new Uri(String.Concat("http://192.168.1.107:1400", HttpUtility.UrlDecode(_albumArtUri_value)));
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 

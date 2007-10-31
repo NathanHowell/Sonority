@@ -66,7 +66,9 @@ namespace Sonority.UPnP
         {
             BeginUpdateQueue();
             ContentDirectory.PropertyChanged += new PropertyChangedEventHandler(ContainerUpdateIDs_PropertyChanged);
-            Dispatcher.BeginInvoke(DispatcherPriority.DataBind, new ThreadStart(GetDocumentUrl));
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, new ThreadStart(GetDocumentUrl));
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart) delegate { this.ZoneGroupTopology.ToString(); });
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart) delegate { this.GroupManagement.ToString(); });
         }
 
         void GetDocumentUrl()
@@ -76,15 +78,6 @@ namespace Sonority.UPnP
             {
                 _documentUrl = new Uri(blah.GetDocumentURL(), UriKind.Absolute);
                 PropertyChanged(this, new PropertyChangedEventArgs("DocumentUrl"));
-            }
-        }
-
-        private void DumpServices()
-        {
-            foreach (UPnPService service in _device.Services)
-            {
-                Console.WriteLine(service.ServiceTypeIdentifier);
-                Console.WriteLine(service.Id);
             }
         }
 
@@ -247,8 +240,7 @@ namespace Sonority.UPnP
 
                 if (index < _queue.Count)
                 {
-                    // shouldn't use resource ID, track can be queued multiple times
-                    if (_queue[index].Res != qi.Res)
+                    if (_queue[index].NumericID != qi.NumericID)
                     {
                         _queue.RemoveAt(index);
                         _queue.Insert(index, qi);

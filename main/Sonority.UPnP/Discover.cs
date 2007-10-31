@@ -25,8 +25,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Threading;
 using System.Windows.Threading;
+using System.Xml;
+using System.Xml.XPath;
 using UPNPLib;
 
 namespace Sonority.UPnP
@@ -52,8 +55,34 @@ namespace Sonority.UPnP
         {
             ZonePlayer zp = new ZonePlayer(pDevice);
             zp.DeviceProperties.PropertyChanged += new PropertyChangedEventHandler(DeviceProperties_PropertyChanged);
+            zp.ZoneGroupTopology.PropertyChanged += new PropertyChangedEventHandler(ZoneGroupTopology_PropertyChanged);
             _zonePlayers.Add(zp);
             PropertyChanged(this, new PropertyChangedEventArgs("ZonePlayers"));
+        }
+
+        void ZoneGroupTopology_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "ZoneGroupState")
+            {
+                return;
+            }
+
+            ZoneGroupTopology zgt = sender as ZoneGroupTopology;
+
+            XPathDocument doc = new XPathDocument(new StringReader(zgt.ZoneGroupState));
+            XPathNavigator nav = doc.CreateNavigator();
+
+            Dispatcher.Invoke(DispatcherPriority.DataBind, (ThreadStart)delegate
+            {
+                _topology.Clear();
+            });
+            foreach (XPathNavigator node in nav.Select("ZoneGroups/*"))
+            {
+                Dispatcher.Invoke(DispatcherPriority.DataBind, (ThreadStart)delegate
+                {
+                    _topology.Add(new ZoneGroup(node));
+                });
+            }
         }
 
         void DeviceProperties_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -115,8 +144,17 @@ namespace Sonority.UPnP
             }
         }
 
+        public ObservableCollection<ZoneGroup> Topology
+        {
+            get
+            {
+                return _topology;
+            }
+        }
+
         private UPnPDeviceFinder _finder = new UPnPDeviceFinderClass();
         private ObservableCollection<ZonePlayer> _zonePlayers = new ObservableCollection<ZonePlayer>();
+        private ObservableCollection<ZoneGroup> _topology = new ObservableCollection<ZoneGroup>();
         private int _findData;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
