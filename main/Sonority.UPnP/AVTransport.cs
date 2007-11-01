@@ -99,7 +99,54 @@ namespace Sonority.UPnP
         public AVTransport(UPnPService service) : base(service)
         {
             _service.AddCallback(new AVTransportCallback(this));
+            PropertyChanged += new PropertyChangedEventHandler(AVTransport_PropertyChanged);
+            PropertyChanged += new PropertyChangedEventHandler(TransportStateChanged);
+            _timer = new Timer(new TimerCallback(this.OnTimerFired), null, 1000, 1000);
         }
+
+        void TransportStateChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "TransportState")
+            {
+                return;
+            }
+
+            if (this.TransportState == TransportState.PLAYING)
+            {
+                _timer.Change(1000, 1000);
+            }
+            else
+            {
+                _timer.Change(Timeout.Infinite, Timeout.Infinite);
+            }
+        }
+
+        void AVTransport_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "LastChange")
+            {
+                return;
+            }
+
+            PositionInfo pi = GetPositionInfo();
+            IUPnPServiceCallback x = this;
+            x.StateVariableChanged(_service, "TrackDuration", TimeSpan.Parse(pi.TrackDuration));
+            x.StateVariableChanged(_service, "RelTime", (_timeSpanBase = TimeSpan.Parse(pi.RelTime)));
+            _baseTime = DateTime.Now;
+        }
+
+        private void OnTimerFired(object state)
+        {
+            if (this.TransportState == TransportState.PLAYING)
+            {
+                IUPnPServiceCallback x = this;
+                x.StateVariableChanged(_service, "RelTime", _timeSpanBase.Add(DateTime.Now - _baseTime));
+            }
+        }
+
+        private TimeSpan _timeSpanBase;
+        private DateTime _baseTime;
+        private Timer _timer;
 
         // required
         public void SetAVTransportUri(string currentUri, string currentUriMetadata)

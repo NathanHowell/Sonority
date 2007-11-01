@@ -63,6 +63,7 @@
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
     <Page Include="Window1.xaml" />
+    <Page Include="Window2.xaml" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -90,6 +91,10 @@
     <Compile Include="Properties\Settings.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Window2.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>Window2.xaml</DependentUpon>
     </Compile>
     <AppDesigner Include="Properties\" />
   </ItemGroup>

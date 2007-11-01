@@ -60,6 +60,12 @@ namespace Sonority.UPnP
         public string NextAVTransportURIMetaData { get { return _NextAVTransportURIMetaData; } }
         public string LastChange { get { return _LastChange; } }
 
+        // for progress bar display binding
+        public TimeSpan RelTime { get { return _RelTime; } }
+        public TimeSpan TrackDuration { get { return _TrackDuration; } }
+        private TimeSpan _RelTime = TimeSpan.MinValue;
+        private TimeSpan _TrackDuration = TimeSpan.MinValue;
+
         private const uint _InstanceID = 0;
         private TransportState _TransportState = TransportState.TRANSITIONING;
         private string _TransportStatus = String.Empty;

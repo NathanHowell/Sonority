@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Sonority.UPnP;
 
 namespace wpf
@@ -36,6 +38,8 @@ namespace wpf
 
         void ListDoubleClick(object sender, MouseButtonEventArgs args)
         {
+            KeyGesture kg = new KeyGesture(Key.P, ModifierKeys.Control);
+
             ListView lv = args.Source as ListView;
             ZonePlayer zp = lv.DataContext as ZonePlayer;
 
@@ -44,7 +48,7 @@ namespace wpf
             zp.AVTransport.Play();
         }
 
-        void ListKeyDown(object sender, KeyEventArgs args)
+        void WindowKeyDown(object sender, KeyEventArgs args)
         {
             ListView lv = args.Source as ListView;
             ZonePlayer zp = lv.DataContext as ZonePlayer;
@@ -112,13 +116,26 @@ namespace wpf
                 }
             }
         }
-
+        
         void ChangeTransportState(object sender, RoutedEventArgs args)
         {
-            Button b = sender as Button;
-            ZonePlayer zp = b.DataContext as ZonePlayer;
+            TabItem ti = args.Source as TabItem;
+            ZonePlayer zp = ti.DataContext as ZonePlayer;
 
             zp.AVTransport.PlayPause();
+        }
+
+        void ZoneVolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ushort volume = (ushort)Math.Round(e.NewValue);
+            Slider s = e.Source as Slider;
+            ZonePlayer zp = s.DataContext as ZonePlayer;
+            s.Delay = 100;
+            if (volume != zp.RenderingControl.Volume[Channel.Master])
+            {
+                zp.RenderingControl.SetVolume(Channel.Master, volume);
+            }
+            e.Handled = true;
         }
 
         private Discover _discover = new Discover();

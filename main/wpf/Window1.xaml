@@ -5,16 +5,22 @@
     >
   <DockPanel>
     <TabControl Name="tabControl1" DockPanel.Dock="Left">
+      <TabControl.CommandBindings>
+        <CommandBinding Command="MediaCommands.Play" Executed="ChangeTransportState" />
+      </TabControl.CommandBindings>
       <TabControl.ContentTemplate>
         <DataTemplate>
           <ScrollViewer>
-            <ListView ItemsSource="{Binding Path=Queue}" VirtualizingStackPanel.IsVirtualizing="True" MouseDoubleClick="ListDoubleClick" KeyDown="ListKeyDown">
+            <ListView
+              ItemsSource="{Binding Path=Queue}"
+              VirtualizingStackPanel.IsVirtualizing="True"
+              MouseDoubleClick="ListDoubleClick"
+              KeyDown="WindowKeyDown">
               <ListView.View>
                 <GridView AllowsColumnReorder="true">
                   <GridViewColumn DisplayMemberBinding="{Binding Path=Artist}" Header="Artist" />
                   <GridViewColumn DisplayMemberBinding="{Binding Path=Album}" Header="Album" />
                   <GridViewColumn DisplayMemberBinding="{Binding Path=Title}" Header="Title" />
-                  <GridViewColumn DisplayMemberBinding="{Binding Path=Res}" Header="Resource" />
                 </GridView>
               </ListView.View>
             </ListView>
@@ -27,7 +33,12 @@
             <TextBlock Text="{Binding Path=DeviceProperties.ZoneName}"/>
             <TextBlock Text="{Binding Path=AVTransport.CurrentTrack}"/>
             <TextBlock Text="{Binding Path=AVTransport.NumberOfTracks}"/>
-            <Button Content="{Binding Path=AVTransport.TransportState}" Click="ChangeTransportState"/>
+            <Slider Value="{Binding Mode=OneWay, Path=RenderingControl.Volume[Master]}" Minimum="0" Maximum="100" Width="100" SmallChange="1" LargeChange="5" ValueChanged="ZoneVolumeChanged"/>
+            <ProgressBar
+              Minimum="0"
+              Maximum="{Binding Mode=OneWay, Path=AVTransport.TrackDuration.TotalSeconds}"
+              Value="{Binding Mode=OneWay, Path=AVTransport.RelTime.TotalSeconds}" />
+            <Button Content="{Binding Path=AVTransport.TransportState}" Command="MediaCommands.Play"/>
           </StackPanel>
         </DataTemplate>
       </TabControl.ItemTemplate>

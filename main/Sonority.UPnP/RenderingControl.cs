@@ -46,6 +46,11 @@ namespace Sonority.UPnP
     {
         internal RenderingControl(UPnPService service) : base(service)
         {
+            foreach (Channel c in Enum.GetValues(typeof(Channel)))
+            {
+                _Mute[c] = false;
+                _Volume[c] = 0;
+            }
             this.PropertyChanged += new PropertyChangedEventHandler(RenderingControl_PropertyChanged);
         }
 

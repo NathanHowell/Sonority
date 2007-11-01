@@ -67,8 +67,13 @@ namespace Sonority.UPnP
             BeginUpdateQueue();
             ContentDirectory.PropertyChanged += new PropertyChangedEventHandler(ContainerUpdateIDs_PropertyChanged);
             Dispatcher.BeginInvoke(DispatcherPriority.Background, new ThreadStart(GetDocumentUrl));
-            Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart) delegate { this.ZoneGroupTopology.ToString(); });
-            Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart) delegate { this.GroupManagement.ToString(); });
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate
+            {
+                foreach (System.Reflection.PropertyInfo pi in this.GetType().GetProperties(System.Reflection.BindingFlags.Instance))
+                {
+                    pi.GetGetMethod().Invoke(this, null);
+                }
+            });
         }
 
         void GetDocumentUrl()
