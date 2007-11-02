@@ -3,6 +3,59 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="wpf" Height="382" Width="776"
     >
+  <Window.Resources>
+    <SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />
+    <LinearGradientBrush x:Key="PressedBrush" StartPoint="0,0" EndPoint="0,1">
+      <GradientBrush.GradientStops>
+        <GradientStopCollection>
+          <GradientStop Color="#BBB" Offset="0.0"/>
+          <GradientStop Color="#EEE" Offset="0.1"/>
+          <GradientStop Color="#EEE" Offset="0.9"/>
+          <GradientStop Color="#FFF" Offset="1.0"/>
+        </GradientStopCollection>
+      </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="DarkBrush" StartPoint="0,0" EndPoint="0,1">
+      <GradientBrush.GradientStops>
+        <GradientStopCollection>
+          <GradientStop Color="#FFF" Offset="0.0"/>
+          <GradientStop Color="#AAA" Offset="1.0"/>
+        </GradientStopCollection>
+      </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="NormalBorderBrush" StartPoint="0,0" EndPoint="0,1">
+      <GradientBrush.GradientStops>
+        <GradientStopCollection>
+          <GradientStop Color="#CCC" Offset="0.0"/>
+          <GradientStop Color="#444" Offset="1.0"/>
+        </GradientStopCollection>
+      </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <Style x:Key="{x:Type ProgressBar}"
+         TargetType="{x:Type ProgressBar}">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="{x:Type ProgressBar}">
+            <Grid MinHeight="14" MinWidth="100">
+              <Border
+                Name="PART_Track"
+                CornerRadius="2"
+                Background="{StaticResource PressedBrush}"
+                BorderBrush="{StaticResource SolidBorderBrush}"
+                BorderThickness="1" />
+              <Border
+                Name="PART_Indicator"
+                CornerRadius="2"
+                Background="{StaticResource DarkBrush}"
+                BorderBrush="{StaticResource NormalBorderBrush}"
+                BorderThickness="1"
+                HorizontalAlignment="Left" />
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Window.Resources>
   <DockPanel>
     <TabControl Name="tabControl1" DockPanel.Dock="Left">
       <TabControl.ContentTemplate>
@@ -51,6 +104,8 @@
         <KeyBinding Key="VolumeMute" Command="MediaCommands.MuteVolume"/>
         <KeyBinding Key="VolumeUp" Command="MediaCommands.IncreaseVolume"/>
         <KeyBinding Key="VolumeDown" Command="MediaCommands.DecreaseVolume"/>
+        <KeyBinding Key="F10" Command="MediaCommands.IncreaseVolume"/>
+        <KeyBinding Key="F9" Command="MediaCommands.DecreaseVolume" />
       </TabControl.InputBindings>
       <TabControl.CommandBindings>
         <CommandBinding
