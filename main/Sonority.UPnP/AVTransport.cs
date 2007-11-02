@@ -83,6 +83,14 @@ namespace Sonority.UPnP
         SECTION,
     }
 
+    public enum PlayMode
+    {
+        NORMAL,
+        REPEAT_ALL,
+        SHUFFLE_NOREPEAT,
+        SHUFFLE,
+    }
+
     // http://x.x.x.x:1400/xml/AVTransport1.xml
     // PAUSED_PLAYBACK does not show up on the list but Sonos uses this state
     public enum TransportState
@@ -240,7 +248,10 @@ namespace Sonority.UPnP
         public void Play()
         {
             const string speed = "1";
-            UPnP.InvokeAction(_service, "Play", InstanceID, speed);
+            if (this.NumberOfTracks > 0)
+            {
+                UPnP.InvokeAction(_service, "Play", InstanceID, speed);
+            }
         }
 
         // optional
@@ -292,9 +303,9 @@ namespace Sonority.UPnP
         }
 
         // optional
-        public void SetPlayMode(string newPlayMode)
+        public void SetPlayMode(PlayMode newPlayMode)
         {
-            UPnP.InvokeAction(_service, "SetPlayMode", InstanceID);
+            UPnP.InvokeAction(_service, "SetPlayMode", InstanceID, newPlayMode.ToString());
         }
 
         // optional
@@ -309,7 +320,24 @@ namespace Sonority.UPnP
             return UPnP.InvokeAction<String>(_service, "GetCurrentTransportActions", InstanceID);
         }
 
-        // undocumented?
+        public void AddURIToQueue(string enqueuedURI, string enqueuedURIMetaData, uint desiredFirstTrackNumberEnqueued, bool enqueueAsNext)
+        {
+            UPnP.InvokeAction(_service, "AddURIToQueue", InstanceID, enqueuedURI, enqueuedURIMetaData, desiredFirstTrackNumberEnqueued, enqueueAsNext);
+            // out[0] == FirstTrackNumberEnqueued
+            // out[1] == NumTracksAdded
+            // out[2] == NewQueueLength
+        }
+
+        public void ReorderTracksInQueue(uint startingIndex, uint numberOfTracks, uint insertBefore)
+        {
+            UPnP.InvokeAction(_service, "ReorderTracksInQueue", InstanceID, startingIndex, numberOfTracks, insertBefore);
+        }
+
+        public void RemoveAllTracksFromQueue()
+        {
+            UPnP.InvokeAction(_service, "RemoveAllTracksFromQueue", InstanceID);
+        }
+
         public void RemoveTrackFromQueue(string objectID)
         {
             UPnP.InvokeAction(_service, "RemoveTrackFromQueue", InstanceID, objectID);

@@ -5,9 +5,6 @@
     >
   <DockPanel>
     <TabControl Name="tabControl1" DockPanel.Dock="Left">
-      <TabControl.CommandBindings>
-        <CommandBinding Command="MediaCommands.Play" Executed="ChangeTransportState" />
-      </TabControl.CommandBindings>
       <TabControl.ContentTemplate>
         <DataTemplate>
           <ScrollViewer>
@@ -37,11 +34,34 @@
             <ProgressBar
               Minimum="0"
               Maximum="{Binding Mode=OneWay, Path=AVTransport.TrackDuration.TotalSeconds}"
-              Value="{Binding Mode=OneWay, Path=AVTransport.RelTime.TotalSeconds}" />
-            <Button Content="{Binding Path=AVTransport.TransportState}" Command="MediaCommands.Play"/>
+              Value="{Binding Mode=OneWay, Path=AVTransport.RelTime.TotalSeconds}"
+              IsEnabled="{Binding Mode=OneWay, Path=AVTransport.TransportState}"/>
+            <Button Content="{Binding Path=AVTransport.TransportState}" Command="MediaCommands.TogglePlayPause"/>
           </StackPanel>
         </DataTemplate>
       </TabControl.ItemTemplate>
+      <TabControl.InputBindings>
+        <KeyBinding Key="F" Modifiers="Control" Command="MediaCommands.NextTrack"/>
+        <KeyBinding Key="B" Modifiers="Control" Command="MediaCommands.PreviousTrack"/>
+        <KeyBinding Key="P" Modifiers="Control" Command="MediaCommands.TogglePlayPause"/>
+        <KeyBinding Key="MediaNextTrack" Command="MediaCommands.NextTrack" />
+        <KeyBinding Key="MediaPreviousTrack" Command="MediaCommands.PreviousTrack"/>
+        <KeyBinding Key="MediaStop" Command="MediaCommands.Stop"/>
+        <KeyBinding Key="MediaPlayPause" Command="MediaCommands.TogglePlayPause"/>
+        <KeyBinding Key="VolumeMute" Command="MediaCommands.MuteVolume"/>
+        <KeyBinding Key="VolumeUp" Command="MediaCommands.IncreaseVolume"/>
+        <KeyBinding Key="VolumeDown" Command="MediaCommands.DecreaseVolume"/>
+      </TabControl.InputBindings>
+      <TabControl.CommandBindings>
+        <CommandBinding
+          Command="MediaCommands.TogglePlayPause"
+          Executed="MediaCommands_TogglePlayPause"
+          CanExecute="MediaCommands_CanTogglePlayPause"/>
+        <CommandBinding
+          Command="MediaCommands.NextTrack"
+          Executed="MediaCommands_Next"
+          CanExecute="MediaCommands_CanNext"/>
+      </TabControl.CommandBindings>
     </TabControl>
     <TreeView Name="treeView1" DockPanel.Dock="Right" ItemsSource="{Binding Path=Library}">
     </TreeView>

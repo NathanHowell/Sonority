@@ -126,7 +126,7 @@ namespace Sonority.UPnP
                 }
                 else
                 {
-                    return null;
+                    return new Uri("http://mypromusa.com/y/images/red_x.gif");
                 }
             }
         }

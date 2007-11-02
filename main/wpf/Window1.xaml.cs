@@ -38,8 +38,6 @@ namespace wpf
 
         void ListDoubleClick(object sender, MouseButtonEventArgs args)
         {
-            KeyGesture kg = new KeyGesture(Key.P, ModifierKeys.Control);
-
             ListView lv = args.Source as ListView;
             ZonePlayer zp = lv.DataContext as ZonePlayer;
 
@@ -100,29 +98,42 @@ namespace wpf
                     break;
             }
 
-            if (args.KeyboardDevice.Modifiers == ModifierKeys.Control)
-            {
-                switch (args.Key)
-                {
-                    case Key.F:
-                        zp.AVTransport.Next();
-                        break;
-                    case Key.B:
-                        zp.AVTransport.Previous();
-                        break;
-                    case Key.P:
-                        zp.AVTransport.PlayPause();
-                        break;
-                }
-            }
         }
         
         void ChangeTransportState(object sender, RoutedEventArgs args)
         {
-            TabItem ti = args.Source as TabItem;
-            ZonePlayer zp = ti.DataContext as ZonePlayer;
+            Button tc = args.OriginalSource as Button;
+            ZonePlayer zp = tc.DataContext as ZonePlayer;
 
             zp.AVTransport.PlayPause();
+        }
+
+        void MediaCommands_TogglePlayPause(object sender, ExecutedRoutedEventArgs e)
+        {
+            TabControl tc = (TabControl)sender;
+            ZonePlayer zp = (ZonePlayer)tc.SelectedItem;
+            zp.AVTransport.PlayPause();
+        }
+
+        void MediaCommands_CanTogglePlayPause(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        void MediaCommands_Next(object sender, ExecutedRoutedEventArgs e)
+        {
+            TabControl tc = (TabControl)sender;
+            ZonePlayer zp = (ZonePlayer)tc.SelectedItem;
+            zp.AVTransport.Next();
+            e.Handled = true;
+        }
+
+        void MediaCommands_CanNext(object sender, CanExecuteRoutedEventArgs e)
+        {
+            TabControl tc = (TabControl)sender;
+            ZonePlayer zp = (ZonePlayer)tc.SelectedItem;
+            e.CanExecute = zp.AVTransport.CurrentTrack < zp.AVTransport.NumberOfTracks;
+            e.Handled = true;
         }
 
         void ZoneVolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -136,6 +147,33 @@ namespace wpf
                 zp.RenderingControl.SetVolume(Channel.Master, volume);
             }
             e.Handled = true;
+        }
+
+        void ProgressBar_Initialized(object sender, EventArgs e)
+        {
+            ProgressBar pb = sender as ProgressBar;
+            ZonePlayer zp = pb.DataContext as ZonePlayer;
+            zp.AVTransport.PropertyChanged += new PropertyChangedEventHandler(AVTransport_PropertyChanged);
+            _avpb[zp.AVTransport] = pb;
+        }
+
+        Dictionary<AVTransport, ProgressBar> _avpb = new Dictionary<AVTransport, ProgressBar>();
+
+        void AVTransport_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != "TransportState")
+            {
+                return;
+            }
+
+            AVTransport av = sender as AVTransport;
+            bool enable = av.TransportState == TransportState.PLAYING;
+            ProgressBar pb = _avpb[av];
+
+            pb.Dispatcher.BeginInvoke(DispatcherPriority.DataBind, (ThreadStart)delegate
+            {
+                pb.IsEnabled = enable;
+            });
         }
 
         private Discover _discover = new Discover();

@@ -33,7 +33,7 @@ namespace Sonority.UPnP
         public string RecordStorageMedium { get { return _RecordStorageMedium; }}
         public string PossiblePlaybackStorageMedia { get { return _PossiblePlaybackStorageMedia; } }
         public string PossibleRecordStorageMedia { get { return _PossibleRecordStorageMedia; } }
-        public string CurrentPlayMode { get { return _CurrentPlayMode; } }
+        public PlayMode CurrentPlayMode { get { return (PlayMode)Enum.Parse(typeof(PlayMode), _CurrentPlayMode); } }
         public string TransportPlaySpeed { get { return _TransportPlaySpeed; } }
         public string RecordMediumWriteStatus { get { return _RecordMediumWriteStatus; } }
         public string CurrentRecordQualityMode { get { return _CurrentRecordQualityMode; } }
@@ -73,7 +73,7 @@ namespace Sonority.UPnP
         private string _RecordStorageMedium = String.Empty;
         private string _PossiblePlaybackStorageMedia = String.Empty;
         private string _PossibleRecordStorageMedia = String.Empty;
-        private string _CurrentPlayMode = String.Empty;
+        private string _CurrentPlayMode = PlayMode.NORMAL.ToString();
         private string _TransportPlaySpeed = String.Empty;
         private string _RecordMediumWriteStatus = String.Empty;
         private string _CurrentRecordQualityMode = String.Empty;
