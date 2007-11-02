@@ -24,10 +24,13 @@ using System;
 using System.Collections.ObjectModel;
 using System.Xml;
 using System.Xml.XPath;
+using System.Windows.Threading;
+using UPNPLib;
+using System.ComponentModel;
 
 namespace Sonority.UPnP
 {
-    public class ZoneGroup
+    public class ZoneGroup : INotifyPropertyChanged
     {
         public ZoneGroup(XPathNavigator node)
         {
@@ -36,11 +39,24 @@ namespace Sonority.UPnP
 
             foreach (XPathNavigator nav in node.Select("ZoneGroupMember"))
             {
-                _members.Add(new ZoneGroupMember(nav));
+                ZonePlayer zp = new ZonePlayer(String.Concat("uuid:", nav.SelectSingleNode("@UUID").Value));
+                _members.Add(zp);
+
+                if (String.CompareOrdinal(zp.UniqueDeviceName, String.Concat("uuid:", _coordinator)) == 0)
+                {
+                    _coordinatorZone = zp;
+                }
             }
+
+            _members.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(_members_CollectionChanged);
         }
 
-        public ObservableCollection<ZoneGroupMember> Members
+        void _members_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            PropertyChanged(this, new PropertyChangedEventArgs("Members"));
+        }
+
+        public ObservableCollection<ZonePlayer> Members
         {
             get
             {
@@ -48,11 +64,11 @@ namespace Sonority.UPnP
             }
         }
 
-        public string Coordinator
+        public ZonePlayer Coordinator
         {
             get
             {
-                return _coordinator;
+                return _coordinatorZone;
             }
         }
 
@@ -64,8 +80,11 @@ namespace Sonority.UPnP
             }
         }
 
-        private ObservableCollection<ZoneGroupMember> _members = new ObservableCollection<ZoneGroupMember>();
+        private ObservableCollection<ZonePlayer> _members = new ObservableCollection<ZonePlayer>();
+        private ZonePlayer _coordinatorZone;
         private string _coordinator;
         private string _id;
+
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
     }
 }

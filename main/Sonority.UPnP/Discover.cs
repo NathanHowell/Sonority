@@ -55,7 +55,12 @@ namespace Sonority.UPnP
         {
             ZonePlayer zp = new ZonePlayer(pDevice);
             zp.DeviceProperties.PropertyChanged += new PropertyChangedEventHandler(DeviceProperties_PropertyChanged);
-            zp.ZoneGroupTopology.PropertyChanged += new PropertyChangedEventHandler(ZoneGroupTopology_PropertyChanged);
+
+            if (_topologyHandled == false)
+            {
+                zp.ZoneGroupTopology.PropertyChanged += new PropertyChangedEventHandler(ZoneGroupTopology_PropertyChanged);
+                _topologyHandled = true;
+            }
             _zonePlayers.Add(zp);
             PropertyChanged(this, new PropertyChangedEventArgs("ZonePlayers"));
         }
@@ -136,6 +141,7 @@ namespace Sonority.UPnP
             // do something?
         }
 
+        /*
         public ObservableCollection<ZonePlayer> ZonePlayers
         {
             get
@@ -143,6 +149,7 @@ namespace Sonority.UPnP
                 return _zonePlayers;
             }
         }
+        */
 
         public ObservableCollection<ZoneGroup> Topology
         {
@@ -156,6 +163,7 @@ namespace Sonority.UPnP
         private ObservableCollection<ZonePlayer> _zonePlayers = new ObservableCollection<ZonePlayer>();
         private ObservableCollection<ZoneGroup> _topology = new ObservableCollection<ZoneGroup>();
         private int _findData;
+        private bool _topologyHandled = false;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
     }

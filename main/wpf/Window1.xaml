@@ -62,7 +62,7 @@
         <DataTemplate>
           <ScrollViewer>
             <ListView
-              ItemsSource="{Binding Path=Queue}"
+              ItemsSource="{Binding Path=Coordinator.Queue}"
               VirtualizingStackPanel.IsVirtualizing="True"
               MouseDoubleClick="ListDoubleClick"
               KeyDown="WindowKeyDown">
@@ -79,7 +79,7 @@
       </TabControl.ContentTemplate>
       <TabControl.ItemTemplate>
         <DataTemplate>
-          <StackPanel>
+          <StackPanel DataContext="{Binding Path=Coordinator}">
             <TextBlock Text="{Binding Path=DeviceProperties.ZoneName}"/>
             <TextBlock Text="{Binding Path=AVTransport.CurrentTrack}"/>
             <TextBlock Text="{Binding Path=AVTransport.NumberOfTracks}"/>
