@@ -245,7 +245,8 @@ namespace Sonority.UPnP
 
                 if (index < _queue.Count)
                 {
-                    if (_queue[index].NumericID != qi.NumericID)
+                    if (_queue[index].NumericID == qi.NumericID &&
+                        String.CompareOrdinal(_queue[index].Res, qi.Res) != 0)
                     {
                         _queue.RemoveAt(index);
                         _queue.Insert(index, qi);
