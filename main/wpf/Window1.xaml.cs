@@ -17,6 +17,19 @@ using Sonority.UPnP;
 
 namespace wpf
 {
+    class AreObjectsEqual : IMultiValueConverter
+    {
+        object IMultiValueConverter.Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return Convert.ToUInt32(values[0]) == Convert.ToUInt32(values[1]);
+        }
+
+        object[] IMultiValueConverter.ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+    }
+
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>

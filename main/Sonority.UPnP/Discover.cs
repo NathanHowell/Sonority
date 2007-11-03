@@ -53,7 +53,20 @@ namespace Sonority.UPnP
 
         void IUPnPDeviceFinderCallback.DeviceAdded(int lFindData, UPnPDevice pDevice)
         {
-            ZonePlayer zp = new ZonePlayer(pDevice);
+            Intern(pDevice.UniqueDeviceName);
+        }
+
+        public ZonePlayer Intern(string uniqueDeviceName)
+        {
+            foreach (ZonePlayer zpi in _zonePlayers)
+            {
+                if (String.CompareOrdinal(zpi.UniqueDeviceName, uniqueDeviceName) == 0)
+                {
+                    return zpi;
+                }
+            }
+
+            ZonePlayer zp = new ZonePlayer(uniqueDeviceName);
             zp.DeviceProperties.PropertyChanged += new PropertyChangedEventHandler(DeviceProperties_PropertyChanged);
 
             if (_topologyHandled == false)
@@ -63,6 +76,7 @@ namespace Sonority.UPnP
             }
             _zonePlayers.Add(zp);
             PropertyChanged(this, new PropertyChangedEventArgs("ZonePlayers"));
+            return zp;
         }
 
         void ZoneGroupTopology_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -85,7 +99,7 @@ namespace Sonority.UPnP
             {
                 Dispatcher.Invoke(DispatcherPriority.DataBind, (ThreadStart)delegate
                 {
-                    _topology.Add(new ZoneGroup(node));
+                    _topology.Add(new ZoneGroup(this, node));
                 });
             }
         }
@@ -141,7 +155,6 @@ namespace Sonority.UPnP
             // do something?
         }
 
-        /*
         public ObservableCollection<ZonePlayer> ZonePlayers
         {
             get
@@ -149,7 +162,6 @@ namespace Sonority.UPnP
                 return _zonePlayers;
             }
         }
-        */
 
         public ObservableCollection<ZoneGroup> Topology
         {

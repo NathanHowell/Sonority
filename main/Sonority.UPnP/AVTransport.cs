@@ -97,8 +97,8 @@ namespace Sonority.UPnP
     {
         STOPPED,
         PLAYING,
-        PAUSED_PLAYBACK,
         PAUSED_PLAYING,
+        PAUSED_PLAYBACK = PAUSED_PLAYING,
         TRANSITIONING,
     }
 

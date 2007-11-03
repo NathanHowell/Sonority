@@ -32,22 +32,18 @@ namespace Sonority.UPnP
 {
     public class ZoneGroup : INotifyPropertyChanged
     {
-        public ZoneGroup(XPathNavigator node)
+        public ZoneGroup(Discover disc, XPathNavigator node)
         {
             _coordinator = node.SelectSingleNode("@Coordinator").Value;
             _id = node.SelectSingleNode("@ID").Value;
 
             foreach (XPathNavigator nav in node.Select("ZoneGroupMember"))
             {
-                ZonePlayer zp = new ZonePlayer(String.Concat("uuid:", nav.SelectSingleNode("@UUID").Value));
+                ZonePlayer zp = disc.Intern(String.Concat("uuid:", nav.SelectSingleNode("@UUID").Value));
                 _members.Add(zp);
-
-                if (String.CompareOrdinal(zp.UniqueDeviceName, String.Concat("uuid:", _coordinator)) == 0)
-                {
-                    _coordinatorZone = zp;
-                }
             }
 
+            _coordinatorZone = disc.Intern(String.Concat("uuid:", _coordinator));
             _members.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(_members_CollectionChanged);
         }
 
