@@ -40,7 +40,8 @@ namespace Sonority.UPnP
             {
                 if (fi.Name.StartsWith("_"))
                 {
-                    ThreadPool.UnsafeQueueUserWorkItem(delegate { UpdateField(fi, target, service); }, null);
+                    FieldInfo fid = fi;
+                    ThreadPool.UnsafeQueueUserWorkItem(delegate { UpdateField(fid, target, service); }, null);
                 }
             }
         }

@@ -56,27 +56,33 @@ namespace Sonority.UPnP
             Intern(pDevice.UniqueDeviceName);
         }
 
+        private object _internLock = new object();
+
         public ZonePlayer Intern(string uniqueDeviceName)
         {
-            foreach (ZonePlayer zpi in _zonePlayers)
+            lock (_internLock)
             {
-                if (String.CompareOrdinal(zpi.UniqueDeviceName, uniqueDeviceName) == 0)
+                foreach (ZonePlayer zpi in _zonePlayers)
                 {
-                    return zpi;
+                    if (String.CompareOrdinal(zpi.UniqueDeviceName, uniqueDeviceName) == 0)
+                    {
+                        return zpi;
+                    }
                 }
-            }
 
-            ZonePlayer zp = new ZonePlayer(uniqueDeviceName);
-            zp.DeviceProperties.PropertyChanged += new PropertyChangedEventHandler(DeviceProperties_PropertyChanged);
+                ZonePlayer zp = new ZonePlayer(uniqueDeviceName);
+                zp.DeviceProperties.PropertyChanged += new PropertyChangedEventHandler(DeviceProperties_PropertyChanged);
 
-            if (_topologyHandled == false)
-            {
-                zp.ZoneGroupTopology.PropertyChanged += new PropertyChangedEventHandler(ZoneGroupTopology_PropertyChanged);
-                _topologyHandled = true;
+                if (_topologyHandled == false)
+                {
+                    zp.ZoneGroupTopology.PropertyChanged += new PropertyChangedEventHandler(ZoneGroupTopology_PropertyChanged);
+                    _topologyHandled = true;
+                }
+
+                _zonePlayers.Add(zp);
+                PropertyChanged(this, new PropertyChangedEventArgs("ZonePlayers"));
+                return zp;
             }
-            _zonePlayers.Add(zp);
-            PropertyChanged(this, new PropertyChangedEventArgs("ZonePlayers"));
-            return zp;
         }
 
         void ZoneGroupTopology_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -91,17 +97,47 @@ namespace Sonority.UPnP
             XPathDocument doc = new XPathDocument(new StringReader(zgt.ZoneGroupState));
             XPathNavigator nav = doc.CreateNavigator();
 
-            Dispatcher.Invoke(DispatcherPriority.DataBind, (ThreadStart)delegate
+            Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
             {
-                _topology.Clear();
-            });
-            foreach (XPathNavigator node in nav.Select("ZoneGroups/*"))
-            {
-                Dispatcher.Invoke(DispatcherPriority.DataBind, (ThreadStart)delegate
+                Dictionary<ZoneGroup, bool> found = new Dictionary<ZoneGroup,bool>();
+                foreach (ZoneGroup zg in Topology)
                 {
-                    _topology.Add(new ZoneGroup(this, node));
-                });
-            }
+                    found[zg] = false;
+                }
+
+                foreach (XPathNavigator node in nav.Select("ZoneGroups/*"))
+                {
+                    string coordinator = node.SelectSingleNode("@Coordinator").Value;
+
+                    bool newGroup = true;
+                    for (int i = 0; i < Topology.Count; ++i)
+                    {
+                        ZoneGroup zg = Topology[i];
+
+                        if (String.CompareOrdinal(zg.CoordinatorUuid, coordinator) == 0)
+                        {
+                            newGroup = false;
+                            found[zg] = true;
+
+                            Topology.RemoveAt(i);
+                            Topology.Insert(i, new ZoneGroup(this, node));
+                        }
+                    }
+
+                    if (newGroup)
+                    {
+                        _topology.Add(new ZoneGroup(this, node));
+                    }
+                }
+
+                foreach (KeyValuePair<ZoneGroup, bool> blah in found)
+                {
+                    if (blah.Value == false)
+                    {
+                        _topology.Remove(blah.Key);
+                    }
+                }
+            });
         }
 
         void DeviceProperties_PropertyChanged(object sender, PropertyChangedEventArgs e)

@@ -64,21 +64,42 @@ namespace Sonority.UPnP
             XPathDocument doc = new XPathDocument(new StringReader(LastChange));
             XPathNavigator nav = doc.CreateNavigator();
 
+            bool raise = false;
             foreach (XPathNavigator node in nav.Select(XPath.Expressions.VolumeElements))
             {
                 string channelString = node.SelectSingleNode(XPath.Expressions.ChannelAttributes).Value;
                 Channel channel = (Channel)Enum.Parse(typeof(Channel), channelString, true);
-                _Volume[channel] = (ushort)node.SelectSingleNode(XPath.Expressions.ValueAttributes).ValueAs(typeof(ushort));
-            }
-            RaisePropertyChangedEvent(new PropertyChangedEventArgs("Volume"));
 
+                ushort newVolume = (ushort)node.SelectSingleNode(XPath.Expressions.ValueAttributes).ValueAs(typeof(ushort));
+
+                if (_Volume[channel] != newVolume)
+                {
+                    _Volume[channel] = newVolume;
+                    raise = true;
+                }
+            }
+            if (raise)
+            {
+                RaisePropertyChangedEvent(new PropertyChangedEventArgs("Volume"));
+            }
+
+            raise = false;
             foreach (XPathNavigator node in nav.Select(XPath.Expressions.MuteElements))
             {
                 string channelString = node.SelectSingleNode(XPath.Expressions.ChannelAttributes).Value;
                 Channel channel = (Channel)Enum.Parse(typeof(Channel), channelString, true);
-                _Mute[channel] = node.SelectSingleNode(XPath.Expressions.ValueAttributes).ValueAsBoolean;
+                bool newMute = node.SelectSingleNode(XPath.Expressions.ValueAttributes).ValueAsBoolean;
+
+                if (_Mute[channel] != newMute)
+                {
+                    _Mute[channel] = newMute;
+                    raise = true;
+                }
             }
-            RaisePropertyChangedEvent(new PropertyChangedEventArgs("Mute"));
+            if (raise)
+            {
+                RaisePropertyChangedEvent(new PropertyChangedEventArgs("Mute"));
+            }
 
             /* TODO: parse the rest, and raise change notifications
              * <Event xmlns=\"urn:schemas-upnp-org:metadata-1-0/RCS/\">

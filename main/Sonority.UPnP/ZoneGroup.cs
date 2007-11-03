@@ -68,6 +68,14 @@ namespace Sonority.UPnP
             }
         }
 
+        public string CoordinatorUuid
+        {
+            get
+            {
+                return _coordinator;
+            }
+        }
+
         public string ID
         {
             get

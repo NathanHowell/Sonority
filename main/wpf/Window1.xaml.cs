@@ -21,7 +21,14 @@ namespace wpf
     {
         object IMultiValueConverter.Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return Convert.ToUInt32(values[0]) == Convert.ToUInt32(values[1]);
+            try
+            {
+                return Convert.ToUInt32(values[0]) == Convert.ToUInt32(values[1]);
+            }
+            catch (InvalidCastException)
+            {
+                return false;
+            }
         }
 
         object[] IMultiValueConverter.ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
