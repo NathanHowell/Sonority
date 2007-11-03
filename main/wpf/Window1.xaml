@@ -80,15 +80,20 @@
       <TabControl.ItemTemplate>
         <DataTemplate>
           <StackPanel DataContext="{Binding Path=Coordinator}">
-            <TextBlock Text="{Binding Path=DeviceProperties.ZoneName}"/>
+            <ListView ItemsSource="{Binding Path=DataContext.Members, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}}}">
+              <ListView.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Path=DeviceProperties.ZoneName}"/>
+                </DataTemplate>
+              </ListView.ItemTemplate>
+            </ListView>
             <TextBlock Text="{Binding Path=AVTransport.CurrentTrack}"/>
             <TextBlock Text="{Binding Path=AVTransport.NumberOfTracks}"/>
             <Slider Value="{Binding Mode=OneWay, Path=RenderingControl.Volume[Master]}" Minimum="0" Maximum="100" Width="100" SmallChange="1" LargeChange="5" ValueChanged="ZoneVolumeChanged"/>
             <ProgressBar
               Minimum="0"
               Maximum="{Binding Mode=OneWay, Path=AVTransport.TrackDuration.TotalSeconds}"
-              Value="{Binding Mode=OneWay, Path=AVTransport.RelTime.TotalSeconds}"
-              IsEnabled="{Binding Mode=OneWay, Path=AVTransport.TransportState}"/>
+              Value="{Binding Mode=OneWay, Path=AVTransport.RelTime.TotalSeconds}"/>
             <Button Content="{Binding Path=AVTransport.TransportState}" Command="MediaCommands.TogglePlayPause"/>
           </StackPanel>
         </DataTemplate>
@@ -114,8 +119,16 @@
           CanExecute="MediaCommands_CanTogglePlayPause"/>
         <CommandBinding
           Command="MediaCommands.NextTrack"
-          Executed="MediaCommands_Next"
-          CanExecute="MediaCommands_CanNext"/>
+          Executed="MediaCommands_NextTrack"
+          CanExecute="MediaCommands_CanNextTrack"/>
+        <CommandBinding
+          Command="MediaCommands.PreviousTrack"
+          Executed="MediaCommands_PreviousTrack"
+          CanExecute="MediaCommands_CanPreviousTrack"/>
+        <CommandBinding
+          Command="MediaCommands.MuteVolume"
+          Executed="MediaCommands_MuteVolume"
+          CanExecute="MediaCommands_CanMuteVolume"/>
       </TabControl.CommandBindings>
     </TabControl>
     <TreeView Name="treeView1" DockPanel.Dock="Right" ItemsSource="{Binding Path=Library}">
