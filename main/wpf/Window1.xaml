@@ -1,11 +1,10 @@
 ﻿<Window x:Class="wpf.Window1"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:wpf" 
+    xmlns:local="clr-namespace:wpf"
     Title="wpf" Height="382" Width="776"
     >
   <Window.Resources>
-    <local:AreObjectsEqual x:Key="AreObjectsEqual"/>
     <SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />
     <LinearGradientBrush x:Key="PressedBrush" StartPoint="0,0" EndPoint="0,1">
       <GradientBrush.GradientStops>
@@ -62,57 +61,12 @@
     <TabControl Name="tabControl1" DockPanel.Dock="Left" TabStripPlacement="Left">
       <TabControl.ContentTemplate>
         <DataTemplate>
-          <ScrollViewer>
-            <ListView
-              ItemsSource="{Binding Path=Coordinator.Queue}"
-              VirtualizingStackPanel.IsVirtualizing="True"
-              MouseDoubleClick="ListDoubleClick"
-              KeyDown="WindowKeyDown">
-              <ListView.View>
-                <GridView AllowsColumnReorder="true">
-                  <GridViewColumn DisplayMemberBinding="{Binding Path=Artist}" Header="Artist" />
-                  <GridViewColumn DisplayMemberBinding="{Binding Path=Album}" Header="Album" />
-                  <GridViewColumn DisplayMemberBinding="{Binding Path=Title}" Header="Title" />
-                </GridView>
-              </ListView.View>
-              <ListView.ItemContainerStyle>
-                <Style TargetType="{x:Type ListViewItem}">
-                  <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                  <Style.Triggers>
-                    <DataTrigger
-                      Value="True">
-                      <DataTrigger.Binding>
-                        <MultiBinding Converter="{StaticResource AreObjectsEqual}" Mode="OneWay" FallbackValue="False">
-                          <Binding Path="DataContext.Coordinator.AVTransport.CurrentTrack" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollViewer}}"/>
-                          <Binding Path="NumericID"/>
-                        </MultiBinding>
-                      </DataTrigger.Binding>
-                      <Setter Property="FontWeight" Value="Bold"/>
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </ListView.ItemContainerStyle>
-            </ListView>
-          </ScrollViewer>
-        </DataTemplate>
+          <local:QueueControl DataContext="{Binding}"/>
+          </DataTemplate>
       </TabControl.ContentTemplate>
       <TabControl.ItemTemplate>
         <DataTemplate>
-          <StackPanel DataContext="{Binding Path=Coordinator}">
-            <ListView ItemsSource="{Binding Path=DataContext.Members, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}}}">
-              <ListView.ItemTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding Path=DeviceProperties.ZoneName}"/>
-                </DataTemplate>
-              </ListView.ItemTemplate>
-            </ListView>
-            <Slider Value="{Binding Mode=OneWay, Path=RenderingControl.Volume[Master]}" Minimum="0" Maximum="100" Width="100" SmallChange="1" LargeChange="5" ValueChanged="ZoneVolumeChanged"/>
-            <ProgressBar
-              Minimum="0"
-              Maximum="{Binding Mode=OneWay, Path=AVTransport.TrackDuration.TotalSeconds}"
-              Value="{Binding Mode=OneWay, Path=AVTransport.RelTime.TotalSeconds}"/>
-            <Button Content="{Binding Path=AVTransport.TransportState}" Command="MediaCommands.TogglePlayPause"/>
-          </StackPanel>
+          <local:SonosControl DataContext="{Binding}"/>
         </DataTemplate>
       </TabControl.ItemTemplate>
       <TabControl.InputBindings>
@@ -128,25 +82,9 @@
         <KeyBinding Key="VolumeDown" Command="MediaCommands.DecreaseVolume"/>
         <KeyBinding Key="F10" Command="MediaCommands.IncreaseVolume"/>
         <KeyBinding Key="F9" Command="MediaCommands.DecreaseVolume" />
+        <KeyBinding Key="Return" Command="MediaCommands.Select" />
+        <MouseBinding MouseAction="LeftDoubleClick" Command="MediaCommands.Select" />
       </TabControl.InputBindings>
-      <TabControl.CommandBindings>
-        <CommandBinding
-          Command="MediaCommands.TogglePlayPause"
-          Executed="MediaCommands_TogglePlayPause"
-          CanExecute="MediaCommands_CanTogglePlayPause"/>
-        <CommandBinding
-          Command="MediaCommands.NextTrack"
-          Executed="MediaCommands_NextTrack"
-          CanExecute="MediaCommands_CanNextTrack"/>
-        <CommandBinding
-          Command="MediaCommands.PreviousTrack"
-          Executed="MediaCommands_PreviousTrack"
-          CanExecute="MediaCommands_CanPreviousTrack"/>
-        <CommandBinding
-          Command="MediaCommands.MuteVolume"
-          Executed="MediaCommands_MuteVolume"
-          CanExecute="MediaCommands_CanMuteVolume"/>
-      </TabControl.CommandBindings>
     </TabControl>
     <TreeView Name="treeView1" DockPanel.Dock="Right" ItemsSource="{Binding Path=Library}">
     </TreeView>

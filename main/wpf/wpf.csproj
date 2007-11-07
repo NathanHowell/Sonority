@@ -62,6 +62,9 @@
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
+    <Page Include="QueueControl.xaml" />
+    <Page Include="SonosControl.xaml" />
+    <Page Include="VolumeControl.xaml" />
     <Page Include="Window1.xaml" />
     <Page Include="Window2.xaml" />
     <Compile Include="App.xaml.cs">
@@ -91,6 +94,18 @@
     <Compile Include="Properties\Settings.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="QueueControl.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>QueueControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SonosControl.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>SonosControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="VolumeControl.xaml.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>VolumeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Window2.xaml.cs">
       <SubType>Code</SubType>
