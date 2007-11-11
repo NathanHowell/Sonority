@@ -30,35 +30,30 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Web;
 using Sonority.UPnP;
+using System.Windows.Threading;
 using UPNPLib;
 
 namespace Sonority.Test
 {
     class Program
     {
-        static void Main(string[] args)
+        static Discover _disc = new Discover();
+
+        static void ThreadFunc()
         {
-            Thread.CurrentThread.SetApartmentState(ApartmentState.MTA);
-
-            Discover disc = new Discover();
-            disc.PropertyChanged += new PropertyChangedEventHandler(OnZonePlayerChanged);
-            disc.Start();
-
-#if !notdef
-	        string masterBedroom = "uuid:xxxxx";
+            string masterBedroom = "uuid:RINCON_000E5810848C01400";
             ZonePlayer zonePlayer = new ZonePlayer(masterBedroom);
             Console.WriteLine(zonePlayer.DeviceProperties.Icon);
-            UPnPDevice mediaServer = zonePlayer.MediaServer;
-            UPnPDevice mediaRenderer = zonePlayer.MediaRenderer;
-            UPnPService audioIn = zonePlayer.AudioIn;
+            //UPnPDevice mediaServer = zonePlayer.MediaServer;
+            //UPnPDevice mediaRenderer = zonePlayer.MediaRenderer;
+            //AudioIn audioIn = zonePlayer.AudioIn;
             DeviceProperties deviceProperties = zonePlayer.DeviceProperties;
             RenderingControl renderingControl = zonePlayer.RenderingControl;
             AVTransport avTransport = zonePlayer.AVTransport;
             ContentDirectory contentDirectory = zonePlayer.ContentDirectory;
-
-            avTransport.GetTransportInfo();
-            avTransport.GetPositionInfo();
-            avTransport.GetTransportSettings();
+            GroupManagement groupManagement = zonePlayer.GroupManagement;
+            //ZoneGroupTopology zoneGroupTopology = zonePlayer.ZoneGroupTopology;
+            //ConnectionManager connectionManager = zonePlayer.ConnectionManager;
 
             foreach (XPathNavigator node in contentDirectory.Browse("0", BrowseFlags.BrowseDirectChildren, "*", ""))
             {
@@ -125,17 +120,28 @@ namespace Sonority.Test
 
             // avTransport.Play("1");
 #endif
-#endif
 
             while (true)
             {
                 Thread.Sleep(30000);
 
-                foreach (ZonePlayer zp in disc.ZonePlayers)
+                foreach (ZoneGroup zp in disc.Topology)
                 {
-                    Console.WriteLine("{0} -> {1}", zp.UniqueDeviceName, zp.DeviceProperties.ZoneName);
+                    Console.WriteLine("{0} -> {1}", zp.Coordinator.UniqueDeviceName, zp.Coordinator.DeviceProperties.ZoneName);
                 }
             }
+        }
+
+        static void Main(string[] args)
+        {
+            Thread.CurrentThread.SetApartmentState(ApartmentState.MTA);
+
+            Discover disc = new Discover();
+            disc.PropertyChanged += new PropertyChangedEventHandler(OnZonePlayerChanged);
+
+            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Normal, new ThreadStart(ThreadFunc));
+
+            Dispatcher.Run();
         }
 
         static void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
