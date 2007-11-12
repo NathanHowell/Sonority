@@ -22,20 +22,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class SystemProperties
+    public partial class SystemProperties : UPnPServiceBase, UPnPService
     {
-        internal SystemProperties(UPnPService service)
+        internal SystemProperties(UPnPService service) : base(service)
         {
-            _service = service;
+            StateVariables.Initialize(this, this);
         }
-
-        // TODO: figure out more state variables
-        public string R_AudioInEncodeType = String.Empty;
 
         void SetString(string name, string value)
         {
@@ -56,6 +54,36 @@ namespace Sonority.UPnP
         // EditAccountPassword
         // CreateStubAccounts
 
-        private UPnPService _service;
+        object IUPnPService.QueryStateVariable(string bstrVariableName)
+        {
+            return this.GetString(bstrVariableName);
+        }
+
+        #region IUPnPService forwarders
+        void IUPnPService.AddCallback(object pUnkCallback)
+        {
+            _service.AddCallback(pUnkCallback);
+        }
+
+        string IUPnPService.Id
+        {
+            get { return _service.Id; }
+        }
+
+        object IUPnPService.InvokeAction(string bstrActionName, object vInActionArgs, ref object pvOutActionArgs)
+        {
+            return _service.InvokeAction(bstrActionName, vInActionArgs, ref pvOutActionArgs);
+        }
+
+        int IUPnPService.LastTransportStatus
+        {
+            get { return _service.LastTransportStatus; }
+        }
+
+        string IUPnPService.ServiceTypeIdentifier
+        {
+            get { return _service.ServiceTypeIdentifier; }
+        }
+        #endregion
     }
 }
