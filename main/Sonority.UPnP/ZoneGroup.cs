@@ -30,7 +30,7 @@ using System.ComponentModel;
 
 namespace Sonority.UPnP
 {
-    public class ZoneGroup : INotifyPropertyChanged
+    public sealed class ZoneGroup : INotifyPropertyChanged
     {
         public ZoneGroup(Discover disc, XPathNavigator node)
         {

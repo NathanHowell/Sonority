@@ -28,7 +28,7 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class SystemProperties : UPnPServiceBase, UPnPService
+    public sealed partial class SystemProperties : UPnPServiceBase, UPnPService
     {
         internal SystemProperties(UPnPService service) : base(service)
         {

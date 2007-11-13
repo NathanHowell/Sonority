@@ -34,7 +34,7 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class DeviceProperties : UPnPServiceBase
+    public sealed partial class DeviceProperties : UPnPServiceBase
     {
         internal DeviceProperties(UPnPService service) : base(service)
         {

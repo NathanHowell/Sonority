@@ -31,15 +31,17 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class ConnectionManager
+    public sealed partial class ConnectionManager
     {
         public string SourceProtocolInfo { get { return _SourceProtocolInfo; } }
         public string SinkProtocolInfo { get { return _SinkProtocolInfo; } }
         public string CurrentConnectionIDs { get { return _CurrentConnectionIDs; } }
+        public string ConnectionManagerRenderer { get { return _ConnectionManagerRenderer; } }
 
         private string _SourceProtocolInfo = String.Empty;
         private string _SinkProtocolInfo = String.Empty;
         private string _CurrentConnectionIDs = String.Empty;
+        private string _ConnectionManagerRenderer = String.Empty;
 
     }
 }

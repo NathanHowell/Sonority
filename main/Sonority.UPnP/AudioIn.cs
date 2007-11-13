@@ -23,6 +23,7 @@
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
@@ -31,7 +32,19 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class AudioIn : UPnPServiceBase
+    public sealed class AudioInputAttributes
+    {
+        public string CurrentName;
+        public string CurrentIcon;
+    }
+
+    public sealed class LineInLevel
+    {
+        public int CurrentLeftLineInLevel;
+        public int CurrentRightLineInLevel;
+    }
+
+    public sealed partial class AudioIn : UPnPServiceBase
     {
         public AudioIn(UPnPService service) : base(service)
         {
@@ -52,11 +65,13 @@ namespace Sonority.UPnP
             UPnP.InvokeAction(_service, "SetAudioInputAttributes", desiredName, desiredIcon);
         }
 
-        public void GetAudioInputAttributes(out string currentName, out string currentIcon)
+        public AudioInputAttributes GetAudioInputAttributes()
         {
             object[] ret = UPnP.InvokeAction(_service, "GetAudioInputAttributes");
-            currentName = Convert.ToString(ret[0]);
-            currentIcon = Convert.ToString(ret[1]);
+            AudioInputAttributes aia = new AudioInputAttributes();
+            aia.CurrentName = Convert.ToString(ret[0], CultureInfo.InvariantCulture);
+            aia.CurrentIcon = Convert.ToString(ret[1], CultureInfo.InvariantCulture);
+            return aia;
         }
 
         public void SetLineInLevel(int desiredLeftLineInLevel, int desiredRightLineInLevel)
@@ -64,11 +79,13 @@ namespace Sonority.UPnP
             UPnP.InvokeAction(_service, "SetLineInLevel", desiredLeftLineInLevel, desiredRightLineInLevel);
         }
 
-        public void GetLineInLevel(out int currentLeftLineInLevel, out int currentRightLineInLevel)
+        public LineInLevel GetLineInLevel()
         {
             object[] ret = UPnP.InvokeAction(_service, "GetLineInLevel");
-            currentLeftLineInLevel = Convert.ToInt32(ret[0]);
-            currentRightLineInLevel = Convert.ToInt32(ret[1]);
+            LineInLevel lil = new LineInLevel();
+            lil.CurrentLeftLineInLevel = Convert.ToInt32(ret[0], CultureInfo.InvariantCulture);
+            lil.CurrentRightLineInLevel = Convert.ToInt32(ret[1], CultureInfo.InvariantCulture);
+            return lil;
         }
     }
 }

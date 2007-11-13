@@ -35,7 +35,7 @@ namespace Sonority.UPnP
         VerifyThenRemoveSystemwide,
     }
 
-    public partial class ZoneGroupTopology : UPnPServiceBase
+    public sealed partial class ZoneGroupTopology : UPnPServiceBase
     {
         internal ZoneGroupTopology(UPnPService service) : base(service)
         {

@@ -26,7 +26,7 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    internal class DeviceFinderCallback : IUPnPDeviceFinderCallback
+    internal sealed class DeviceFinderCallback : IUPnPDeviceFinderCallback
     {
         public DeviceFinderCallback(IUPnPDeviceFinderCallback outer)
         {

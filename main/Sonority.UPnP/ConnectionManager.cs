@@ -31,7 +31,7 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class ConnectionManager : UPnPServiceBase
+    public sealed partial class ConnectionManager : UPnPServiceBase
     {
         public ConnectionManager(UPnPService service) : base(service)
         {

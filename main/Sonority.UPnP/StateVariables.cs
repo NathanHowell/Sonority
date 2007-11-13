@@ -22,6 +22,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -41,7 +42,7 @@ namespace Sonority.UPnP
                 if (fi.Name.StartsWith("_"))
                 {
                     FieldInfo fid = fi;
-                    ThreadPool.UnsafeQueueUserWorkItem(delegate { UpdateField(fid, target, service); }, null);
+                    ThreadPool.QueueUserWorkItem(delegate { UpdateField(fid, target, service); }, null);
                 }
             }
         }
@@ -50,7 +51,7 @@ namespace Sonority.UPnP
         {
             try
             {
-                object stateVariable = Convert.ChangeType(service.QueryStateVariable(fi.Name.Substring(1)), fi.FieldType);
+                object stateVariable = Convert.ChangeType(service.QueryStateVariable(fi.Name.Substring(1)), fi.FieldType, CultureInfo.InvariantCulture);
                 target.Dispatcher.BeginInvoke(DispatcherPriority.DataBind, (ThreadStart)delegate { target.StateVariableChanged(service, fi.Name.Substring(1), stateVariable); });
             }
             catch (COMException e)
@@ -76,7 +77,7 @@ namespace Sonority.UPnP
 
         public static void Changed(object target, UPnPService pus, string stateVariable, object value)
         {
-            string fieldName = String.Format("_{0}", stateVariable);
+            string fieldName = String.Format(CultureInfo.InvariantCulture, "_{0}", stateVariable);
             FieldInfo fi = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             if (fi == null)
             {
@@ -90,7 +91,7 @@ namespace Sonority.UPnP
             }
             else
             {
-                fi.SetValue(target, Convert.ChangeType(value, fi.FieldType));
+                fi.SetValue(target, Convert.ChangeType(value, fi.FieldType, CultureInfo.InvariantCulture));
             }
         }
     }

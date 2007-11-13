@@ -24,7 +24,7 @@ using System;
 
 namespace Sonority.UPnP
 {
-    public partial class SystemProperties
+    public sealed partial class SystemProperties
     {
         private string _R_AudioInEncodeType = String.Empty;
         private string _R_CustomerID = String.Empty;

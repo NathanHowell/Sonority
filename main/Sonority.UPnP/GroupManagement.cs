@@ -29,7 +29,7 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class GroupManagement : UPnPServiceBase
+    public sealed partial class GroupManagement : UPnPServiceBase
     {
         internal GroupManagement(UPnPService service) : base(service)
         {

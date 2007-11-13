@@ -25,7 +25,7 @@ using System.Collections.Generic;
 
 namespace Sonority.UPnP
 {
-    public partial class RenderingControl
+    public sealed partial class RenderingControl
     {
         public uint InstanceID { get { return _InstanceID; } }
         public string LastChange { get { return _LastChange; } }

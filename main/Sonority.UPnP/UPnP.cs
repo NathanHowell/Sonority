@@ -21,6 +21,7 @@
 //
 
 using System;
+using System.Globalization;
 using UPNPLib;
 
 namespace Sonority.UPnP
@@ -37,7 +38,7 @@ namespace Sonority.UPnP
 
         public static T InvokeAction<T>(UPnPService service, string actionName, params object[] args)
         {
-            return (T)Convert.ChangeType(InvokeAction(service, actionName, args).GetValue(0), typeof(T));
+            return (T)Convert.ChangeType(InvokeAction(service, actionName, args).GetValue(0), typeof(T), CultureInfo.InvariantCulture);
         }
     }
 }

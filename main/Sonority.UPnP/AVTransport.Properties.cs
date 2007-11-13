@@ -24,7 +24,7 @@ using System;
 
 namespace Sonority.UPnP
 {
-    public partial class AVTransport
+    public sealed partial class AVTransport
     {
         public uint InstanceID { get { return _InstanceID; } }
         public TransportState TransportState { get { return _TransportState; } }

@@ -24,7 +24,7 @@ using System;
 
 namespace Sonority.UPnP
 {
-    public partial class GroupManagement
+    public sealed partial class GroupManagement
     {
         public bool GroupCoordinatorIsLocal { get { return _GroupCoordinatorIsLocal; } }
         public string LocalGroupUUID { get { return _LocalGroupUUID; } }

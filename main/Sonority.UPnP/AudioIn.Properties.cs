@@ -24,7 +24,7 @@ using System;
 
 namespace Sonority.UPnP
 {
-    public partial class AudioIn
+    public sealed partial class AudioIn
     {
         public string AudioInputName { get { return _AudioInputName; } }
         public string Icon { get { return _Icon; } }

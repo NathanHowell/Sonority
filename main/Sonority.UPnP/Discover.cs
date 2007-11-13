@@ -34,7 +34,7 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class Discover : DispatcherObject, IUPnPDeviceFinderCallback, IDisposable, INotifyPropertyChanged
+    public sealed class Discover : DispatcherObject, IUPnPDeviceFinderCallback, IDisposable, INotifyPropertyChanged
     {
         public Discover()
         {
@@ -48,6 +48,7 @@ namespace Sonority.UPnP
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             _finder.CancelAsyncFind(_findData);
         }
 

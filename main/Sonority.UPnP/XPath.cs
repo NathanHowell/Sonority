@@ -26,21 +26,23 @@ using System.Xml.XPath;
 
 namespace Sonority.XPath
 {
+    internal sealed class SonorityNamespaceManager : XmlNamespaceManager
+    {
+        public SonorityNamespaceManager(XmlNameTable nameTable) : base(nameTable)
+        {
+            AddNamespace("didl", "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/");
+            AddNamespace("upnp", "urn:schemas-upnp-org:metadata-1-0/upnp/");
+            AddNamespace("r", "urn:schemas-rinconnetworks-com:metadata-1-0/");
+            AddNamespace("avt", "urn:schemas-upnp-org:metadata-1-0/AVT/");
+            AddNamespace("dc", "http://purl.org/dc/elements/1.1/");
+            AddNamespace("rcs", "urn:schemas-upnp-org:metadata-1-0/RCS/");
+        }
+    }
+
     public static class Globals
     {
-        static Globals()
-        {
-            Manager = new XmlNamespaceManager(Table);
-            Manager.AddNamespace("didl",    "urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/");
-            Manager.AddNamespace("upnp",    "urn:schemas-upnp-org:metadata-1-0/upnp/");
-            Manager.AddNamespace("r",       "urn:schemas-rinconnetworks-com:metadata-1-0/");
-            Manager.AddNamespace("avt",     "urn:schemas-upnp-org:metadata-1-0/AVT/");
-            Manager.AddNamespace("dc",      "http://purl.org/dc/elements/1.1/");
-            Manager.AddNamespace("rcs",     "urn:schemas-upnp-org:metadata-1-0/RCS/");
-        }
-
-        public static readonly XmlNameTable Table = new NameTable();
-        public static readonly XmlNamespaceManager Manager;
+        private static XmlNameTable Table = new NameTable();
+        public static XmlNamespaceManager Manager = new SonorityNamespaceManager(Table);
     }
 
     public static class Expressions

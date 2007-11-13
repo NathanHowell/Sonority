@@ -29,7 +29,7 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    internal class AVTransportCallback : ServiceCallback
+    internal sealed class AVTransportCallback : ServiceCallback
     {
         public AVTransportCallback(IUPnPServiceCallback outer) : base(outer)
         {

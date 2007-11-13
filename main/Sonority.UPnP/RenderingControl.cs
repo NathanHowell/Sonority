@@ -42,7 +42,7 @@ namespace Sonority.UPnP
         ALARM_RAMP_TYPE,
     }
 
-    public partial class RenderingControl : UPnPServiceBase
+    public sealed partial class RenderingControl : UPnPServiceBase
     {
         internal RenderingControl(UPnPService service) : base(service)
         {

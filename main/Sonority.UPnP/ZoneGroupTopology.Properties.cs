@@ -24,7 +24,7 @@ using System;
 
 namespace Sonority.UPnP
 {
-    public partial class ZoneGroupTopology
+    public sealed partial class ZoneGroupTopology
     {
         public string AvailableSoftwareUpdate { get { return _AvailableSoftwareUpdate; } }
         public string ZoneGroupState { get { return _ZoneGroupState; } }

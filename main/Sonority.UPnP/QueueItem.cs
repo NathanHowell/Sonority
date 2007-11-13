@@ -30,10 +30,15 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class QueueItem : IComparable<QueueItem>, IComparable
+    public sealed class QueueItem : IComparable<QueueItem>, IComparable
     {
         public QueueItem(XPathNavigator node)
         {
+            if (node == null)
+            {
+                throw new ArgumentNullException("node");
+            }
+
             _item_id = node.SelectSingleNode("@id", XPath.Globals.Manager).Value;
             _item_parentID = node.SelectSingleNode("@parentID", XPath.Globals.Manager).Value;
             _item_restricted = node.SelectSingleNode("@restricted", XPath.Globals.Manager).ValueAsBoolean;

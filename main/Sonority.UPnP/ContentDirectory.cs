@@ -41,7 +41,7 @@ namespace Sonority.UPnP
         BrowseMetadata,
     }
 
-    public partial class ContentDirectory : UPnPServiceBase
+    public sealed partial class ContentDirectory : UPnPServiceBase
     {
         internal ContentDirectory(UPnPService service) : base(service)
         {

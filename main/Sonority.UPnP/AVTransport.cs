@@ -23,6 +23,7 @@
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
@@ -31,7 +32,7 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class MediaInfo
+    public sealed class MediaInfo
     {
         public uint NrTracks;
         public string MediaDuration;
@@ -44,14 +45,14 @@ namespace Sonority.UPnP
         public string WriteStatus;
     }
 
-    public class TransportInfo
+    public sealed class TransportInfo
     {
         public TransportState CurrentTransportState;
         public string CurrentTransportStatus;
         public string CurrentSpeed;
     }
 
-    public class PositionInfo
+    public sealed class PositionInfo
     {
         public string Track;
         public string TrackDuration;
@@ -63,14 +64,14 @@ namespace Sonority.UPnP
         public string AbsCount;
     }
 
-    public class DeviceCapabilities
+    public sealed class DeviceCapabilities
     {
         public string PlayMedia;
         public string RecMedia;
         public string ReqQualityModes;
     }
 
-    public class TransportSettings
+    public sealed class TransportSettings
     {
         public string PlayMode;
         public string RecQualityMode;
@@ -102,7 +103,7 @@ namespace Sonority.UPnP
         TRANSITIONING,
     }
 
-    public partial class AVTransport : UPnPServiceBase
+    public sealed partial class AVTransport : UPnPServiceBase, IDisposable
     {
         public AVTransport(UPnPService service) : base(service)
         {
@@ -174,15 +175,15 @@ namespace Sonority.UPnP
             object[] outArray = UPnP.InvokeAction(_service, "GetMediaInfo", InstanceID);
 
             MediaInfo mi = new MediaInfo();
-            mi.NrTracks = Convert.ToUInt32(outArray[0]);
-            mi.MediaDuration = Convert.ToString(outArray[1]);
-            mi.CurrentUri = Convert.ToString(outArray[2]);
-            mi.CurrentUriMetadata = Convert.ToString(outArray[3]);
-            mi.NextUri = Convert.ToString(outArray[4]);
-            mi.NextUriMetadata = Convert.ToString(outArray[5]);
-            mi.PlayMedium = Convert.ToString(outArray[6]);
-            mi.RecordMedium = Convert.ToString(outArray[7]);
-            mi.WriteStatus = Convert.ToString(outArray[8]);
+            mi.NrTracks = Convert.ToUInt32(outArray[0], CultureInfo.InvariantCulture);
+            mi.MediaDuration = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
+            mi.CurrentUri = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
+            mi.CurrentUriMetadata = Convert.ToString(outArray[3], CultureInfo.InvariantCulture);
+            mi.NextUri = Convert.ToString(outArray[4], CultureInfo.InvariantCulture);
+            mi.NextUriMetadata = Convert.ToString(outArray[5], CultureInfo.InvariantCulture);
+            mi.PlayMedium = Convert.ToString(outArray[6], CultureInfo.InvariantCulture);
+            mi.RecordMedium = Convert.ToString(outArray[7], CultureInfo.InvariantCulture);
+            mi.WriteStatus = Convert.ToString(outArray[8], CultureInfo.InvariantCulture);
             return mi;
         }
 
@@ -192,9 +193,9 @@ namespace Sonority.UPnP
             object[] outArray = UPnP.InvokeAction(_service, "GetTransportInfo", InstanceID);
 
             TransportInfo ti = new TransportInfo();
-            ti.CurrentTransportState = (TransportState)Enum.Parse(typeof(TransportState), Convert.ToString(outArray[0]), true);
-            ti.CurrentTransportStatus = Convert.ToString(outArray[1]);
-            ti.CurrentSpeed = Convert.ToString(outArray[2]);
+            ti.CurrentTransportState = (TransportState)Enum.Parse(typeof(TransportState), Convert.ToString(outArray[0], CultureInfo.InvariantCulture), true);
+            ti.CurrentTransportStatus = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
+            ti.CurrentSpeed = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
             return ti;
         }
 
@@ -204,14 +205,14 @@ namespace Sonority.UPnP
             object[] outArray = UPnP.InvokeAction(_service, "GetPositionInfo", InstanceID);
 
             PositionInfo pi = new PositionInfo();
-            pi.Track = Convert.ToString(outArray[0]);
-            pi.TrackDuration = Convert.ToString(outArray[1]);
-            pi.TrackMetaData = Convert.ToString(outArray[2]);
-            pi.TrackUri = Convert.ToString(outArray[3]);
-            pi.RelTime = Convert.ToString(outArray[4]);
-            pi.AbsTime = Convert.ToString(outArray[5]);
-            pi.RelCount = Convert.ToString(outArray[6]);
-            pi.AbsCount = Convert.ToString(outArray[7]);
+            pi.Track = Convert.ToString(outArray[0], CultureInfo.InvariantCulture);
+            pi.TrackDuration = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
+            pi.TrackMetaData = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
+            pi.TrackUri = Convert.ToString(outArray[3], CultureInfo.InvariantCulture);
+            pi.RelTime = Convert.ToString(outArray[4], CultureInfo.InvariantCulture);
+            pi.AbsTime = Convert.ToString(outArray[5], CultureInfo.InvariantCulture);
+            pi.RelCount = Convert.ToString(outArray[6], CultureInfo.InvariantCulture);
+            pi.AbsCount = Convert.ToString(outArray[7], CultureInfo.InvariantCulture);
             return pi;
         }
 
@@ -221,9 +222,9 @@ namespace Sonority.UPnP
             object[] outArray = UPnP.InvokeAction(_service, "GetDeviceCapabilities", InstanceID);
 
             DeviceCapabilities dc = new DeviceCapabilities();
-            dc.PlayMedia = Convert.ToString(outArray[0]);
-            dc.RecMedia = Convert.ToString(outArray[1]);
-            dc.ReqQualityModes = Convert.ToString(outArray[2]);
+            dc.PlayMedia = Convert.ToString(outArray[0], CultureInfo.InvariantCulture);
+            dc.RecMedia = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
+            dc.ReqQualityModes = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
             return dc;
         }
 
@@ -233,8 +234,8 @@ namespace Sonority.UPnP
             object[] outArray = UPnP.InvokeAction(_service, "GetTransportSettings", InstanceID);
 
             TransportSettings ts = new TransportSettings();
-            ts.PlayMode = Convert.ToString(outArray[0]);
-            ts.RecQualityMode = Convert.ToString(outArray[1]);
+            ts.PlayMode = Convert.ToString(outArray[0], CultureInfo.InvariantCulture);
+            ts.RecQualityMode = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
             return ts;
         }
 
@@ -287,7 +288,7 @@ namespace Sonority.UPnP
         // required
         public void Next()
         {
-            if (CurrentTrack < this.NumberOfTracks)
+            if (CurrentTrack < NumberOfTracks)
             {
                 UPnP.InvokeAction(_service, "Next", InstanceID);
             }
@@ -341,6 +342,11 @@ namespace Sonority.UPnP
         public void RemoveTrackFromQueue(string objectID)
         {
             UPnP.InvokeAction(_service, "RemoveTrackFromQueue", InstanceID, objectID);
+        }
+
+        void IDisposable.Dispose()
+        {
+            _timer.Dispose();
         }
     }
 }

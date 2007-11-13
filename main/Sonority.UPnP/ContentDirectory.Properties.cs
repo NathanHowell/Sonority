@@ -24,7 +24,7 @@ using System;
 
 namespace Sonority.UPnP
 {
-    public partial class ContentDirectory
+    public sealed partial class ContentDirectory
     {
         public uint SystemUpdateID { get { return _SystemUpdateID; } }
         public string ContainerUpdateIDs { get { return _ContainerUpdateIDs; } }

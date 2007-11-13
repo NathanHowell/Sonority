@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Xml;
 using System.Xml.XPath;
 using System.Threading;
@@ -32,7 +33,7 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class ZonePlayer : DispatcherObject, IComparable<ZonePlayer>, IComparable, INotifyPropertyChanged
+    public sealed class ZonePlayer : DispatcherObject, IComparable<ZonePlayer>, IComparable, INotifyPropertyChanged, IDisposable
     {
         public ZonePlayer(string uniqueDeviceName)
         {
@@ -92,7 +93,7 @@ namespace Sonority.UPnP
             {
                 if (_mediaServer == null)
                 {
-                    _mediaServer = _device.Children[String.Format("{0}_MS", _device.UniqueDeviceName)];
+                    _mediaServer = _device.Children[String.Format(CultureInfo.InvariantCulture, "{0}_MS", _device.UniqueDeviceName)];
                 }
                 return _mediaServer;
             }
@@ -104,7 +105,7 @@ namespace Sonority.UPnP
             {
                 if (_mediaRenderer == null)
                 {
-                    _mediaRenderer = _device.Children[String.Format("{0}_MR", _device.UniqueDeviceName)];
+                    _mediaRenderer = _device.Children[String.Format(CultureInfo.InvariantCulture, "{0}_MR", _device.UniqueDeviceName)];
                 }
                 return _mediaRenderer;
             }
@@ -329,5 +330,13 @@ namespace Sonority.UPnP
         private ContentDirectory _contentDirectory;
         private ConnectionManager _connectionManager;
         private Uri _documentUrl;
+
+        void IDisposable.Dispose()
+        {
+            if (_avTransport != null)
+            {
+                ((IDisposable)_avTransport).Dispose();
+            }
+        }
     }
 }

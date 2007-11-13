@@ -34,7 +34,7 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public partial class DeviceProperties
+    public sealed partial class DeviceProperties
     {
         public string ZoneName { get { return _ZoneName; } }
         public string Icon { get { return _Icon; } }
