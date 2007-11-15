@@ -10,10 +10,53 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.XPath;
 using Sonority.UPnP;
 
 namespace wpf
 {
+    class AlbumArtUriConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            XPathNavigator nav = (XPathNavigator)value;
+            XPathNavigator artNav = nav.SelectSingleNode(Sonority.XPath.Expressions.AlbumArt);
+            if (artNav == null)
+            {
+                return null;
+            }
+
+            string art = artNav.Value;
+            if (String.IsNullOrEmpty(art))
+            {
+                return null;
+            }
+
+            if (Uri.IsWellFormedUriString(art, UriKind.Absolute))
+            {
+                // Pandora, etc where the full Uri is already given to use
+                return new Uri(art);
+            }
+            else
+            {
+                string url = art.Substring(0, art.IndexOf('?'));
+                string qs = art.Substring(art.IndexOf('?'));
+                UriBuilder builder = new UriBuilder("http", "192.168.1.107", 1400, url, qs);
+                return builder.Uri;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+    }
+
     /// <summary>
     /// Interaction logic for SonosControl.xaml
     /// </summary>
@@ -27,8 +70,8 @@ namespace wpf
 
         void MediaCommands_TogglePlayPause(object sender, ExecutedRoutedEventArgs e)
         {
-            TabControl tc = (TabControl)sender;
-            ZoneGroup zg = (ZoneGroup)tc.SelectedItem;
+            SonosControl tc = (SonosControl)sender;
+            ZoneGroup zg = (ZoneGroup)tc.DataContext;
             ZonePlayer zp = zg.Coordinator;
             zp.AVTransport.PlayPause();
             e.Handled = true;
@@ -36,24 +79,26 @@ namespace wpf
 
         void MediaCommands_CanTogglePlayPause(object sender, CanExecuteRoutedEventArgs e)
         {
-            try
+            FrameworkElement fe = (FrameworkElement)e.OriginalSource;
+            if (fe.DataContext == null)
             {
-                FrameworkElement fe = (FrameworkElement)e.OriginalSource;
-                ZonePlayer zp = (ZonePlayer)fe.DataContext;
-                e.CanExecute = zp.AVTransport.TransportState != TransportState.STOPPED;
-                e.Handled = true;
+                return;
             }
-            catch (NullReferenceException)
+
+            ZonePlayer zp = (ZonePlayer)fe.DataContext;
+            if (zp.AVTransport == null)
             {
-                // wpf likes to render the button before the zoneplayer properties
-                // have filled in, 
+                return;
             }
+
+            e.CanExecute = zp.AVTransport.TransportState != TransportState.STOPPED;
+            e.Handled = true;
         }
 
         void MediaCommands_NextTrack(object sender, ExecutedRoutedEventArgs e)
         {
-            TabControl tc = (TabControl)sender;
-            ZoneGroup zg = (ZoneGroup)tc.SelectedItem;
+            SonosControl tc = (SonosControl)sender;
+            ZoneGroup zg = (ZoneGroup)tc.DataContext;
             ZonePlayer zp = zg.Coordinator;
             zp.AVTransport.Next();
             e.Handled = true;
@@ -61,8 +106,8 @@ namespace wpf
 
         void MediaCommands_CanNextTrack(object sender, CanExecuteRoutedEventArgs e)
         {
-            TabControl tc = (TabControl)sender;
-            ZoneGroup zg = (ZoneGroup)tc.SelectedItem;
+            SonosControl tc = (SonosControl)sender;
+            ZoneGroup zg = (ZoneGroup)tc.DataContext;
             ZonePlayer zp = zg.Coordinator;
             e.CanExecute = zp.AVTransport.CurrentTrack < zp.AVTransport.NumberOfTracks;
             e.Handled = true;
@@ -70,8 +115,8 @@ namespace wpf
 
         void MediaCommands_PreviousTrack(object sender, ExecutedRoutedEventArgs e)
         {
-            TabControl tc = (TabControl)sender;
-            ZoneGroup zg = (ZoneGroup)tc.SelectedItem;
+            SonosControl tc = (SonosControl)sender;
+            ZoneGroup zg = (ZoneGroup)tc.DataContext;
             ZonePlayer zp = zg.Coordinator;
             zp.AVTransport.Previous();
             e.Handled = true;
@@ -79,8 +124,8 @@ namespace wpf
 
         void MediaCommands_CanPreviousTrack(object sender, CanExecuteRoutedEventArgs e)
         {
-            TabControl tc = (TabControl)sender;
-            ZoneGroup zg = (ZoneGroup)tc.SelectedItem;
+            SonosControl tc = (SonosControl)sender;
+            ZoneGroup zg = (ZoneGroup)tc.DataContext;
             ZonePlayer zp = zg.Coordinator;
             e.CanExecute = zp.AVTransport.CurrentTrack > 0;
             e.Handled = true;
@@ -88,8 +133,8 @@ namespace wpf
 
         void MediaCommands_MuteVolume(object sender, ExecutedRoutedEventArgs e)
         {
-            TabControl tc = (TabControl)sender;
-            ZoneGroup zg = (ZoneGroup)tc.SelectedItem;
+            SonosControl tc = (SonosControl)sender;
+            ZoneGroup zg = (ZoneGroup)tc.DataContext;
             ZonePlayer zp = zg.Coordinator;
             zp.RenderingControl.SetMute(Channel.Master, !zp.RenderingControl.Mute[Channel.Master]);
             e.Handled = true;
@@ -102,8 +147,8 @@ namespace wpf
 
         void MediaCommands_Select(object sender, ExecutedRoutedEventArgs e)
         {
-            TabControl tc = (TabControl)sender;
-            ZoneGroup zg = (ZoneGroup)tc.SelectedItem;
+            SonosControl tc = (SonosControl)sender;
+            ZoneGroup zg = (ZoneGroup)tc.DataContext;
             ZonePlayer zp = zg.Coordinator;
             zp.RenderingControl.SetMute(Channel.Master, !zp.RenderingControl.Mute[Channel.Master]);
             e.Handled = true;
@@ -112,19 +157,6 @@ namespace wpf
         void MediaCommands_CanSelect(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
-        }
-
-        void ZoneVolumeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            ushort volume = (ushort)Math.Round(e.NewValue);
-            Slider s = (Slider)e.Source;
-            ZonePlayer zp = (ZonePlayer)s.DataContext;
-            s.Delay = 100;
-            if (volume != zp.RenderingControl.Volume[Channel.Master])
-            {
-                zp.RenderingControl.SetVolume(Channel.Master, volume);
-            }
-            e.Handled = true;
         }
     }
 }

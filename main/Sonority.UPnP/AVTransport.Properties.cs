@@ -21,6 +21,7 @@
 //
 
 using System;
+using System.Xml.XPath;
 
 namespace Sonority.UPnP
 {
@@ -42,15 +43,15 @@ namespace Sonority.UPnP
         public uint CurrentTrack { get { return _CurrentTrack; } }
         public TimeSpan CurrentTrackDuration { get { return TimeSpan.Parse(_CurrentTrackDuration); } }
         public string CurrentMediaDuration { get { return _CurrentMediaDuration; } }
-        public string CurrentTrackMetaData { get { return _CurrentTrackMetaData; } }
+        public XPathNavigator CurrentTrackMetaData { get { return CreateXmlProperty(_CurrentTrackMetaData); } }
         public string CurrentSection { get { return _CurrentSection; } }
         public string CurrentTrackURI { get { return _CurrentTrackURI; } }
         public string NextTrackURI { get { return _NextTrackURI; } }
-        public string NextTrackMetaData { get { return _NextTrackMetaData; } }
+        public XPathNavigator NextTrackMetaData { get { return CreateXmlProperty(_NextTrackMetaData); } }
         public string EnqueuedTransportURI { get { return _EnqueuedTransportURI; } }
-        public string EnqueuedTransportURIMetaData { get { return _EnqueuedTransportURIMetaData; } }
+        public XPathNavigator EnqueuedTransportURIMetaData { get { return CreateXmlProperty(_EnqueuedTransportURIMetaData); } }
         public string AVTransportURI { get { return _AVTransportURI; } }
-        public string AVTransportURIMetaData { get { return _AVTransportURIMetaData; } }
+        public XPathNavigator AVTransportURIMetaData { get { return CreateXmlProperty(_AVTransportURIMetaData); } }
         public string CurrentTransportActions { get { return _CurrentTransportActions; } }
         public string SleepTimerGeneration { get { return _SleepTimerGeneration; } }
         public string AlarmRunning { get { return _AlarmRunning; } }
@@ -59,6 +60,17 @@ namespace Sonority.UPnP
         public string NextAVTransportURI { get { return _NextAVTransportURI; } }
         public string NextAVTransportURIMetaData { get { return _NextAVTransportURIMetaData; } }
         public string LastChange { get { return _LastChange; } }
+
+        private static XPathNavigator CreateXmlProperty(string xml)
+        {
+            if (String.IsNullOrEmpty(xml))
+            {
+                return null;
+            }
+
+            XPathDocument doc = new XPathDocument(new System.IO.StringReader(xml));
+            return doc.CreateNavigator();
+        }
 
         // for progress bar display binding
         public TimeSpan RelTime { get { return _RelTime; } }

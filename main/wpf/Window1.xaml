@@ -61,32 +61,31 @@
     <TabControl Name="tabControl1" DockPanel.Dock="Left" TabStripPlacement="Left">
       <TabControl.ContentTemplate>
         <DataTemplate>
-          <local:QueueControl DataContext="{Binding}"/>
-          </DataTemplate>
+          <local:QueueControl DataContext="{Binding}" />
+        </DataTemplate>
       </TabControl.ContentTemplate>
       <TabControl.ItemTemplate>
         <DataTemplate>
-          <local:SonosControl DataContext="{Binding}"/>
+          <local:SonosControl DockPanel.Dock="Left" DataContext="{Binding}"/>
         </DataTemplate>
       </TabControl.ItemTemplate>
-      <TabControl.InputBindings>
-        <KeyBinding Key="F" Modifiers="Control" Command="MediaCommands.NextTrack"/>
-        <KeyBinding Key="B" Modifiers="Control" Command="MediaCommands.PreviousTrack"/>
-        <KeyBinding Key="P" Modifiers="Control" Command="MediaCommands.TogglePlayPause"/>
-        <KeyBinding Key="MediaNextTrack" Command="MediaCommands.NextTrack" />
-        <KeyBinding Key="MediaPreviousTrack" Command="MediaCommands.PreviousTrack"/>
-        <KeyBinding Key="MediaStop" Command="MediaCommands.Stop"/>
-        <KeyBinding Key="MediaPlayPause" Command="MediaCommands.TogglePlayPause"/>
-        <KeyBinding Key="VolumeMute" Command="MediaCommands.MuteVolume"/>
-        <KeyBinding Key="VolumeUp" Command="MediaCommands.IncreaseVolume"/>
-        <KeyBinding Key="VolumeDown" Command="MediaCommands.DecreaseVolume"/>
-        <KeyBinding Key="F10" Command="MediaCommands.IncreaseVolume"/>
-        <KeyBinding Key="F9" Command="MediaCommands.DecreaseVolume" />
-        <KeyBinding Key="Return" Command="MediaCommands.Select" />
-        <MouseBinding MouseAction="LeftDoubleClick" Command="MediaCommands.Select" />
-      </TabControl.InputBindings>
     </TabControl>
-    <TreeView Name="treeView1" DockPanel.Dock="Right" ItemsSource="{Binding Path=Library}">
-    </TreeView>
+    <TreeView DockPanel.Dock="Right" ItemsSource="{Binding Path=Coordinator.Library}"/>
   </DockPanel>
+  <Window.InputBindings>
+    <KeyBinding Key="F" Modifiers="Control" Command="MediaCommands.NextTrack"/>
+    <KeyBinding Key="B" Modifiers="Control" Command="MediaCommands.PreviousTrack"/>
+    <KeyBinding Key="P" Modifiers="Control" Command="MediaCommands.TogglePlayPause"/>
+    <KeyBinding Key="MediaNextTrack" Command="MediaCommands.NextTrack" />
+    <KeyBinding Key="MediaPreviousTrack" Command="MediaCommands.PreviousTrack"/>
+    <KeyBinding Key="MediaStop" Command="MediaCommands.Stop"/>
+    <KeyBinding Key="MediaPlayPause" Command="MediaCommands.TogglePlayPause"/>
+    <KeyBinding Key="VolumeMute" Command="MediaCommands.MuteVolume"/>
+    <KeyBinding Key="VolumeUp" Command="MediaCommands.IncreaseVolume"/>
+    <KeyBinding Key="VolumeDown" Command="MediaCommands.DecreaseVolume"/>
+    <KeyBinding Key="F10" Command="MediaCommands.IncreaseVolume"/>
+    <KeyBinding Key="F9" Command="MediaCommands.DecreaseVolume" />
+    <KeyBinding Key="Return" Command="MediaCommands.Select" />
+    <MouseBinding MouseAction="LeftDoubleClick" Command="MediaCommands.Select" />
+  </Window.InputBindings>
 </Window>

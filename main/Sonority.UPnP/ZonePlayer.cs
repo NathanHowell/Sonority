@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.Reflection;
 using System.Xml;
 using System.Xml.XPath;
 using System.Threading;
@@ -37,6 +38,7 @@ namespace Sonority.UPnP
     {
         public ZonePlayer(string uniqueDeviceName)
         {
+            _udn = uniqueDeviceName;
             _device = FindByUDN(uniqueDeviceName);
             Initialize();
         }
@@ -53,7 +55,7 @@ namespace Sonority.UPnP
             {
                 _device = device;
             }
-
+            _udn = _device.UniqueDeviceName;
             Initialize();
         }
 
@@ -65,6 +67,11 @@ namespace Sonority.UPnP
 
         private void Initialize()
         {
+            if (_device == null)
+            {
+                throw new ArgumentNullException();
+            }
+
             BeginUpdateQueue();
             ContentDirectory.PropertyChanged += new PropertyChangedEventHandler(ContainerUpdateIDs_PropertyChanged);
             Dispatcher.BeginInvoke(DispatcherPriority.Background, new ThreadStart(GetDocumentUrl));
@@ -330,6 +337,7 @@ namespace Sonority.UPnP
         private ContentDirectory _contentDirectory;
         private ConnectionManager _connectionManager;
         private Uri _documentUrl;
+        private string _udn;
 
         void IDisposable.Dispose()
         {

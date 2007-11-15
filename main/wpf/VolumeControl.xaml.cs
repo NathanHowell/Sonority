@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Sonority.UPnP;
 
 namespace wpf
 {
@@ -24,5 +25,16 @@ namespace wpf
             InitializeComponent();
         }
 
+        void SetVolume(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ushort volume = (ushort)Math.Round(e.NewValue);
+            FrameworkElement fe = (FrameworkElement)e.OriginalSource;
+            ZonePlayer zp = (ZonePlayer)fe.DataContext;
+            if (volume != zp.RenderingControl.Volume[Channel.Master])
+            {
+                zp.RenderingControl.SetVolume(Channel.Master, volume);
+                e.Handled = true;
+            }
+        }
     }
 }

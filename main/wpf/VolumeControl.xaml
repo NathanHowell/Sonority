@@ -9,7 +9,7 @@
       <ListView ItemsSource="{Binding }">
         <ListView.ItemTemplate>
           <DataTemplate>
-            <Slider Value="{Binding Mode=OneWay, Path=RenderingControl.Volume[Master]}" Minimum="0" Maximum="100" Width="100" SmallChange="1" LargeChange="5"/>
+            <Slider Value="{Binding Mode=OneWay, Path=RenderingControl.Volume[Master]}" Minimum="0" Maximum="100" Width="100" SmallChange="1" LargeChange="5" ValueChanged="SetVolume"/>
           </DataTemplate>
         </ListView.ItemTemplate>
       </ListView>

@@ -41,7 +41,7 @@ namespace Sonority.XPath
 
     public static class Globals
     {
-        private static XmlNameTable Table = new NameTable();
+        public static XmlNameTable Table = new NameTable();
         public static XmlNamespaceManager Manager = new SonorityNamespaceManager(Table);
     }
 
@@ -56,5 +56,7 @@ namespace Sonority.XPath
 
         public static readonly XPathExpression ItemsElements = XPathExpression.Compile("/didl:DIDL-Lite/didl:item", XPath.Globals.Manager);
         public static readonly XPathExpression ContainerElements = XPathExpression.Compile("/didl:DIDL-Lite/didl:container", XPath.Globals.Manager);
+
+        public static readonly XPathExpression AlbumArt = XPathExpression.Compile("/didl:DIDL-Lite/didl:item/upnp:albumArtURI", XPath.Globals.Manager);
     }
 }
