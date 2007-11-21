@@ -4,37 +4,41 @@
   xmlns:local="clr-namespace:wpf">
   <UserControl.Resources>
     <local:AreObjectsEqual x:Key="AreObjectsEqual"/>
+    <local:TrackMetadataConverter x:Key="TrackMetadataConverter"/>
   </UserControl.Resources>
-  <ScrollViewer>
-    <ListView
-      ItemsSource="{Binding Path=Coordinator.Queue}"
-      VirtualizingStackPanel.IsVirtualizing="True"
-      MouseDoubleClick="ListDoubleClick"
-      KeyDown="WindowKeyDown">
-      <ListView.View>
-        <GridView AllowsColumnReorder="true">
-          <GridViewColumn DisplayMemberBinding="{Binding Path=Artist}" Header="Artist" />
-          <GridViewColumn DisplayMemberBinding="{Binding Path=Album}" Header="Album" />
-          <GridViewColumn DisplayMemberBinding="{Binding Path=Title}" Header="Title" />
-        </GridView>
-      </ListView.View>
-      <ListView.ItemContainerStyle>
-        <Style TargetType="{x:Type ListViewItem}">
-          <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-          <Style.Triggers>
-            <DataTrigger
-              Value="True">
-              <DataTrigger.Binding>
-                <MultiBinding Converter="{StaticResource AreObjectsEqual}" Mode="OneWay" FallbackValue="False">
-                  <Binding Path="DataContext.Coordinator.AVTransport.CurrentTrack" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollViewer}}"/>
-                  <Binding Path="NumericID"/>
-                </MultiBinding>
-              </DataTrigger.Binding>
-              <Setter Property="FontWeight" Value="Bold"/>
-            </DataTrigger>
-          </Style.Triggers>
-        </Style>
-      </ListView.ItemContainerStyle>
-    </ListView>
-  </ScrollViewer>
+  <DockPanel>
+    <TextBlock DockPanel.Dock="Top" Text="{Binding Path=Coordinator.AVTransport.CurrentTrackMetaData, Converter={StaticResource TrackMetadataConverter}}"/>
+    <ScrollViewer DockPanel.Dock="Bottom">
+      <ListView
+        ItemsSource="{Binding Path=Coordinator.Queue}"
+        VirtualizingStackPanel.IsVirtualizing="True"
+        MouseDoubleClick="ListDoubleClick"
+        KeyDown="WindowKeyDown">
+        <ListView.View>
+          <GridView AllowsColumnReorder="true">
+            <GridViewColumn DisplayMemberBinding="{Binding Path=Artist}" Header="Artist" />
+            <GridViewColumn DisplayMemberBinding="{Binding Path=Album}" Header="Album" />
+            <GridViewColumn DisplayMemberBinding="{Binding Path=Title}" Header="Title" />
+          </GridView>
+        </ListView.View>
+        <ListView.ItemContainerStyle>
+          <Style TargetType="{x:Type ListViewItem}">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Style.Triggers>
+              <DataTrigger
+                Value="True">
+                <DataTrigger.Binding>
+                  <MultiBinding Converter="{StaticResource AreObjectsEqual}" Mode="OneWay" FallbackValue="False">
+                    <Binding Path="DataContext.Coordinator.AVTransport.CurrentTrack" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollViewer}}"/>
+                    <Binding Path="NumericID"/>
+                  </MultiBinding>
+                </DataTrigger.Binding>
+                <Setter Property="FontWeight" Value="Bold"/>
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ListView.ItemContainerStyle>
+      </ListView>
+    </ScrollViewer>
+  </DockPanel>
 </UserControl>

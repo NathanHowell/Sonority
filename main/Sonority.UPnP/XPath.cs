@@ -36,6 +36,9 @@ namespace Sonority.XPath
             AddNamespace("avt", "urn:schemas-upnp-org:metadata-1-0/AVT/");
             AddNamespace("dc", "http://purl.org/dc/elements/1.1/");
             AddNamespace("rcs", "urn:schemas-upnp-org:metadata-1-0/RCS/");
+            AddNamespace("media", "http://search.yahoo.com/mrss/");
+            AddNamespace("itunes", "http://www.itunes.com/dtds/podcast-1.0.dtd");
+            AddNamespace("feedburner", "http://rssnamespace.org/feedburner/ext/1.0");
         }
     }
 
@@ -58,5 +61,9 @@ namespace Sonority.XPath
         public static readonly XPathExpression ContainerElements = XPathExpression.Compile("/didl:DIDL-Lite/didl:container", XPath.Globals.Manager);
 
         public static readonly XPathExpression AlbumArt = XPathExpression.Compile("/didl:DIDL-Lite/didl:item/upnp:albumArtURI", XPath.Globals.Manager);
+
+        public static readonly XPathExpression Creator = XPathExpression.Compile("/didl:DIDL-Lite/didl:item/dc:creator", XPath.Globals.Manager);
+        public static readonly XPathExpression Title = XPathExpression.Compile("/didl:DIDL-Lite/didl:item/dc:title", XPath.Globals.Manager);
+        public static readonly XPathExpression Album = XPathExpression.Compile("/didl:DIDL-Lite/didl:item/upnp:album", XPath.Globals.Manager);
     }
 }

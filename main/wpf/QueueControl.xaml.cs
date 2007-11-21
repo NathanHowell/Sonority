@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.XPath;
 using Sonority.UPnP;
 
 namespace wpf
@@ -29,6 +30,29 @@ namespace wpf
         }
 
         object[] IMultiValueConverter.ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+    }
+
+    class TrackMetadataConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            XPathNavigator nav = (XPathNavigator)value;
+
+            return String.Format("Artist: {0} / Album: {1} / Track: {2}",
+                nav.SelectSingleNode(Sonority.XPath.Expressions.Creator).Value,
+                nav.SelectSingleNode(Sonority.XPath.Expressions.Album).Value,
+                nav.SelectSingleNode(Sonority.XPath.Expressions.Title).Value);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             throw new Exception("The method or operation is not implemented.");
         }

@@ -57,11 +57,12 @@ namespace Sonority.UPnP
             Intern(pDevice.UniqueDeviceName);
         }
 
-        private object _internLock = new object();
+        private delegate ZonePlayer InternHandler();
 
         public ZonePlayer Intern(string uniqueDeviceName)
         {
-            lock (_internLock)
+            bool zpAdded = false;
+            ZonePlayer zonePlayer = (ZonePlayer)Dispatcher.Invoke(DispatcherPriority.Normal, (InternHandler)delegate
             {
                 foreach (ZonePlayer zpi in _zonePlayers)
                 {
@@ -81,9 +82,16 @@ namespace Sonority.UPnP
                 }
 
                 _zonePlayers.Add(zp);
-                PropertyChanged(this, new PropertyChangedEventArgs("ZonePlayers"));
+                zpAdded = true;
                 return zp;
+            });
+
+            if (zpAdded)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ZonePlayers"));
             }
+
+            return zonePlayer;
         }
 
         void ZoneGroupTopology_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -93,14 +101,14 @@ namespace Sonority.UPnP
                 return;
             }
 
-            ZoneGroupTopology zgt = sender as ZoneGroupTopology;
+            ZoneGroupTopology zgt = (ZoneGroupTopology)sender;
 
             XPathDocument doc = new XPathDocument(new StringReader(zgt.ZoneGroupState));
             XPathNavigator nav = doc.CreateNavigator();
 
-            Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
+            DispatcherOperation dispOperation = Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
             {
-                Dictionary<ZoneGroup, bool> found = new Dictionary<ZoneGroup,bool>();
+                Dictionary<ZoneGroup, bool> found = new Dictionary<ZoneGroup, bool>();
                 foreach (ZoneGroup zg in Topology)
                 {
                     found[zg] = false;
@@ -139,6 +147,11 @@ namespace Sonority.UPnP
                     }
                 }
             });
+
+            dispOperation.Completed += delegate
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("Topology"));
+            };
         }
 
         void DeviceProperties_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -152,7 +165,7 @@ namespace Sonority.UPnP
             _zonePlayers.CopyTo(zonePlayers, 0);
             Array.Sort(zonePlayers, delegate(ZonePlayer a, ZonePlayer b) { return String.CompareOrdinal(a.DeviceProperties.ZoneName, b.DeviceProperties.ZoneName); });
 
-            Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
+            DispatcherOperation dispOperation = Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
             {
                 for (int i = 0; i < zonePlayers.Length; ++i)
                 {
@@ -165,6 +178,11 @@ namespace Sonority.UPnP
                     }
                 }
             });
+
+            dispOperation.Completed += delegate
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("ZonePlayers"));
+            };
         }
 
         void IUPnPDeviceFinderCallback.DeviceRemoved(int lFindData, string bstrUDN)
