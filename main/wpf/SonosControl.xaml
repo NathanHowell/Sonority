@@ -3,13 +3,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:wpf">
   <UserControl.Resources>
-    <local:AlbumArtUriConverter x:Key="albumArtUriConverter"/>
   </UserControl.Resources>
-  <UserControl.Background>
-    <ImageBrush Stretch="Fill" ImageSource="{Binding Path=Coordinator.AVTransport.CurrentTrackMetaData, Converter={StaticResource albumArtUriConverter}}"/>
-  </UserControl.Background>
   <StackPanel DataContext="{Binding Path=Coordinator, IsAsync=True}" Opacity="70">
-    <ListView ItemsSource="{Binding Path=DataContext.Members, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}}, IsAsync=True}">
+    <ListView AllowDrop="True" ItemsSource="{Binding Path=DataContext.Members, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}}, IsAsync=True}">
       <ListView.ItemTemplate>
         <DataTemplate>
           <TextBlock Text="{Binding Path=DeviceProperties.ZoneName}"/>

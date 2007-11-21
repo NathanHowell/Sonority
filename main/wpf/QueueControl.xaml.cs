@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -45,11 +46,19 @@ namespace wpf
             }
 
             XPathNavigator nav = (XPathNavigator)value;
-
-            return String.Format("Artist: {0} / Album: {1} / Track: {2}",
-                nav.SelectSingleNode(Sonority.XPath.Expressions.Creator).Value,
-                nav.SelectSingleNode(Sonority.XPath.Expressions.Album).Value,
-                nav.SelectSingleNode(Sonority.XPath.Expressions.Title).Value);
+            if (parameter == null)
+            {
+                return String.Format("Artist: {0} / Album: {1} / Track: {2}",
+                    nav.SelectSingleNode(Sonority.XPath.Expressions.Creator).Value,
+                    nav.SelectSingleNode(Sonority.XPath.Expressions.Album).Value,
+                    nav.SelectSingleNode(Sonority.XPath.Expressions.Title).Value);
+            }
+            else
+            {
+                FieldInfo fi = typeof(Sonority.XPath.Expressions).GetField(parameter.ToString(), BindingFlags.Public | BindingFlags.Static | BindingFlags.GetField);
+                XPathExpression e = (XPathExpression)fi.GetValue(null);
+                return nav.SelectSingleNode(e).Value;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
