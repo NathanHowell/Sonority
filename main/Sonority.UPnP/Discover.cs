@@ -152,19 +152,19 @@ namespace Sonority.UPnP
             _zonePlayers.CopyTo(zonePlayers, 0);
             Array.Sort(zonePlayers, delegate(ZonePlayer a, ZonePlayer b) { return String.CompareOrdinal(a.DeviceProperties.ZoneName, b.DeviceProperties.ZoneName); });
 
-            for (int i = 0; i < zonePlayers.Length; ++i)
+            Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
             {
-                for (int j = i; j < _zonePlayers.Count; ++j)
+                for (int i = 0; i < zonePlayers.Length; ++i)
                 {
-                    if (zonePlayers[i] == _zonePlayers[j])
+                    for (int j = i; j < _zonePlayers.Count; ++j)
                     {
-                        Dispatcher.Invoke(DispatcherPriority.Normal, (ThreadStart)delegate
+                        if (zonePlayers[i] == _zonePlayers[j])
                         {
                             _zonePlayers.Move(j, i);
-                        });
+                        }
                     }
                 }
-            }
+            });
         }
 
         void IUPnPDeviceFinderCallback.DeviceRemoved(int lFindData, string bstrUDN)
