@@ -77,22 +77,26 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlbumArtUriConverter.cs" />
+    <Compile Include="QueueItemsComparator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.cs</LastGenOutput>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Properties\Settings.cs">
+    <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="QueueControl.xaml.cs">
@@ -103,6 +107,7 @@
       <SubType>Code</SubType>
       <DependentUpon>SonosControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TrackMetadataConverter.cs" />
     <Compile Include="VolumeControl.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>VolumeControl.xaml</DependentUpon>

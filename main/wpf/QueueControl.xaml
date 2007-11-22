@@ -3,13 +3,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:wpf">
   <UserControl.Resources>
-    <local:AreObjectsEqual x:Key="AreObjectsEqual"/>
+    <local:QueueItemsComparator x:Key="QueueItemsComparator"/>
     <local:TrackMetadataConverter x:Key="TrackMetadataConverter"/>
     <local:AlbumArtUriConverter x:Key="AlbumArtUriConverter"/>
   </UserControl.Resources>
   <DockPanel>
-    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Height="128">
-      <Image Height="128" Width="128">
+    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Height="136">
+      <Image Height="128" Width="128" Margin="4">
         <Image.Source>
           <MultiBinding Converter="{StaticResource AlbumArtUriConverter}" Mode="OneWay">
             <Binding Path="Coordinator.AVTransport.CurrentTrackMetaData"/>
@@ -18,14 +18,47 @@
         </Image.Source>
       </Image>
       <Line Stretch="Fill" Margin="2" Width="6" Y1="0" Y2="1" Stroke="Black"/>
-      <StackPanel Orientation="Vertical" TextBlock.TextAlignment="Left">
+      <TextBlock Margin="4">
         <TextBlock Text="Track"/>
+        <LineBreak/>
         <TextBlock TextBlock.FontWeight="Bold" Text="{Binding Path=Coordinator.AVTransport.CurrentTrackMetaData, Converter={StaticResource TrackMetadataConverter}, ConverterParameter='Title'}"/>
+        <LineBreak/>
         <TextBlock Text="Artist"/>
+        <LineBreak/>
         <TextBlock TextBlock.FontWeight="Bold" Text="{Binding Path=Coordinator.AVTransport.CurrentTrackMetaData, Converter={StaticResource TrackMetadataConverter}, ConverterParameter='Creator'}"/>
+        <LineBreak/>
         <TextBlock Text="Album"/>
+        <LineBreak/>
         <TextBlock TextBlock.FontWeight="Bold" Text="{Binding Path=Coordinator.AVTransport.CurrentTrackMetaData, Converter={StaticResource TrackMetadataConverter}, ConverterParameter='Album'}"/>
-      </StackPanel>
+      </TextBlock>
+      <TextBlock Margin="4">
+        <TextBlock Text="SystemUpdateID: "/>
+        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.SystemUpdateID}"/>
+        <LineBreak/>
+        <TextBlock Text="ContainerUpdateIDs: "/>
+        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ContainerUpdateIDs}"/>
+        <LineBreak/>
+        <TextBlock Text="ShareListRefreshState: "/>
+        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ShareListRefreshState}"/>
+        <LineBreak/>
+        <TextBlock Text="ShareIndexInProgress: "/>
+        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ShareIndexInProgress}"/>
+        <LineBreak/>
+        <TextBlock Text="ShareIndexLastError: "/>
+        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ShareIndexLastError}"/>
+        <LineBreak/>
+        <TextBlock Text="UserRadioUpdateID: "/>
+        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.UserRadioUpdateID}"/>
+        <LineBreak/>
+        <TextBlock Text="MasterRadioUpdateID: "/>
+        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.MasterRadioUpdateID}"/>
+        <LineBreak/>
+        <TextBlock Text="SavedQueuesUpdateID: "/>
+        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.SavedQueuesUpdateID}"/>
+        <LineBreak/>
+        <TextBlock Text="ShareListUpdateID: "/>
+        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ShareListUpdateID}"/>
+      </TextBlock>
     </StackPanel>
     <ScrollViewer DockPanel.Dock="Bottom">
       <ListView
@@ -46,9 +79,11 @@
             <Style.Triggers>
               <DataTrigger Value="True">
                 <DataTrigger.Binding>
-                  <MultiBinding Converter="{StaticResource AreObjectsEqual}" Mode="OneWay" FallbackValue="False">
+                  <MultiBinding Converter="{StaticResource QueueItemsComparator}" Mode="OneWay" FallbackValue="False">
                     <Binding Path="DataContext.Coordinator.AVTransport.CurrentTrack" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollViewer}}"/>
                     <Binding Path="NumericID"/>
+                    <Binding Path="DataContext.Coordinator.AVTransport.CurrentTrackURI" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollViewer}}"/>
+                    <Binding Path="Res"/>
                   </MultiBinding>
                 </DataTrigger.Binding>
                 <Setter Property="FontWeight" Value="Bold"/>
