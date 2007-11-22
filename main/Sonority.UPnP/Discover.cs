@@ -73,7 +73,6 @@ namespace Sonority.UPnP
                 }
 
                 ZonePlayer zp = new ZonePlayer(uniqueDeviceName);
-                zp.DeviceProperties.PropertyChanged += new PropertyChangedEventHandler(DeviceProperties_PropertyChanged);
 
                 if (_topologyHandled == false)
                 {
@@ -154,28 +153,23 @@ namespace Sonority.UPnP
             };
         }
 
-        void DeviceProperties_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        void IUPnPDeviceFinderCallback.DeviceRemoved(int lFindData, string bstrUDN)
         {
-            if (e.PropertyName != "ZoneName")
+            DispatcherOperation dispOperation = Dispatcher.BeginInvoke(DispatcherPriority.DataBind, (ThreadStart)delegate
             {
-                return;
-            }
-
-            ZonePlayer[] zonePlayers = new ZonePlayer[_zonePlayers.Count];
-            _zonePlayers.CopyTo(zonePlayers, 0);
-            Array.Sort(zonePlayers, delegate(ZonePlayer a, ZonePlayer b) { return String.CompareOrdinal(a.DeviceProperties.ZoneName, b.DeviceProperties.ZoneName); });
-
-            DispatcherOperation dispOperation = Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
-            {
-                for (int i = 0; i < zonePlayers.Length; ++i)
+                ZonePlayer found = null;
+                foreach (ZonePlayer zp in _zonePlayers)
                 {
-                    for (int j = i; j < _zonePlayers.Count; ++j)
+                    if (zp.UniqueDeviceName == bstrUDN)
                     {
-                        if (zonePlayers[i] == _zonePlayers[j])
-                        {
-                            _zonePlayers.Move(j, i);
-                        }
+                        found = zp;
+                        break;
                     }
+                }
+
+                if (found != null)
+                {
+                    _zonePlayers.Remove(found);
                 }
             });
 
@@ -183,26 +177,6 @@ namespace Sonority.UPnP
             {
                 PropertyChanged(this, new PropertyChangedEventArgs("ZonePlayers"));
             };
-        }
-
-        void IUPnPDeviceFinderCallback.DeviceRemoved(int lFindData, string bstrUDN)
-        {
-            ZonePlayer found = null;
-            foreach (ZonePlayer zp in _zonePlayers)
-            {
-                if (zp.UniqueDeviceName == bstrUDN)
-                {
-                    found = zp;
-                    break;
-                }
-            }
-
-            if (found != null)
-            {
-                _zonePlayers.Remove(found);
-            }
-
-            PropertyChanged(this, new PropertyChangedEventArgs("ZonePlayers"));
         }
 
         void IUPnPDeviceFinderCallback.SearchComplete(int lFindData)

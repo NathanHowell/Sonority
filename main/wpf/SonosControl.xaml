@@ -20,32 +20,15 @@
       Value="{Binding Mode=OneWay, Path=AVTransport.RelTime.TotalSeconds}"/>
     <Button Content="{Binding Path=AVTransport.TransportState}" Command="MediaCommands.TogglePlayPause"/>
   </StackPanel>
-  <UserControl.InputBindings>
-    <KeyBinding Key="F" Modifiers="Control" Command="MediaCommands.NextTrack"/>
-    <KeyBinding Key="B" Modifiers="Control" Command="MediaCommands.PreviousTrack"/>
-    <KeyBinding Key="P" Modifiers="Control" Command="MediaCommands.TogglePlayPause"/>
-    <KeyBinding Key="MediaNextTrack" Command="MediaCommands.NextTrack" />
-    <KeyBinding Key="MediaPreviousTrack" Command="MediaCommands.PreviousTrack"/>
-    <KeyBinding Key="MediaStop" Command="MediaCommands.Stop"/>
-    <KeyBinding Key="MediaPlayPause" Command="MediaCommands.TogglePlayPause"/>
-    <KeyBinding Key="VolumeMute" Command="MediaCommands.MuteVolume"/>
-    <KeyBinding Key="VolumeUp" Command="MediaCommands.IncreaseVolume"/>
-    <KeyBinding Key="VolumeDown" Command="MediaCommands.DecreaseVolume"/>
-    <KeyBinding Key="F10" Command="MediaCommands.IncreaseVolume"/>
-    <KeyBinding Key="F9" Command="MediaCommands.DecreaseVolume" />
-    <KeyBinding Key="Return" Command="MediaCommands.Select" />
-    <KeyBinding Key="Delete" Command="ApplicationCommands.Delete" />
-    <MouseBinding MouseAction="LeftDoubleClick" Command="MediaCommands.Select" />
-  </UserControl.InputBindings>
   <UserControl.CommandBindings>
     <CommandBinding
-    Command="MediaCommands.TogglePlayPause"
-    Executed="MediaCommands_TogglePlayPause"
-    CanExecute="MediaCommands_CanTogglePlayPause"/>
+      Command="MediaCommands.TogglePlayPause"
+      Executed="MediaCommands_TogglePlayPause"
+      CanExecute="MediaCommands_CanTogglePlayPause"/>
     <CommandBinding
       Command="MediaCommands.NextTrack"
-      Executed="MediaCommands_NextTrack"
-      CanExecute="MediaCommands_CanNextTrack"/>
+      PreviewExecuted="MediaCommands_NextTrack"
+      PreviewCanExecute="MediaCommands_CanNextTrack"/>
     <CommandBinding
       Command="MediaCommands.PreviousTrack"
       Executed="MediaCommands_PreviousTrack"

@@ -5,11 +5,18 @@
   <UserControl.Resources>
     <local:AreObjectsEqual x:Key="AreObjectsEqual"/>
     <local:TrackMetadataConverter x:Key="TrackMetadataConverter"/>
-    <local:AlbumArtUriConverter x:Key="albumArtUriConverter"/>
+    <local:AlbumArtUriConverter x:Key="AlbumArtUriConverter"/>
   </UserControl.Resources>
   <DockPanel>
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Height="128">
-      <Image Height="128" Width="128" Source="{Binding Path=Coordinator.AVTransport.CurrentTrackMetaData, Converter={StaticResource albumArtUriConverter}}"/>
+      <Image Height="128" Width="128">
+        <Image.Source>
+          <MultiBinding Converter="{StaticResource AlbumArtUriConverter}" Mode="OneWay">
+            <Binding Path="Coordinator.AVTransport.CurrentTrackMetaData"/>
+            <Binding Path="Coordinator.DocumentUrl"/>
+          </MultiBinding>
+        </Image.Source>
+      </Image>
       <Line Stretch="Fill" Margin="2" Width="6" Y1="0" Y2="1" Stroke="Black"/>
       <StackPanel Orientation="Vertical" TextBlock.TextAlignment="Left">
         <TextBlock Text="Track"/>
@@ -24,8 +31,8 @@
       <ListView
         ItemsSource="{Binding Path=Coordinator.Queue}"
         VirtualizingStackPanel.IsVirtualizing="True"
-        MouseDoubleClick="ListDoubleClick"
-        KeyDown="WindowKeyDown">
+        KeyDown="WindowKeyDown"
+        MouseDoubleClick="ListDoubleClick">
         <ListView.View>
           <GridView AllowsColumnReorder="True">
             <GridViewColumn DisplayMemberBinding="{Binding Path=Artist}" Header="Artist" />
@@ -37,8 +44,7 @@
           <Style TargetType="{x:Type ListViewItem}">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Style.Triggers>
-              <DataTrigger
-                Value="True">
+              <DataTrigger Value="True">
                 <DataTrigger.Binding>
                   <MultiBinding Converter="{StaticResource AreObjectsEqual}" Mode="OneWay" FallbackValue="False">
                     <Binding Path="DataContext.Coordinator.AVTransport.CurrentTrack" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollViewer}}"/>

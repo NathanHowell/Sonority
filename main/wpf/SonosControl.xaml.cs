@@ -1,3 +1,25 @@
+//
+// Copyright (c) 2007 Sonority
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+//
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,48 +37,6 @@ using Sonority.UPnP;
 
 namespace wpf
 {
-    class AlbumArtUriConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-
-            XPathNavigator nav = (XPathNavigator)value;
-            XPathNavigator artNav = nav.SelectSingleNode(Sonority.XPath.Expressions.AlbumArt);
-            if (artNav == null)
-            {
-                return null;
-            }
-
-            string art = artNav.Value;
-            if (String.IsNullOrEmpty(art))
-            {
-                return null;
-            }
-
-            if (Uri.IsWellFormedUriString(art, UriKind.Absolute))
-            {
-                // Pandora, etc where the full Uri is already given to use
-                return new Uri(art);
-            }
-            else
-            {
-                string url = art.Substring(0, art.IndexOf('?'));
-                string qs = art.Substring(art.IndexOf('?'));
-                UriBuilder builder = new UriBuilder("http", "192.168.1.107", 1400, url, qs);
-                return builder.Uri;
-            }
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-    }
-
     /// <summary>
     /// Interaction logic for SonosControl.xaml
     /// </summary>
