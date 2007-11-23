@@ -8,8 +8,8 @@
     <local:AlbumArtUriConverter x:Key="AlbumArtUriConverter"/>
   </UserControl.Resources>
   <DockPanel>
-    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Height="136">
-      <Image Height="128" Width="128" Margin="4">
+    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" MinHeight="136">
+      <Image Height="128" Width="128" Margin="4" Stretch="Uniform" VerticalAlignment="Top">
         <Image.Source>
           <MultiBinding Converter="{StaticResource AlbumArtUriConverter}" Mode="OneWay">
             <Binding Path="Coordinator.AVTransport.CurrentTrackMetaData"/>
@@ -17,7 +17,6 @@
           </MultiBinding>
         </Image.Source>
       </Image>
-      <Line Stretch="Fill" Margin="2" Width="6" Y1="0" Y2="1" Stroke="Black"/>
       <TextBlock Margin="4">
         <TextBlock Text="Track"/>
         <LineBreak/>
@@ -31,33 +30,37 @@
         <LineBreak/>
         <TextBlock TextBlock.FontWeight="Bold" Text="{Binding Path=Coordinator.AVTransport.CurrentTrackMetaData, Converter={StaticResource TrackMetadataConverter}, ConverterParameter='Album'}"/>
       </TextBlock>
-      <TextBlock Margin="4">
-        <TextBlock Text="SystemUpdateID: "/>
-        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.SystemUpdateID}"/>
-        <LineBreak/>
-        <TextBlock Text="ContainerUpdateIDs: "/>
-        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ContainerUpdateIDs}"/>
-        <LineBreak/>
-        <TextBlock Text="ShareListRefreshState: "/>
-        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ShareListRefreshState}"/>
-        <LineBreak/>
-        <TextBlock Text="ShareIndexInProgress: "/>
-        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ShareIndexInProgress}"/>
-        <LineBreak/>
-        <TextBlock Text="ShareIndexLastError: "/>
-        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ShareIndexLastError}"/>
-        <LineBreak/>
-        <TextBlock Text="UserRadioUpdateID: "/>
-        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.UserRadioUpdateID}"/>
-        <LineBreak/>
-        <TextBlock Text="MasterRadioUpdateID: "/>
-        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.MasterRadioUpdateID}"/>
-        <LineBreak/>
-        <TextBlock Text="SavedQueuesUpdateID: "/>
-        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.SavedQueuesUpdateID}"/>
-        <LineBreak/>
-        <TextBlock Text="ShareListUpdateID: "/>
-        <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ShareListUpdateID}"/>
+      <TextBlock>
+        <Expander ExpandDirection="Right">
+          <TextBlock>
+            <TextBlock Text="SystemUpdateID: "/>
+            <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.SystemUpdateID}"/>
+            <LineBreak/>
+            <TextBlock Text="ContainerUpdateIDs: "/>
+            <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ContainerUpdateIDs}"/>
+            <LineBreak/>
+            <TextBlock Text="ShareListRefreshState: "/>
+            <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ShareListRefreshState}"/>
+            <LineBreak/>
+            <TextBlock Text="ShareIndexInProgress: "/>
+            <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ShareIndexInProgress}"/>
+            <LineBreak/>
+            <TextBlock Text="ShareIndexLastError: "/>
+            <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ShareIndexLastError}"/>
+            <LineBreak/>
+            <TextBlock Text="UserRadioUpdateID: "/>
+            <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.UserRadioUpdateID}"/>
+            <LineBreak/>
+            <TextBlock Text="MasterRadioUpdateID: "/>
+            <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.MasterRadioUpdateID}"/>
+            <LineBreak/>
+            <TextBlock Text="SavedQueuesUpdateID: "/>
+            <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.SavedQueuesUpdateID}"/>
+            <LineBreak/>
+            <TextBlock Text="ShareListUpdateID: "/>
+            <TextBlock Text="{Binding Path=Coordinator.ContentDirectory.ShareListUpdateID}"/>
+          </TextBlock>
+        </Expander>
       </TextBlock>
     </StackPanel>
     <ScrollViewer DockPanel.Dock="Bottom">
