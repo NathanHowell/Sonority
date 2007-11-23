@@ -36,9 +36,9 @@ namespace Sonority.UPnP
     {
         public uint NrTracks;
         public string MediaDuration;
-        public string CurrentUri;
+        public Uri CurrentUri;
         public string CurrentUriMetadata;
-        public string NextUri;
+        public Uri NextUri;
         public string NextUriMetadata;
         public string PlayMedium;
         public string RecordMedium;
@@ -57,7 +57,7 @@ namespace Sonority.UPnP
         public string Track;
         public string TrackDuration;
         public string TrackMetaData;
-        public string TrackUri;
+        public Uri TrackUri;
         public string RelTime;
         public string AbsTime;
         public string RelCount;
@@ -158,15 +158,22 @@ namespace Sonority.UPnP
         private Timer _timer;
 
         // required
-        public void SetAVTransportUri(string currentUri, string currentUriMetadata)
+        public void SetAVTransportUri(Uri currentUri, string currentUriMetadata)
         {
-            UPnP.InvokeAction(_service, "SetAVTransportURI", InstanceID, currentUri, currentUriMetadata);
+            if (AVTransportURI != currentUri || String.CompareOrdinal(_AVTransportURIMetaData, currentUriMetadata) != 0)
+            {
+                UPnP.InvokeAction(_service, "SetAVTransportURI", InstanceID, currentUri.ToString(), currentUriMetadata);
+                _TransportState = TransportState.TRANSITIONING;
+            }
         }
 
         // optional
-        public void SetNextAVTransportUri(string currentUri, string currentUriMetadata)
+        public void SetNextAVTransportUri(Uri currentUri, string currentUriMetadata)
         {
-            UPnP.InvokeAction(_service, "SetNextAVTransportUri", InstanceID, currentUri, currentUriMetadata);
+            if (NextAVTransportURI != currentUri || String.CompareOrdinal(_NextAVTransportURIMetaData, currentUriMetadata) != 0)
+            {
+                UPnP.InvokeAction(_service, "SetNextAVTransportUri", InstanceID, currentUri.ToString(), currentUriMetadata);
+            }
         }
 
         // required
@@ -177,9 +184,9 @@ namespace Sonority.UPnP
             MediaInfo mi = new MediaInfo();
             mi.NrTracks = Convert.ToUInt32(outArray[0], CultureInfo.InvariantCulture);
             mi.MediaDuration = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
-            mi.CurrentUri = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
+            mi.CurrentUri = CreateUri(Convert.ToString(outArray[2], CultureInfo.InvariantCulture));
             mi.CurrentUriMetadata = Convert.ToString(outArray[3], CultureInfo.InvariantCulture);
-            mi.NextUri = Convert.ToString(outArray[4], CultureInfo.InvariantCulture);
+            mi.NextUri = CreateUri(Convert.ToString(outArray[4], CultureInfo.InvariantCulture));
             mi.NextUriMetadata = Convert.ToString(outArray[5], CultureInfo.InvariantCulture);
             mi.PlayMedium = Convert.ToString(outArray[6], CultureInfo.InvariantCulture);
             mi.RecordMedium = Convert.ToString(outArray[7], CultureInfo.InvariantCulture);
@@ -208,7 +215,7 @@ namespace Sonority.UPnP
             pi.Track = Convert.ToString(outArray[0], CultureInfo.InvariantCulture);
             pi.TrackDuration = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
             pi.TrackMetaData = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
-            pi.TrackUri = Convert.ToString(outArray[3], CultureInfo.InvariantCulture);
+            pi.TrackUri = CreateUri(Convert.ToString(outArray[3], CultureInfo.InvariantCulture));
             pi.RelTime = Convert.ToString(outArray[4], CultureInfo.InvariantCulture);
             pi.AbsTime = Convert.ToString(outArray[5], CultureInfo.InvariantCulture);
             pi.RelCount = Convert.ToString(outArray[6], CultureInfo.InvariantCulture);
@@ -242,14 +249,17 @@ namespace Sonority.UPnP
         // required
         public void Stop()
         {
-            UPnP.InvokeAction(_service, "Stop", InstanceID);
+            if (TransportState != TransportState.STOPPED)
+            {
+                UPnP.InvokeAction(_service, "Stop", InstanceID);
+            }
         }
 
         // required
         public void Play()
         {
             const string speed = "1";
-            if (this.NumberOfTracks > 0)
+            if (this.NumberOfTracks > 0 && TransportState != TransportState.PLAYING)
             {
                 UPnP.InvokeAction(_service, "Play", InstanceID, speed);
             }
@@ -258,7 +268,10 @@ namespace Sonority.UPnP
         // optional
         public void Pause()
         {
-            UPnP.InvokeAction(_service, "Pause", InstanceID);
+            if (TransportState != TransportState.PAUSED_PLAYBACK)
+            {
+                UPnP.InvokeAction(_service, "Pause", InstanceID);
+            }
         }
 
         public void PlayPause()
@@ -321,9 +334,9 @@ namespace Sonority.UPnP
             return UPnP.InvokeAction<String>(_service, "GetCurrentTransportActions", InstanceID);
         }
 
-        public void AddURIToQueue(string enqueuedURI, string enqueuedURIMetaData, uint desiredFirstTrackNumberEnqueued, bool enqueueAsNext)
+        public void AddURIToQueue(Uri enqueuedURI, string enqueuedURIMetaData, uint desiredFirstTrackNumberEnqueued, bool enqueueAsNext)
         {
-            UPnP.InvokeAction(_service, "AddURIToQueue", InstanceID, enqueuedURI, enqueuedURIMetaData, desiredFirstTrackNumberEnqueued, enqueueAsNext);
+            UPnP.InvokeAction(_service, "AddURIToQueue", InstanceID, enqueuedURI.ToString(), enqueuedURIMetaData, desiredFirstTrackNumberEnqueued, enqueueAsNext);
             // out[0] == FirstTrackNumberEnqueued
             // out[1] == NumTracksAdded
             // out[2] == NewQueueLength
@@ -342,6 +355,16 @@ namespace Sonority.UPnP
         public void RemoveTrackFromQueue(string objectID)
         {
             UPnP.InvokeAction(_service, "RemoveTrackFromQueue", InstanceID, objectID);
+        }
+
+        private Uri CreateUri(string uri)
+        {
+            if (String.IsNullOrEmpty(uri))
+            {
+                return null;
+            }
+
+            return new Uri(uri);
         }
 
         void IDisposable.Dispose()

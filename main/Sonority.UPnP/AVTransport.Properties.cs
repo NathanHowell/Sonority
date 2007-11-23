@@ -45,20 +45,20 @@ namespace Sonority.UPnP
         public string CurrentMediaDuration { get { return _CurrentMediaDuration; } }
         public XPathNavigator CurrentTrackMetaData { get { return CreateXmlProperty(_CurrentTrackMetaData); } }
         public string CurrentSection { get { return _CurrentSection; } }
-        public string CurrentTrackURI { get { return _CurrentTrackURI; } }
-        public string NextTrackURI { get { return _NextTrackURI; } }
+        public Uri CurrentTrackURI { get { return CreateUri(_CurrentTrackURI); } }
+        public Uri NextTrackURI { get { return CreateUri(_NextTrackURI); } }
         public XPathNavigator NextTrackMetaData { get { return CreateXmlProperty(_NextTrackMetaData); } }
-        public string EnqueuedTransportURI { get { return _EnqueuedTransportURI; } }
+        public Uri EnqueuedTransportURI { get { return CreateUri(_EnqueuedTransportURI); } }
         public XPathNavigator EnqueuedTransportURIMetaData { get { return CreateXmlProperty(_EnqueuedTransportURIMetaData); } }
-        public string AVTransportURI { get { return _AVTransportURI; } }
+        public Uri AVTransportURI { get { return CreateUri(_AVTransportURI); } }
         public XPathNavigator AVTransportURIMetaData { get { return CreateXmlProperty(_AVTransportURIMetaData); } }
         public string CurrentTransportActions { get { return _CurrentTransportActions; } }
         public string SleepTimerGeneration { get { return _SleepTimerGeneration; } }
         public string AlarmRunning { get { return _AlarmRunning; } }
         public string SnoozeRunning { get { return _SnoozeRunning; } }
         public string RestartPending { get { return _RestartPending; } }
-        public string NextAVTransportURI { get { return _NextAVTransportURI; } }
-        public string NextAVTransportURIMetaData { get { return _NextAVTransportURIMetaData; } }
+        public Uri NextAVTransportURI { get { return CreateUri(_NextAVTransportURI); } }
+        public XPathNavigator NextAVTransportURIMetaData { get { return CreateXmlProperty(_NextAVTransportURIMetaData); } }
         public string LastChange { get { return _LastChange; } }
 
         private static XPathNavigator CreateXmlProperty(string xml)

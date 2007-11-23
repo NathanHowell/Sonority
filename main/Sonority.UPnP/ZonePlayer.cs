@@ -234,6 +234,19 @@ namespace Sonority.UPnP
             }
         }
 
+        public Uri QueueUri
+        {
+            get
+            {
+                if (_queueUri == null)
+                {
+                    _queueUri = new Uri(String.Format("x-rincon-queue{0}#0", UniqueDeviceName.Substring(UniqueDeviceName.IndexOf(':'))));
+                }
+
+                return _queueUri;
+            }
+        }
+
         public string UniqueDeviceName { get { return _device.UniqueDeviceName; } }
         public Uri DocumentUrl { get { return _documentUrl; } }
 
@@ -253,8 +266,7 @@ namespace Sonority.UPnP
 
                 if (index < _queue.Count)
                 {
-                    if (_queue[index].NumericID == qi.NumericID &&
-                        String.CompareOrdinal(_queue[index].Res, qi.Res) != 0)
+                    if (_queue[index].NumericID == qi.NumericID && _queue[index].Res == qi.Res)
                     {
                         _queue.RemoveAt(index);
                         _queue.Insert(index, qi);
@@ -337,6 +349,7 @@ namespace Sonority.UPnP
         private ContentDirectory _contentDirectory;
         private ConnectionManager _connectionManager;
         private Uri _documentUrl;
+        private Uri _queueUri;
         private string _udn;
 
         void IDisposable.Dispose()

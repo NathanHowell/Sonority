@@ -51,7 +51,15 @@ namespace wpf
             {
                 FieldInfo fi = typeof(Expressions).GetField(parameter.ToString(), BindingFlags.Public | BindingFlags.Static | BindingFlags.GetField);
                 XPathExpression e = (XPathExpression)fi.GetValue(null);
-                return nav.SelectSingleNode(e).Value;
+                XPathNavigator node = nav.SelectSingleNode(e);
+                if (node != null)
+                {
+                    return node.Value;
+                }
+                else
+                {
+                    return DependencyProperty.UnsetValue;
+                }
             }
         }
 

@@ -56,11 +56,11 @@ namespace wpf
             ZoneGroup zg = (ZoneGroup)lv.DataContext;
             ZonePlayer zp = zg.Coordinator;
 
-            string mainQueue = String.Format("x-rincon-queue{0}#0", zp.UniqueDeviceName.Substring(zp.UniqueDeviceName.IndexOf(':')));
             // make sure it's playing off the queue before we select a queue track. might be a callback that can be
             // used instead of this explicit call, but this works for now. sort of hacky but it looks like the Sonos client
             // does the same thing... what can you do? :-(
-            zp.AVTransport.SetAVTransportUri(mainQueue, "");
+            zp.AVTransport.SetAVTransportUri(zp.QueueUri, "");
+
             // Sonos queues are 1 based, ListView index is 0 based
             zp.AVTransport.Seek(SeekMode.TRACK_NR, (lv.SelectedIndex + 1).ToString());
             zp.AVTransport.Play();

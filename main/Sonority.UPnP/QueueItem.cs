@@ -43,7 +43,7 @@ namespace Sonority.UPnP
             _item_parentID = node.SelectSingleNode("@parentID", XPath.Globals.Manager).Value;
             _item_restricted = node.SelectSingleNode("@restricted", XPath.Globals.Manager).ValueAsBoolean;
             _res_protocolInfo = node.SelectSingleNode("didl:res/@protocolInfo", XPath.Globals.Manager).Value;
-            _res_value = node.SelectSingleNode("didl:res", XPath.Globals.Manager).Value;
+            _res_value = new Uri(node.SelectSingleNode("didl:res", XPath.Globals.Manager).Value);
             _albumArtUri_value = node.SelectSingleNode("upnp:albumArtURI", XPath.Globals.Manager).Value;
             _title_value = node.SelectSingleNode("dc:title", XPath.Globals.Manager).Value;
             _class_value = node.SelectSingleNode("upnp:class", XPath.Globals.Manager).Value;
@@ -73,7 +73,7 @@ namespace Sonority.UPnP
             return _item_id.GetHashCode();
         }
 
-        public string Res
+        public Uri Res
         {
             get
             {
@@ -138,14 +138,14 @@ namespace Sonority.UPnP
 
         public override string ToString()
         {
-            return System.Web.HttpUtility.UrlDecode(Res);
+            return Res.ToString();
         }
 
         private string _item_id;
         private string _item_parentID;
         private bool _item_restricted;
         private string _res_protocolInfo;
-        private string _res_value;
+        private Uri _res_value;
         private string _albumArtUri_value;
         private string _title_value;
         private string _class_value;

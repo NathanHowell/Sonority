@@ -49,7 +49,7 @@ namespace wpf
                 // this is a fix if you're playing something that is not in the queue.
                 // Sonos doesn't update the CurrentTrack value, so we need to double
                 // check that the URIs are identical
-                return String.CompareOrdinal((string)values[2], (string)values[3]) == 0;
+                return (Uri)values[2] == (Uri)values[3];
             }
             catch (InvalidCastException)
             {
