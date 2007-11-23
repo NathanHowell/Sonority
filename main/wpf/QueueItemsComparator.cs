@@ -37,6 +37,14 @@ namespace wpf
                 return DependencyProperty.UnsetValue;
             }
 
+            foreach (object obj in values)
+            {
+                if (obj == null || obj == DependencyProperty.UnsetValue)
+                {
+                    return DependencyProperty.UnsetValue;
+                }
+            }
+
             try
             {
                 // AVTransport.CurrentTrack == QueueItem.NumericID

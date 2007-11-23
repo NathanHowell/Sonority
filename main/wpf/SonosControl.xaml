@@ -2,18 +2,15 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:wpf">
-  <UserControl.Resources>
-  </UserControl.Resources>
-  <StackPanel DataContext="{Binding Path=Coordinator, IsAsync=True}" Opacity="70">
-    <ListView AllowDrop="True" ItemsSource="{Binding Path=DataContext.Members, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}}, IsAsync=True}">
+  <StackPanel DataContext="{Binding Path=Coordinator}">
+    <ListView Focusable="False" IsEnabled="False" ItemsSource="{Binding Path=DataContext.Members, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}}, IsAsync=True}">
       <ListView.ItemTemplate>
         <DataTemplate>
           <TextBlock Text="{Binding Path=DeviceProperties.ZoneName}"/>
         </DataTemplate>
       </ListView.ItemTemplate>
     </ListView>
-    <local:VolumeControl DataContext="{Binding Path=DataContext.Members, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}}, IsAsync=True}"/>
-    <!-- <Slider Value="{Binding Mode=OneWay, Path=RenderingControl.Volume[Master]}" Minimum="0" Maximum="100" Width="100" SmallChange="1" LargeChange="5" ValueChanged="ZoneVolumeChanged"/> -->
+    <local:VolumeControl DataContext="{Binding Path=DataContext.Members, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}}}"/>
     <ProgressBar
       Minimum="0"
       Maximum="{Binding Mode=OneWay, Path=AVTransport.TrackDuration.TotalSeconds}"

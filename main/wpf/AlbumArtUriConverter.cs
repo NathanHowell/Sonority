@@ -42,9 +42,13 @@ namespace wpf
             {
                 return DependencyProperty.UnsetValue;
             }
-            else if (values[0] == null || values[1] == null)
+
+            foreach (object obj in values)
             {
-                return DependencyProperty.UnsetValue;
+                if (obj == null || obj == DependencyProperty.UnsetValue)
+                {
+                    return DependencyProperty.UnsetValue;
+                }
             }
 
             XPathNavigator nav = (XPathNavigator)values[0];

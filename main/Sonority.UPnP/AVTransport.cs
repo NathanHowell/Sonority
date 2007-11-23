@@ -55,11 +55,11 @@ namespace Sonority.UPnP
     public sealed class PositionInfo
     {
         public string Track;
-        public string TrackDuration;
+        public TimeSpan? TrackDuration;
         public string TrackMetaData;
         public Uri TrackUri;
-        public string RelTime;
-        public string AbsTime;
+        public TimeSpan? RelTime;
+        public TimeSpan? AbsTime;
         public string RelCount;
         public string AbsCount;
     }
@@ -139,8 +139,15 @@ namespace Sonority.UPnP
 
             PositionInfo pi = GetPositionInfo();
             IUPnPServiceCallback x = this;
-            x.StateVariableChanged(_service, "TrackDuration", TimeSpan.Parse(pi.TrackDuration));
-            x.StateVariableChanged(_service, "RelTime", (_timeSpanBase = TimeSpan.Parse(pi.RelTime)));
+
+            if (pi.TrackDuration.HasValue)
+            {
+                x.StateVariableChanged(_service, "TrackDuration", pi.TrackDuration.Value);
+            }
+            if (pi.RelTime.HasValue)
+            {
+                x.StateVariableChanged(_service, "RelTime", (_timeSpanBase = pi.RelTime.Value));
+            }
             _baseTime = DateTime.Now;
         }
 
@@ -213,14 +220,27 @@ namespace Sonority.UPnP
 
             PositionInfo pi = new PositionInfo();
             pi.Track = Convert.ToString(outArray[0], CultureInfo.InvariantCulture);
-            pi.TrackDuration = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
+            pi.TrackDuration = CreateTimeSpan(Convert.ToString(outArray[1], CultureInfo.InvariantCulture));
             pi.TrackMetaData = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
             pi.TrackUri = CreateUri(Convert.ToString(outArray[3], CultureInfo.InvariantCulture));
-            pi.RelTime = Convert.ToString(outArray[4], CultureInfo.InvariantCulture);
-            pi.AbsTime = Convert.ToString(outArray[5], CultureInfo.InvariantCulture);
+            pi.RelTime = CreateTimeSpan(Convert.ToString(outArray[4], CultureInfo.InvariantCulture));
+            pi.AbsTime = CreateTimeSpan(Convert.ToString(outArray[5], CultureInfo.InvariantCulture));
             pi.RelCount = Convert.ToString(outArray[6], CultureInfo.InvariantCulture);
             pi.AbsCount = Convert.ToString(outArray[7], CultureInfo.InvariantCulture);
             return pi;
+        }
+
+        private TimeSpan? CreateTimeSpan(string s)
+        {
+            TimeSpan timeSpan;
+            if (TimeSpan.TryParse(s, out timeSpan))
+            {
+                return timeSpan;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         // required
