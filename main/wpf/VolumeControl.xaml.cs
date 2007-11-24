@@ -22,16 +22,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
 using Sonority.UPnP;
 
 namespace wpf
@@ -40,23 +36,55 @@ namespace wpf
     /// Interaction logic for VolumeControl.xaml
     /// </summary>
 
-    public partial class VolumeControl : System.Windows.Controls.UserControl
+    public partial class VolumeControl : UserControl, IDisposable
     {
         public VolumeControl()
         {
             InitializeComponent();
+            _setVolumeTimer = new Timer(new TimerCallback(SetVolumeCallback));
+
+            _disc = ((wpf.App)Application.Current).Discover;
         }
 
-        void SetVolume(object sender, RoutedPropertyChangedEventArgs<double> e)
+        void IDisposable.Dispose()
+        {
+            _setVolumeTimer.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        private void SetVolume(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             ushort volume = (ushort)Math.Round(e.NewValue);
             FrameworkElement fe = (FrameworkElement)e.OriginalSource;
             ZonePlayer zp = (ZonePlayer)fe.DataContext;
-            if (volume != zp.RenderingControl.Volume[Channel.Master])
-            {
-                zp.RenderingControl.SetVolume(Channel.Master, volume);
-                e.Handled = true;
-            }
+
+            _volumes[zp.UniqueDeviceName] = volume;
+            _setVolumeTimer.Change(50, 0);
+            e.Handled = true;
         }
+
+        private void SetVolumeCallback(object state)
+        {
+            Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate
+            {
+                foreach (KeyValuePair<string, ushort> volume in _volumes)
+                {
+                    ZonePlayer zp = _disc.Intern(volume.Key);
+                    if (volume.Value != zp.RenderingControl.Volume[Channel.Master])
+                    {
+                        ThreadPool.QueueUserWorkItem(delegate
+                        {
+                            zp.RenderingControl.SetVolume(Channel.Master, volume.Value);
+                        });
+                    }
+                }
+
+                _volumes.Clear();
+            });
+        }
+
+        private Discover _disc;
+        private Dictionary<string, ushort> _volumes = new Dictionary<string, ushort>();
+        private Timer _setVolumeTimer;
     }
 }
