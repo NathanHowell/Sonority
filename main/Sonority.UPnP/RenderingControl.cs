@@ -22,7 +22,9 @@
 
 using System;
 using System.ComponentModel;
+using System.Collections;
 using System.IO;
+using System.Reflection;
 using System.Windows.Threading;
 using System.Xml.XPath;
 using UPNPLib;
@@ -46,6 +48,7 @@ namespace Sonority.UPnP
     {
         internal RenderingControl(UPnPService service) : base(service)
         {
+            _Loudness[Channel.Master] = false;
             foreach (Channel c in Enum.GetValues(typeof(Channel)))
             {
                 _Mute[c] = false;
@@ -64,41 +67,23 @@ namespace Sonority.UPnP
             XPathDocument doc = new XPathDocument(new StringReader(LastChange));
             XPathNavigator nav = doc.CreateNavigator();
 
-            bool raise = false;
-            foreach (XPathNavigator node in nav.Select(XPath.Expressions.VolumeElements))
+            foreach (XPathNavigator node in nav.Select(XPath.Expressions.ChannelElements))
             {
+                FieldInfo fi = this.GetType().GetField(String.Format("_{0}", node.LocalName), BindingFlags.Instance | BindingFlags.NonPublic);
+                IDictionary dict = (IDictionary)fi.GetValue(this);
+                Type[] dictionaryTypes = fi.FieldType.GetGenericArguments();
+
                 string channelString = node.SelectSingleNode(XPath.Expressions.ChannelAttributes).Value;
                 Channel channel = (Channel)Enum.Parse(typeof(Channel), channelString, true);
 
-                ushort newVolume = (ushort)node.SelectSingleNode(XPath.Expressions.ValueAttributes).ValueAs(typeof(ushort));
+                object value = node.SelectSingleNode(XPath.Expressions.ValueAttributes).ValueAs(dictionaryTypes[1]);
 
-                if (_Volume[channel] != newVolume)
+                if (Object.Equals(dict[channel], value) == false)
                 {
-                    _Volume[channel] = newVolume;
-                    raise = true;
+                    dict[channel] = value;
+                    RaisePropertyChangedEvent(new PropertyChangedEventArgs(node.LocalName));
+                    RaisePropertyChangedEvent(new PropertyChangedEventArgs(String.Format("{0}[{1}]", node.LocalName, channel)));
                 }
-            }
-            if (raise)
-            {
-                RaisePropertyChangedEvent(new PropertyChangedEventArgs("Volume"));
-            }
-
-            raise = false;
-            foreach (XPathNavigator node in nav.Select(XPath.Expressions.MuteElements))
-            {
-                string channelString = node.SelectSingleNode(XPath.Expressions.ChannelAttributes).Value;
-                Channel channel = (Channel)Enum.Parse(typeof(Channel), channelString, true);
-                bool newMute = node.SelectSingleNode(XPath.Expressions.ValueAttributes).ValueAsBoolean;
-
-                if (_Mute[channel] != newMute)
-                {
-                    _Mute[channel] = newMute;
-                    raise = true;
-                }
-            }
-            if (raise)
-            {
-                RaisePropertyChangedEvent(new PropertyChangedEventArgs("Mute"));
             }
 
             /* TODO: parse the rest, and raise change notifications
