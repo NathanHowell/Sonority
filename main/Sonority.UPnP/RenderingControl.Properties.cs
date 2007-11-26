@@ -37,6 +37,7 @@ namespace Sonority.UPnP
         public Dictionary<Channel, bool> Loudness { get { return _Loudness; } }
         public bool SupportsOutputFixed { get { return _SupportsOutputFixed; } }
         public bool OutputFixed { get { return _OutputFixed; } }
+        public string PresetNameList { get { return _PresetNameList; } }
 
         private const uint _InstanceID = 0;
         private string _LastChange = String.Empty;
@@ -48,5 +49,6 @@ namespace Sonority.UPnP
         private Dictionary<Channel, bool> _Loudness = new Dictionary<Channel, bool>();
         private bool _SupportsOutputFixed = false;
         private bool _OutputFixed = false;
+        private string _PresetNameList = String.Empty;
     }
 }

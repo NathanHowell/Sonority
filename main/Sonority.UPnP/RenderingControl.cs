@@ -64,12 +64,29 @@ namespace Sonority.UPnP
                 return;
             }
 
+            /* <Event xmlns=\"urn:schemas-upnp-org:metadata-1-0/RCS/\">
+             * <InstanceID val=\"0\">
+             * <Volume channel=\"Master\" val=\"59\"/>
+             * <Volume channel=\"LF\" val=\"100\"/>
+             * <Volume channel=\"RF\" val=\"100\"/>
+             * <Mute channel=\"Master\" val=\"0\"/>
+             * <Mute channel=\"LF\" val=\"0\"/>
+             * <Mute channel=\"RF\" val=\"0\"/>
+             * <Bass val=\"0\"/>
+             * <Treble val=\"0\"/>
+             * <Loudness channel=\"Master\" val=\"0\"/>
+             * <OutputFixed val=\"0\"/>
+             * <PresetNameList>FactoryDefaults</PresetNameList>
+             * </InstanceID>
+             * </Event>
+             */
+
             XPathDocument doc = new XPathDocument(new StringReader(LastChange));
             XPathNavigator nav = doc.CreateNavigator();
 
-            foreach (XPathNavigator node in nav.Select(XPath.Expressions.ChannelElements))
+            foreach (XPathNavigator node in nav.Select(XPath.Expressions.RenderingChannelElements))
             {
-                FieldInfo fi = this.GetType().GetField(String.Format("_{0}", node.LocalName), BindingFlags.Instance | BindingFlags.NonPublic);
+                FieldInfo fi = GetField(node);
                 IDictionary dict = (IDictionary)fi.GetValue(this);
                 Type[] dictionaryTypes = fi.FieldType.GetGenericArguments();
 
@@ -86,23 +103,36 @@ namespace Sonority.UPnP
                 }
             }
 
-            /* TODO: parse the rest, and raise change notifications
-             * <Event xmlns=\"urn:schemas-upnp-org:metadata-1-0/RCS/\">
-             * <InstanceID val=\"0\">
-             * <Volume channel=\"Master\" val=\"59\"/>
-             * <Volume channel=\"LF\" val=\"100\"/>
-             * <Volume channel=\"RF\" val=\"100\"/>
-             * <Mute channel=\"Master\" val=\"0\"/>
-             * <Mute channel=\"LF\" val=\"0\"/>
-             * <Mute channel=\"RF\" val=\"0\"/>
-             * <Bass val=\"0\"/>
-             * <Treble val=\"0\"/>
-             * <Loudness channel=\"Master\" val=\"0\"/>
-             * <OutputFixed val=\"0\"/>
-             * <PresetNameList>FactoryDefaults</PresetNameList>
-             * </InstanceID>
-             * </Event>
-             */
+            foreach (XPathNavigator node in nav.Select(XPath.Expressions.RenderingValueElements))
+            {
+                FieldInfo fi = GetField(node);
+                object oldValue = fi.GetValue(this);
+                object newValue = node.SelectSingleNode(XPath.Expressions.ValueAttributes).ValueAs(fi.FieldType);
+
+                if (Object.Equals(oldValue, newValue) == false)
+                {
+                    fi.SetValue(this, newValue);
+                    RaisePropertyChangedEvent(new PropertyChangedEventArgs(node.LocalName));
+                }
+            }
+
+            foreach (XPathNavigator node in nav.Select(XPath.Expressions.RenderingNoAttributeElements))
+            {
+                FieldInfo fi = GetField(node);
+                object oldValue = fi.GetValue(this);
+                object newValue = node.ValueAs(fi.FieldType);
+
+                if (Object.Equals(oldValue, newValue) == false)
+                {
+                    fi.SetValue(this, newValue);
+                    RaisePropertyChangedEvent(new PropertyChangedEventArgs(node.LocalName));
+                }
+            }
+        }
+
+        private FieldInfo GetField(XPathNavigator node)
+        {
+            return this.GetType().GetField(String.Format("_{0}", node.LocalName), BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
         public bool GetMute(Channel channel)

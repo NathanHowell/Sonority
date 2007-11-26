@@ -54,9 +54,9 @@ namespace Sonority.XPath
         public static readonly XPathExpression ValueAttributes = XPathExpression.Compile("@val", XPath.Globals.Manager);
         public static readonly XPathExpression ChannelAttributes = XPathExpression.Compile("@channel", XPath.Globals.Manager);
 
-        public static readonly XPathExpression VolumeElements = XPathExpression.Compile("/rcs:Event/rcs:InstanceID[@val='0']/rcs:Volume", XPath.Globals.Manager);
-        public static readonly XPathExpression MuteElements = XPathExpression.Compile("/rcs:Event/rcs:InstanceID[@val='0']/rcs:Mute", XPath.Globals.Manager);
-        public static readonly XPathExpression ChannelElements = XPathExpression.Compile("/rcs:Event/rcs:InstanceID[@val='0']/rcs:*[@channel and @val]", XPath.Globals.Manager);
+        public static readonly XPathExpression RenderingChannelElements = XPathExpression.Compile("/rcs:Event/rcs:InstanceID[@val='0']/rcs:*[@channel and @val]", XPath.Globals.Manager);
+        public static readonly XPathExpression RenderingValueElements = XPathExpression.Compile("/rcs:Event/rcs:InstanceID[@val='0']/rcs:*[not(@channel) and @val]", XPath.Globals.Manager);
+        public static readonly XPathExpression RenderingNoAttributeElements = XPathExpression.Compile("/rcs:Event/rcs:InstanceID[@val='0']/rcs:*[not(@*)]", XPath.Globals.Manager);
 
         public static readonly XPathExpression ItemsElements = XPathExpression.Compile("/didl:DIDL-Lite/didl:item", XPath.Globals.Manager);
         public static readonly XPathExpression ContainerElements = XPathExpression.Compile("/didl:DIDL-Lite/didl:container", XPath.Globals.Manager);
