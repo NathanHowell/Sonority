@@ -32,23 +32,36 @@ namespace Sonority.UPnP
 {
     public sealed class QueueItem : IComparable<QueueItem>, IComparable
     {
-        public QueueItem(XPathNavigator node)
+        public QueueItem(XPathNavigator nav)
         {
-            if (node == null)
+            if (nav == null)
             {
-                throw new ArgumentNullException("node");
+                throw new ArgumentNullException("nav");
             }
 
-            _item_id = node.SelectSingleNode("@id", XPath.Globals.Manager).Value;
-            _item_parentID = node.SelectSingleNode("@parentID", XPath.Globals.Manager).Value;
-            _item_restricted = node.SelectSingleNode("@restricted", XPath.Globals.Manager).ValueAsBoolean;
-            _res_protocolInfo = node.SelectSingleNode("didl:res/@protocolInfo", XPath.Globals.Manager).Value;
-            _res_value = new Uri(node.SelectSingleNode("didl:res", XPath.Globals.Manager).Value);
-            _albumArtUri_value = node.SelectSingleNode("upnp:albumArtURI", XPath.Globals.Manager).Value;
-            _title_value = node.SelectSingleNode("dc:title", XPath.Globals.Manager).Value;
-            _class_value = node.SelectSingleNode("upnp:class", XPath.Globals.Manager).Value;
-            _creator_value = node.SelectSingleNode("dc:creator", XPath.Globals.Manager).Value;
-            _album_value = node.SelectSingleNode("upnp:album", XPath.Globals.Manager).Value;
+            _item_id = SelectSingleNode<string>(nav, "@id");
+            _item_parentID = SelectSingleNode<string>(nav, "@parentID");
+            _item_restricted = SelectSingleNode<bool>(nav, "@restricted");
+            _res_protocolInfo = SelectSingleNode<string>(nav, "didl:res/@protocolInfo");
+            _res_value = SelectSingleNode<Uri>(nav, "didl:res");
+            _albumArtUri_value = SelectSingleNode<string>(nav, "upnp:albumArtURI");
+            _title_value = SelectSingleNode<string>(nav, "dc:title");
+            _class_value = SelectSingleNode<string>(nav, "upnp:class");
+            _creator_value = SelectSingleNode<string>(nav, "dc:creator");
+            _album_value = SelectSingleNode<string>(nav, "upnp:album");
+        }
+
+        private T SelectSingleNode<T>(XPathNavigator nav, string xpath)
+        {
+            XPathNavigator node = nav.SelectSingleNode(xpath, XPath.Globals.Manager);
+            if (node == null || String.IsNullOrEmpty(node.Value))
+            {
+                return default(T);
+            }
+            else
+            {
+                return (T)node.ValueAs(typeof(T));
+            }
         }
 
         int IComparable<QueueItem>.CompareTo(QueueItem other)
