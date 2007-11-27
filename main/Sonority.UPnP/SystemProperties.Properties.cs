@@ -42,5 +42,6 @@ namespace Sonority.UPnP
         private string _R_TrialZPSerial = String.Empty;
         private string _R_UpdatePreference = String.Empty;
         private string _R_LastChange = String.Empty;
+        private string _R_ForceReIndex = String.Empty;
     }
 }

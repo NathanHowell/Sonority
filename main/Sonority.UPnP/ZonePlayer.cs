@@ -59,10 +59,20 @@ namespace Sonority.UPnP
             Initialize();
         }
 
+        private static UPnPDeviceFinder _finder = new UPnPDeviceFinderClass();
+
         private static UPnPDevice FindByUDN(string uniqueDeviceName)
         {
-            UPnPDeviceFinder finder = new UPnPDeviceFinderClass();
-            return finder.FindByUDN(uniqueDeviceName);
+            for (int i = 0; i < 3; ++i)
+            {
+                UPnPDevice device = _finder.FindByUDN(uniqueDeviceName);
+                if (device != null)
+                {
+                    return device;
+                }
+            }
+
+            return null;
         }
 
         private void Initialize()
@@ -72,16 +82,24 @@ namespace Sonority.UPnP
                 throw new ArgumentNullException();
             }
 
-            BeginUpdateQueue();
             ContentDirectory.PropertyChanged += new PropertyChangedEventHandler(ContainerUpdateIDs_PropertyChanged);
             Dispatcher.BeginInvoke(DispatcherPriority.Background, new ThreadStart(GetDocumentUrl));
-            Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate
+            BeginUpdateQueue();
+
+#if DEBUG
+            // this is helpful just for loading in otherwise unused interfaces and being able to poke
+            // at them in a debugger...
+            if (System.Diagnostics.Debugger.IsAttached)
             {
-                foreach (System.Reflection.PropertyInfo pi in this.GetType().GetProperties(System.Reflection.BindingFlags.Instance))
+                Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, (ThreadStart)delegate
                 {
-                    pi.GetGetMethod().Invoke(this, null);
-                }
-            });
+                    foreach (PropertyInfo pi in this.GetType().GetProperties(BindingFlags.Instance))
+                    {
+                        pi.GetGetMethod().Invoke(this, null);
+                    }
+                });
+            }
+#endif
         }
 
         void GetDocumentUrl()
@@ -252,7 +270,7 @@ namespace Sonority.UPnP
 
         private void BeginUpdateQueue()
         {
-            Dispatcher.BeginInvoke(DispatcherPriority.DataBind, new ThreadStart(UpdateQueue));
+            ThreadPool.QueueUserWorkItem(delegate { UpdateQueue(); });
         }
 
         // maybe there is some way to detect items moving within the queue otherwise need to implement
@@ -264,26 +282,32 @@ namespace Sonority.UPnP
             {
                 QueueItem qi = new QueueItem(node);
 
-                if (index < _queue.Count)
+                Dispatcher.Invoke(DispatcherPriority.Background, (ThreadStart)delegate
                 {
-                    if (_queue[index].NumericID == qi.NumericID && _queue[index].Res == qi.Res)
+                    if (index < _queue.Count)
                     {
-                        _queue.RemoveAt(index);
+                        if (_queue[index].NumericID == qi.NumericID && _queue[index].Res == qi.Res)
+                        {
+                            _queue.RemoveAt(index);
+                            _queue.Insert(index, qi);
+                        }
+                    }
+                    else
+                    {
                         _queue.Insert(index, qi);
                     }
-                }
-                else
-                {
-                    _queue.Insert(index, qi);
-                }
+                });
 
                 index++;
             }
 
-            while (index < _queue.Count)
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate
             {
-                _queue.RemoveAt(index);
-            }
+                while (index < _queue.Count)
+                {
+                    _queue.RemoveAt(index);
+                }
+            });
         }
 
         private void ContainerUpdateIDs_PropertyChanged(object sender, PropertyChangedEventArgs e)

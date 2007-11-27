@@ -54,7 +54,7 @@ namespace Sonority.UPnP
                 object stateVariable = Convert.ChangeType(service.QueryStateVariable(fi.Name.Substring(1)), fi.FieldType, CultureInfo.InvariantCulture);
                 if (String.CompareOrdinal(stateVariable.ToString(), "NOT_IMPLEMENTED") != 0)
                 {
-                    target.Dispatcher.BeginInvoke(DispatcherPriority.DataBind, (ThreadStart)delegate { target.StateVariableChanged(service, fi.Name.Substring(1), stateVariable); });
+                    target.Dispatcher.BeginInvoke(DispatcherPriority.Background, (ThreadStart)delegate { target.StateVariableChanged(service, fi.Name.Substring(1), stateVariable); });
                 }
             }
             catch (COMException e)

@@ -51,7 +51,11 @@ namespace Sonority.UPnP
                 foreach (XPathNavigator node in nav.Select(XPath.Expressions.EventElements))
                 {
                     XPathNavigator val = node.SelectSingleNode(XPath.Expressions.ValueAttributes);
-                    callback.StateVariableChanged(pus, node.LocalName, val.Value);
+
+                    if (String.CompareOrdinal(val.Value, "NOT_IMPLEMENTED") != 0)
+                    {
+                        callback.StateVariableChanged(pus, node.LocalName, val.Value);
+                    }
                 }
             }
             finally
