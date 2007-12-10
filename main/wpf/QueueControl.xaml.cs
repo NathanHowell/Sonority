@@ -24,16 +24,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using System.Reflection;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml.XPath;
 using Sonority.UPnP;
 
@@ -43,7 +37,7 @@ namespace wpf
     /// Interaction logic for QueueControl.xaml
     /// </summary>
 
-    public partial class QueueControl : System.Windows.Controls.UserControl
+    public partial class QueueControl : UserControl
     {
         public QueueControl()
         {
@@ -79,17 +73,19 @@ namespace wpf
                     // each time the queue is modified
                     QueueItem[] delete = new QueueItem[lv.SelectedItems.Count];
                     lv.SelectedItems.CopyTo(delete, 0);
-                    // TODO: reverse numeric sort on queue ID
-                    System.Collections.Comparer cmp = new System.Collections.Comparer(System.Globalization.CultureInfo.InvariantCulture);
-                    Array.Sort(delete, delegate(QueueItem a, QueueItem b) { return cmp.Compare(a.NumericID, b.NumericID) * -1; });
 
-                    System.Threading.ThreadPool.UnsafeQueueUserWorkItem(delegate
+                    // reverse numeric sort on queue ID
+                    Array.Sort(delete, delegate(QueueItem a, QueueItem b) { return Comparer<int>.Default.Compare(a.NumericId, b.NumericId) * -1; });
+
+                    // deletes must be synchronous & in order to work properly
+                    ThreadPool.QueueUserWorkItem(delegate
                     {
                         foreach (QueueItem qi in delete)
                         {
-                            zp.AVTransport.RemoveTrackFromQueue(qi.ItemID);
+                            zp.AVTransport.RemoveTrackFromQueue(qi.ItemId);
                         }
-                    }, null);
+                    });
+
                     args.Handled = true;
                     break;
             }

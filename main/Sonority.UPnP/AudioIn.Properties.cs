@@ -32,10 +32,12 @@ namespace Sonority.UPnP
         public int LeftLineInLevel { get { return _LeftLineInLevel; } }
         public int RightLineInLevel { get { return _RightLineInLevel; } }
 
+#pragma warning disable 0649 // Field 'x' is never assigned to, and will always have its default value
         private string _AudioInputName = String.Empty;
         private string _Icon = String.Empty;
-        private bool _LineInConnected = false;
-        private int _LeftLineInLevel = 0;
-        private int _RightLineInLevel = 0;
+        private bool _LineInConnected;
+        private int _LeftLineInLevel;
+        private int _RightLineInLevel;
+#pragma warning restore 0649
     }
 }

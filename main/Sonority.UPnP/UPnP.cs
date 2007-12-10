@@ -22,6 +22,7 @@
 
 using System;
 using System.Globalization;
+using System.Threading;
 using UPNPLib;
 
 namespace Sonority.UPnP
@@ -39,6 +40,11 @@ namespace Sonority.UPnP
         public static T InvokeAction<T>(UPnPService service, string actionName, params object[] args)
         {
             return (T)Convert.ChangeType(InvokeAction(service, actionName, args).GetValue(0), typeof(T), CultureInfo.InvariantCulture);
+        }
+
+        public static void AsyncInvokeAction(UPnPService service, string actionName, params object[] args)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { InvokeAction(service, actionName, args); });
         }
     }
 }

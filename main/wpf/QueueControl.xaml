@@ -85,7 +85,7 @@
                   <MultiBinding Converter="{StaticResource QueueItemsComparator}" Mode="OneWay" FallbackValue="False">
                     <Binding Path="DataContext.Coordinator.AVTransport.CurrentTrack" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollViewer}}"/>
                     <Binding Path="NumericID"/>
-                    <Binding Path="DataContext.Coordinator.AVTransport.CurrentTrackURI" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollViewer}}"/>
+                    <Binding Path="DataContext.Coordinator.AVTransport.CurrentTrackUri" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollViewer}}"/>
                     <Binding Path="Res"/>
                   </MultiBinding>
                 </DataTrigger.Binding>

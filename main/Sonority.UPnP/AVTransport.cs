@@ -23,6 +23,7 @@
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Threading;
@@ -34,47 +35,77 @@ namespace Sonority.UPnP
 {
     public sealed class MediaInfo
     {
-        public uint NrTracks;
-        public string MediaDuration;
-        public Uri CurrentUri;
-        public string CurrentUriMetadata;
-        public Uri NextUri;
-        public string NextUriMetadata;
-        public string PlayMedium;
-        public string RecordMedium;
-        public string WriteStatus;
+        public uint NrTracks { get { return _nrTracks; } }
+        public string MediaDuration { get { return _mediaDuration; } }
+        public Uri CurrentUri { get { return _currentUri; } }
+        public string CurrentUriMetadata { get { return _currentUriMetadata; } }
+        public Uri NextUri { get { return _nextUri; } }
+        public string NextUriMetadata { get { return _nextUriMetadata; } }
+        public string PlayMedium { get { return _playMedium; } }
+        public string RecordMedium { get { return _recordMedium; } }
+        public string WriteStatus { get { return _writeStatus; } }
+
+        internal uint _nrTracks;
+        internal string _mediaDuration;
+        internal Uri _currentUri;
+        internal string _currentUriMetadata;
+        internal Uri _nextUri;
+        internal string _nextUriMetadata;
+        internal string _playMedium;
+        internal string _recordMedium;
+        internal string _writeStatus;
     }
 
     public sealed class TransportInfo
     {
-        public TransportState CurrentTransportState;
-        public string CurrentTransportStatus;
-        public string CurrentSpeed;
+        public TransportState CurrentTransportState { get { return _currentTransportState; } }
+        public string CurrentTransportStatus { get { return _currentTransportStatus; } }
+        public string CurrentSpeed { get { return _currentSpeed; } }
+
+        internal TransportState _currentTransportState;
+        internal string _currentTransportStatus;
+        internal string _currentSpeed;
     }
 
     public sealed class PositionInfo
     {
-        public string Track;
-        public TimeSpan? TrackDuration;
-        public string TrackMetaData;
-        public Uri TrackUri;
-        public TimeSpan? RelTime;
-        public TimeSpan? AbsTime;
-        public string RelCount;
-        public string AbsCount;
+        public string Track { get { return _track; } }
+        public TimeSpan? TrackDuration { get { return _trackDuration; } }
+        public string TrackMetaData { get { return _trackMetaData; } }
+        public Uri TrackUri { get { return _trackUri; } }
+        public TimeSpan? RelTime { get { return _relTime; } }
+        public TimeSpan? AbsTime { get { return _absTime; } }
+        public string RelCount { get { return _relCount; } }
+        public string AbsCount { get { return _absCount; } }
+
+        internal string _track;
+        internal TimeSpan? _trackDuration;
+        internal string _trackMetaData;
+        internal Uri _trackUri;
+        internal TimeSpan? _relTime;
+        internal TimeSpan? _absTime;
+        internal string _relCount;
+        internal string _absCount;
     }
 
     public sealed class DeviceCapabilities
     {
-        public string PlayMedia;
-        public string RecMedia;
-        public string ReqQualityModes;
+        public string PlayMedia { get { return _playMedia; } }
+        public string RecMedia { get { return _recMedia; } }
+        public string ReqQualityModes { get { return _reqQualityModes; } }
+
+        internal string _playMedia;
+        internal string _recMedia;
+        internal string _reqQualityModes;
     }
 
     public sealed class TransportSettings
     {
-        public string PlayMode;
-        public string RecQualityMode;
+        public string PlayMode { get { return _playMode; } }
+        public string RecQualityMode { get { return _recQualityMode; } }
+
+        internal string _playMode;
+        internal string _recQualityMode;
     }
 
     public enum SeekMode
@@ -167,9 +198,14 @@ namespace Sonority.UPnP
         // required
         public void SetAVTransportUri(Uri currentUri, string currentUriMetadata)
         {
-            if (AVTransportURI != currentUri || String.CompareOrdinal(_AVTransportURIMetaData, currentUriMetadata) != 0)
+            if (currentUri == null)
             {
-                UPnP.InvokeAction(_service, "SetAVTransportURI", InstanceID, currentUri.ToString(), currentUriMetadata);
+                throw new ArgumentException("currentUri is required", "currentUri");
+            }
+
+            if (AVTransportUri != currentUri || String.CompareOrdinal(_AVTransportURIMetaData, currentUriMetadata) != 0)
+            {
+                UPnP.InvokeAction(_service, "SetAVTransportURI", InstanceId, currentUri.ToString(), currentUriMetadata);
                 _TransportState = TransportState.TRANSITIONING;
             }
         }
@@ -177,60 +213,68 @@ namespace Sonority.UPnP
         // optional
         public void SetNextAVTransportUri(Uri currentUri, string currentUriMetadata)
         {
-            if (NextAVTransportURI != currentUri || String.CompareOrdinal(_NextAVTransportURIMetaData, currentUriMetadata) != 0)
+            if (currentUri == null)
             {
-                UPnP.InvokeAction(_service, "SetNextAVTransportUri", InstanceID, currentUri.ToString(), currentUriMetadata);
+                throw new ArgumentException("currentUri is required", "currentUri");
+            }
+
+            if (NextAVTransportUri != currentUri || String.CompareOrdinal(_NextAVTransportURIMetaData, currentUriMetadata) != 0)
+            {
+                UPnP.InvokeAction(_service, "SetNextAVTransportUri", InstanceId, currentUri.ToString(), currentUriMetadata);
             }
         }
 
         // required
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public MediaInfo GetMediaInfo()
         {
-            object[] outArray = UPnP.InvokeAction(_service, "GetMediaInfo", InstanceID);
+            object[] outArray = UPnP.InvokeAction(_service, "GetMediaInfo", InstanceId);
 
             MediaInfo mi = new MediaInfo();
-            mi.NrTracks = Convert.ToUInt32(outArray[0], CultureInfo.InvariantCulture);
-            mi.MediaDuration = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
-            mi.CurrentUri = CreateUri(Convert.ToString(outArray[2], CultureInfo.InvariantCulture));
-            mi.CurrentUriMetadata = Convert.ToString(outArray[3], CultureInfo.InvariantCulture);
-            mi.NextUri = CreateUri(Convert.ToString(outArray[4], CultureInfo.InvariantCulture));
-            mi.NextUriMetadata = Convert.ToString(outArray[5], CultureInfo.InvariantCulture);
-            mi.PlayMedium = Convert.ToString(outArray[6], CultureInfo.InvariantCulture);
-            mi.RecordMedium = Convert.ToString(outArray[7], CultureInfo.InvariantCulture);
-            mi.WriteStatus = Convert.ToString(outArray[8], CultureInfo.InvariantCulture);
+            mi._nrTracks = Convert.ToUInt32(outArray[0], CultureInfo.InvariantCulture);
+            mi._mediaDuration = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
+            mi._currentUri = CreateUri(Convert.ToString(outArray[2], CultureInfo.InvariantCulture));
+            mi._currentUriMetadata = Convert.ToString(outArray[3], CultureInfo.InvariantCulture);
+            mi._nextUri = CreateUri(Convert.ToString(outArray[4], CultureInfo.InvariantCulture));
+            mi._nextUriMetadata = Convert.ToString(outArray[5], CultureInfo.InvariantCulture);
+            mi._playMedium = Convert.ToString(outArray[6], CultureInfo.InvariantCulture);
+            mi._recordMedium = Convert.ToString(outArray[7], CultureInfo.InvariantCulture);
+            mi._writeStatus = Convert.ToString(outArray[8], CultureInfo.InvariantCulture);
             return mi;
         }
 
         // required
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public TransportInfo GetTransportInfo()
         {
-            object[] outArray = UPnP.InvokeAction(_service, "GetTransportInfo", InstanceID);
+            object[] outArray = UPnP.InvokeAction(_service, "GetTransportInfo", InstanceId);
 
             TransportInfo ti = new TransportInfo();
-            ti.CurrentTransportState = (TransportState)Enum.Parse(typeof(TransportState), Convert.ToString(outArray[0], CultureInfo.InvariantCulture), true);
-            ti.CurrentTransportStatus = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
-            ti.CurrentSpeed = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
+            ti._currentTransportState = (TransportState)Enum.Parse(typeof(TransportState), Convert.ToString(outArray[0], CultureInfo.InvariantCulture), true);
+            ti._currentTransportStatus = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
+            ti._currentSpeed = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
             return ti;
         }
 
         // required
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public PositionInfo GetPositionInfo()
         {
-            object[] outArray = UPnP.InvokeAction(_service, "GetPositionInfo", InstanceID);
+            object[] outArray = UPnP.InvokeAction(_service, "GetPositionInfo", InstanceId);
 
             PositionInfo pi = new PositionInfo();
-            pi.Track = Convert.ToString(outArray[0], CultureInfo.InvariantCulture);
-            pi.TrackDuration = CreateTimeSpan(Convert.ToString(outArray[1], CultureInfo.InvariantCulture));
-            pi.TrackMetaData = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
-            pi.TrackUri = CreateUri(Convert.ToString(outArray[3], CultureInfo.InvariantCulture));
-            pi.RelTime = CreateTimeSpan(Convert.ToString(outArray[4], CultureInfo.InvariantCulture));
-            pi.AbsTime = CreateTimeSpan(Convert.ToString(outArray[5], CultureInfo.InvariantCulture));
-            pi.RelCount = Convert.ToString(outArray[6], CultureInfo.InvariantCulture);
-            pi.AbsCount = Convert.ToString(outArray[7], CultureInfo.InvariantCulture);
+            pi._track = Convert.ToString(outArray[0], CultureInfo.InvariantCulture);
+            pi._trackDuration = CreateTimeSpan(Convert.ToString(outArray[1], CultureInfo.InvariantCulture));
+            pi._trackMetaData = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
+            pi._trackUri = CreateUri(Convert.ToString(outArray[3], CultureInfo.InvariantCulture));
+            pi._relTime = CreateTimeSpan(Convert.ToString(outArray[4], CultureInfo.InvariantCulture));
+            pi._absTime = CreateTimeSpan(Convert.ToString(outArray[5], CultureInfo.InvariantCulture));
+            pi._relCount = Convert.ToString(outArray[6], CultureInfo.InvariantCulture);
+            pi._absCount = Convert.ToString(outArray[7], CultureInfo.InvariantCulture);
             return pi;
         }
 
-        private TimeSpan? CreateTimeSpan(string s)
+        private static TimeSpan? CreateTimeSpan(string s)
         {
             TimeSpan timeSpan;
             if (TimeSpan.TryParse(s, out timeSpan))
@@ -244,25 +288,27 @@ namespace Sonority.UPnP
         }
 
         // required
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public DeviceCapabilities GetDeviceCapabilities()
         {
-            object[] outArray = UPnP.InvokeAction(_service, "GetDeviceCapabilities", InstanceID);
+            object[] outArray = UPnP.InvokeAction(_service, "GetDeviceCapabilities", InstanceId);
 
             DeviceCapabilities dc = new DeviceCapabilities();
-            dc.PlayMedia = Convert.ToString(outArray[0], CultureInfo.InvariantCulture);
-            dc.RecMedia = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
-            dc.ReqQualityModes = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
+            dc._playMedia = Convert.ToString(outArray[0], CultureInfo.InvariantCulture);
+            dc._recMedia = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
+            dc._reqQualityModes = Convert.ToString(outArray[2], CultureInfo.InvariantCulture);
             return dc;
         }
 
         // required
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public TransportSettings GetTransportSettings()
         {
-            object[] outArray = UPnP.InvokeAction(_service, "GetTransportSettings", InstanceID);
+            object[] outArray = UPnP.InvokeAction(_service, "GetTransportSettings", InstanceId);
 
             TransportSettings ts = new TransportSettings();
-            ts.PlayMode = Convert.ToString(outArray[0], CultureInfo.InvariantCulture);
-            ts.RecQualityMode = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
+            ts._playMode = Convert.ToString(outArray[0], CultureInfo.InvariantCulture);
+            ts._recQualityMode = Convert.ToString(outArray[1], CultureInfo.InvariantCulture);
             return ts;
         }
 
@@ -271,7 +317,7 @@ namespace Sonority.UPnP
         {
             if (TransportState != TransportState.STOPPED)
             {
-                UPnP.InvokeAction(_service, "Stop", InstanceID);
+                UPnP.InvokeAction(_service, "Stop", InstanceId);
             }
         }
 
@@ -281,7 +327,7 @@ namespace Sonority.UPnP
             const string speed = "1";
             if (this.NumberOfTracks > 0 && TransportState != TransportState.PLAYING)
             {
-                UPnP.InvokeAction(_service, "Play", InstanceID, speed);
+                UPnP.InvokeAction(_service, "Play", InstanceId, speed);
             }
         }
 
@@ -290,7 +336,7 @@ namespace Sonority.UPnP
         {
             if (TransportState != TransportState.PAUSED_PLAYBACK)
             {
-                UPnP.InvokeAction(_service, "Pause", InstanceID);
+                UPnP.InvokeAction(_service, "Pause", InstanceId);
             }
         }
 
@@ -309,13 +355,13 @@ namespace Sonority.UPnP
         // optional
         public void Record()
         {
-            UPnP.InvokeAction(_service, "Record", InstanceID);
+            UPnP.InvokeAction(_service, "Record", InstanceId);
         }
 
         // required
         public void Seek(SeekMode unit, string target)
         {
-            UPnP.InvokeAction(_service, "Seek", InstanceID, unit.ToString(), target);
+            UPnP.InvokeAction(_service, "Seek", InstanceId, unit.ToString(), target);
         }
 
         // required
@@ -323,7 +369,7 @@ namespace Sonority.UPnP
         {
             if (CurrentTrack < NumberOfTracks)
             {
-                UPnP.InvokeAction(_service, "Next", InstanceID);
+                UPnP.InvokeAction(_service, "Next", InstanceId);
             }
         }
 
@@ -332,14 +378,14 @@ namespace Sonority.UPnP
         {
             if (CurrentTrack > 1)
             {
-               UPnP.InvokeAction(_service, "Previous", InstanceID);
+               UPnP.InvokeAction(_service, "Previous", InstanceId);
             }
         }
 
         // optional
         public void SetPlayMode(PlayMode newPlayMode)
         {
-            UPnP.InvokeAction(_service, "SetPlayMode", InstanceID, newPlayMode.ToString());
+            UPnP.InvokeAction(_service, "SetPlayMode", InstanceId, newPlayMode.ToString());
         }
 
         // optional
@@ -349,14 +395,20 @@ namespace Sonority.UPnP
         }
 
         // optional
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public string GetCurrentTransportActions()
         {
-            return UPnP.InvokeAction<String>(_service, "GetCurrentTransportActions", InstanceID);
+            return UPnP.InvokeAction<String>(_service, "GetCurrentTransportActions", InstanceId);
         }
 
-        public void AddURIToQueue(Uri enqueuedURI, string enqueuedURIMetaData, uint desiredFirstTrackNumberEnqueued, bool enqueueAsNext)
+        public void AddUriToQueue(Uri enqueuedUri, string enqueuedUriMetaData, uint desiredFirstTrackNumberEnqueued, bool enqueueAsNext)
         {
-            UPnP.InvokeAction(_service, "AddURIToQueue", InstanceID, enqueuedURI.ToString(), enqueuedURIMetaData, desiredFirstTrackNumberEnqueued, enqueueAsNext);
+            if (enqueuedUri == null)
+            {
+                throw new ArgumentException("enqueuedUri required", "enqueuedUri");
+            }
+
+            UPnP.InvokeAction(_service, "AddURIToQueue", InstanceId, enqueuedUri.ToString(), enqueuedUriMetaData, desiredFirstTrackNumberEnqueued, enqueueAsNext);
             // out[0] == FirstTrackNumberEnqueued
             // out[1] == NumTracksAdded
             // out[2] == NewQueueLength
@@ -364,20 +416,20 @@ namespace Sonority.UPnP
 
         public void ReorderTracksInQueue(uint startingIndex, uint numberOfTracks, uint insertBefore)
         {
-            UPnP.InvokeAction(_service, "ReorderTracksInQueue", InstanceID, startingIndex, numberOfTracks, insertBefore);
+            UPnP.AsyncInvokeAction(_service, "ReorderTracksInQueue", InstanceId, startingIndex, numberOfTracks, insertBefore);
         }
 
         public void RemoveAllTracksFromQueue()
         {
-            UPnP.InvokeAction(_service, "RemoveAllTracksFromQueue", InstanceID);
+            UPnP.AsyncInvokeAction(_service, "RemoveAllTracksFromQueue", InstanceId);
         }
 
-        public void RemoveTrackFromQueue(string objectID)
+        public void RemoveTrackFromQueue(string objectId)
         {
-            UPnP.InvokeAction(_service, "RemoveTrackFromQueue", InstanceID, objectID);
+            UPnP.InvokeAction(_service, "RemoveTrackFromQueue", InstanceId, objectId);
         }
 
-        private Uri CreateUri(string uri)
+        private static Uri CreateUri(string uri)
         {
             if (String.IsNullOrEmpty(uri))
             {
@@ -387,7 +439,7 @@ namespace Sonority.UPnP
             return new Uri(uri);
         }
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             _timer.Dispose();
         }

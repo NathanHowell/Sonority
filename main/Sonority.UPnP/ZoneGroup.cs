@@ -76,7 +76,7 @@ namespace Sonority.UPnP
             }
         }
 
-        public string ID
+        public string Id
         {
             get
             {

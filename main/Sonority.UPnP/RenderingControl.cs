@@ -23,6 +23,8 @@
 using System;
 using System.ComponentModel;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Windows.Threading;
@@ -65,7 +67,7 @@ namespace Sonority.UPnP
             }
 
             /* <Event xmlns=\"urn:schemas-upnp-org:metadata-1-0/RCS/\">
-             * <InstanceID val=\"0\">
+             * <InstanceId val=\"0\">
              * <Volume channel=\"Master\" val=\"59\"/>
              * <Volume channel=\"LF\" val=\"100\"/>
              * <Volume channel=\"RF\" val=\"100\"/>
@@ -77,7 +79,7 @@ namespace Sonority.UPnP
              * <Loudness channel=\"Master\" val=\"0\"/>
              * <OutputFixed val=\"0\"/>
              * <PresetNameList>FactoryDefaults</PresetNameList>
-             * </InstanceID>
+             * </InstanceId>
              * </Event>
              */
 
@@ -99,7 +101,7 @@ namespace Sonority.UPnP
                 {
                     dict[channel] = value;
                     RaisePropertyChangedEvent(new PropertyChangedEventArgs(node.LocalName));
-                    RaisePropertyChangedEvent(new PropertyChangedEventArgs(String.Format("{0}[{1}]", node.LocalName, channel)));
+                    RaisePropertyChangedEvent(new PropertyChangedEventArgs(String.Format(CultureInfo.InvariantCulture, "{0}[{1}]", node.LocalName, channel)));
                 }
             }
 
@@ -132,103 +134,108 @@ namespace Sonority.UPnP
 
         private FieldInfo GetField(XPathNavigator node)
         {
-            return this.GetType().GetField(String.Format("_{0}", node.LocalName), BindingFlags.Instance | BindingFlags.NonPublic);
+            return this.GetType().GetField(String.Format(CultureInfo.InvariantCulture, "_{0}", node.LocalName), BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
         public bool GetMute(Channel channel)
         {
-            return UPnP.InvokeAction<bool>(_service, "GetMute", InstanceID, channel.ToString());
+            return UPnP.InvokeAction<bool>(_service, "GetMute", InstanceId, channel.ToString());
         }
 
         public void SetMute(Channel channel, bool desiredMute)
         {
-            UPnP.InvokeAction(_service, "SetMute", InstanceID, channel.ToString(), desiredMute);
+            UPnP.InvokeAction(_service, "SetMute", InstanceId, channel.ToString(), desiredMute);
         }
 
         public ushort GetVolume(Channel channel)
         {
-            return UPnP.InvokeAction<ushort>(_service, "GetVolume", InstanceID, channel.ToString());
+            return UPnP.InvokeAction<ushort>(_service, "GetVolume", InstanceId, channel.ToString());
         }
 
         public void SetVolume(Channel channel, ushort desiredVolume)
         {
-            UPnP.InvokeAction(_service, "SetVolume", InstanceID, channel.ToString(), desiredVolume);
+            UPnP.InvokeAction(_service, "SetVolume", InstanceId, channel.ToString(), desiredVolume);
         }
 
         public ushort SetRelativeVolume(Channel channel, int adjustment)
         {
-            return UPnP.InvokeAction<ushort>(_service, "SetRelativeVolume", InstanceID, channel.ToString(), adjustment);
+            return UPnP.InvokeAction<ushort>(_service, "SetRelativeVolume", InstanceId, channel.ToString(), adjustment);
         }
 
         public short GetVolumeDB(Channel channel)
         {
-            return UPnP.InvokeAction<short>(_service, "GetVolumeDB", InstanceID, channel.ToString());
+            return UPnP.InvokeAction<short>(_service, "GetVolumeDB", InstanceId, channel.ToString());
         }
 
         public void SetVolumeDB(Channel channel, short desiredVolume)
         {
-            UPnP.InvokeAction(_service, "SetVolumeDB", InstanceID, channel.ToString(), desiredVolume);
+            UPnP.InvokeAction(_service, "SetVolumeDB", InstanceId, channel.ToString(), desiredVolume);
         }
 
         public void GetVolumeDBRange(Channel channel)
         {
             // TODO: return MinValue/MaxValue
-            object[] results = UPnP.InvokeAction(_service, "GetVolumeDBRange", InstanceID, channel.ToString());
+            object[] results = UPnP.InvokeAction(_service, "GetVolumeDBRange", InstanceId, channel.ToString());
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public short GetBass()
         {
-            return UPnP.InvokeAction<short>(_service, "GetBass", InstanceID);
+            return UPnP.InvokeAction<short>(_service, "GetBass", InstanceId);
         }
 
         public void SetBass(int desiredBass)
         {
-            UPnP.InvokeAction(_service, "SetBass", InstanceID, desiredBass);
+            UPnP.InvokeAction(_service, "SetBass", InstanceId, desiredBass);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public short GetTreble()
         {
-            return UPnP.InvokeAction<short>(_service, "GetTreble", InstanceID);
+            return UPnP.InvokeAction<short>(_service, "GetTreble", InstanceId);
         }
 
         public void SetTreble(int desiredTreble)
         {
-            UPnP.InvokeAction(_service, "SetTreble", InstanceID, desiredTreble);
+            UPnP.InvokeAction(_service, "SetTreble", InstanceId, desiredTreble);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public bool GetLoudness(Channel channel)
         {
-            return UPnP.InvokeAction<bool>(_service, "GetLoudness", InstanceID, channel.ToString());
+            return UPnP.InvokeAction<bool>(_service, "GetLoudness", InstanceId, channel.ToString());
         }
 
         public void SetLoudness(Channel channel, bool desiredLoudness)
         {
-            UPnP.InvokeAction(_service, "SetLoudness", InstanceID, channel.ToString(), desiredLoudness);
+            UPnP.InvokeAction(_service, "SetLoudness", InstanceId, channel.ToString(), desiredLoudness);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public bool GetSupportsOutputFixed()
         {
-            return UPnP.InvokeAction<bool>(_service, "GetSupportsOutputFixed", InstanceID);
+            return UPnP.InvokeAction<bool>(_service, "GetSupportsOutputFixed", InstanceId);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public bool GetOutputFixed()
         {
-            return UPnP.InvokeAction<bool>(_service, "GetOutputFixed", InstanceID);
+            return UPnP.InvokeAction<bool>(_service, "GetOutputFixed", InstanceId);
         }
 
         public void SetOutputFixed(bool desiredFixed)
         {
-            UPnP.InvokeAction(_service, "SetOutputFixed", InstanceID, desiredFixed);
+            UPnP.InvokeAction(_service, "SetOutputFixed", InstanceId, desiredFixed);
         }
 
         public uint RampToVolume(Channel channel, RampType rampType, short desiredVolume)
         {
-            return UPnP.InvokeAction<uint>(_service, "RampToVolume", InstanceID, channel.ToString(), rampType.ToString(), desiredVolume);
+            return UPnP.InvokeAction<uint>(_service, "RampToVolume", InstanceId, channel.ToString(), rampType.ToString(), desiredVolume);
         }
 
         public void RestoreVolumePriorToRamp(Channel channel)
         {
-            UPnP.InvokeAction(_service, "RestoreVolumePriorToRamp", InstanceID, channel.ToString());
+            UPnP.InvokeAction(_service, "RestoreVolumePriorToRamp", InstanceId, channel.ToString());
         }
     }
 }

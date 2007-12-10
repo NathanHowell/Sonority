@@ -25,6 +25,7 @@ using System.Windows;
 using System.Data;
 using System.Xml;
 using System.Configuration;
+using Sonority.UPnP;
 
 namespace wpf
 {
@@ -34,6 +35,14 @@ namespace wpf
 
     public partial class App : System.Windows.Application
     {
+        public Discover Discover
+        {
+            get
+            {
+                return _disc;
+            }
+        }
 
+        private Discover _disc = new Discover();
     }
 }

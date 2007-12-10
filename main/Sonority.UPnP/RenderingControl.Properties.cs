@@ -27,7 +27,7 @@ namespace Sonority.UPnP
 {
     public sealed partial class RenderingControl
     {
-        public uint InstanceID { get { return _InstanceID; } }
+        public uint InstanceId { get { return _InstanceID; } }
         public string LastChange { get { return _LastChange; } }
         public Dictionary<Channel, bool> Mute { get { return _Mute; } }
         public Dictionary<Channel, ushort> Volume { get { return _Volume; } }
@@ -39,16 +39,18 @@ namespace Sonority.UPnP
         public bool OutputFixed { get { return _OutputFixed; } }
         public string PresetNameList { get { return _PresetNameList; } }
 
+#pragma warning disable 0649 // Field 'x' is never assigned to, and will always have its default value
         private const uint _InstanceID = 0;
         private string _LastChange = String.Empty;
         private Dictionary<Channel, bool> _Mute = new Dictionary<Channel, bool>();
         private Dictionary<Channel, ushort> _Volume = new Dictionary<Channel, ushort>();
-        private short _VolumeDB = 0;
-        private short _Bass = 0;
-        private short _Treble = 0;
+        private short _VolumeDB;
+        private short _Bass;
+        private short _Treble;
         private Dictionary<Channel, bool> _Loudness = new Dictionary<Channel, bool>();
-        private bool _SupportsOutputFixed = false;
-        private bool _OutputFixed = false;
+        private bool _SupportsOutputFixed;
+        private bool _OutputFixed;
         private string _PresetNameList = String.Empty;
+#pragma warning restore 0649
     }
 }

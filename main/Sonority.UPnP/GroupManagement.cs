@@ -35,21 +35,21 @@ namespace Sonority.UPnP
         {
         }
 
-        public void AddMember(string memberID)
+        public void AddMember(string memberId)
         {
-            UPnP.InvokeAction(_service, "AddMember", memberID);
+            UPnP.InvokeAction(_service, "AddMember", memberId);
             // TODO: out[0] == CurrentTransportSettings
             // TODO: out[1] == GroupUUIDJoined
         }
 
-        public void RemoveMember(string memberID)
+        public void RemoveMember(string memberId)
         {
-            UPnP.InvokeAction(_service, "RemoveMember", memberID);
+            UPnP.InvokeAction(_service, "RemoveMember", memberId);
         }
 
-        public void ReportTrackBufferingResult(string memberID, int resultCode)
+        public void ReportTrackBufferingResult(string memberId, int resultCode)
         {
-            UPnP.InvokeAction(_service, "ReportTrackBufferingResult", memberID, resultCode);
+            UPnP.InvokeAction(_service, "ReportTrackBufferingResult", memberId, resultCode);
         }
     }
 }

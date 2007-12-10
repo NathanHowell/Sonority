@@ -10,12 +10,12 @@
         </DataTemplate>
       </ListView.ItemTemplate>
     </ListView>
-    <local:VolumeControl DataContext="{Binding Path=DataContext.Members, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}}}"/>
+    <local:VolumeControl DataContext="{Binding IsAsync=True, Path=DataContext.Members, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabItem}}}"/>
     <ProgressBar
       Minimum="0"
       Maximum="{Binding Mode=OneWay, Path=AVTransport.TrackDuration.TotalSeconds}"
       Value="{Binding Mode=OneWay, Path=AVTransport.RelTime.TotalSeconds}"/>
-    <Button Content="{Binding Path=AVTransport.TransportState}" Command="MediaCommands.TogglePlayPause"/>
+    <Button Content="{Binding IsAsync=True, Path=AVTransport.TransportState}" Command="MediaCommands.TogglePlayPause"/>
   </StackPanel>
   <UserControl.CommandBindings>
     <CommandBinding

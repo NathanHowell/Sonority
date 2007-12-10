@@ -25,6 +25,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -47,26 +48,31 @@ namespace Sonority.UPnP
         {
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public string GetSearchCapabilities()
         {
             return UPnP.InvokeAction<String>(_service, "GetSearchCapabilities");
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public string GetSortCapabilities()
         {
             return UPnP.InvokeAction<String>(_service, "GetSortCapabilities");
         }
 
-        public string GetSystemUpdateID()
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
+        public string GetSystemUpdateId()
         {
             return UPnP.InvokeAction<String>(_service, "GetSystemUpdateID");
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public string GetAlbumArtistDisplayOption()
         {
             return UPnP.InvokeAction<String>(_service, "GetAlbumArtistDisplayOption");
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public string GetLastIndexChange()
         {
             return UPnP.InvokeAction<String>(_service, "GetLastIndexChange");
@@ -131,7 +137,7 @@ namespace Sonority.UPnP
 
         public void RefreshShareIndex(string albumArtistDisplayOption)
         {
-            UPnP.InvokeAction(_service, "RefreshShareIndex");
+            UPnP.InvokeAction(_service, "RefreshShareIndex", albumArtistDisplayOption);
         }
 
         public void Search()

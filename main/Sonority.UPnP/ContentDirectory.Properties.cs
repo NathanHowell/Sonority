@@ -26,17 +26,18 @@ namespace Sonority.UPnP
 {
     public sealed partial class ContentDirectory
     {
-        public uint SystemUpdateID { get { return _SystemUpdateID; } }
+        public uint SystemUpdateId { get { return _SystemUpdateID; } }
         public string ContainerUpdateIDs { get { return _ContainerUpdateIDs; } }
         public string ShareListRefreshState { get { return _ShareListRefreshState; } }
         public string ShareIndexInProgress { get { return _ShareIndexInProgress; } }
         public string ShareIndexLastError { get { return _ShareIndexLastError; } }
-        public string UserRadioUpdateID { get { return _UserRadioUpdateID; } }
-        public string MasterRadioUpdateID { get { return _MasterRadioUpdateID; } }
-        public string SavedQueuesUpdateID { get { return _SavedQueuesUpdateID; } }
-        public string ShareListUpdateID { get { return _ShareListUpdateID; } }
+        public string UserRadioUpdateId { get { return _UserRadioUpdateID; } }
+        public string MasterRadioUpdateId { get { return _MasterRadioUpdateID; } }
+        public string SavedQueuesUpdateId { get { return _SavedQueuesUpdateID; } }
+        public string ShareListUpdateId { get { return _ShareListUpdateID; } }
 
-        private uint _SystemUpdateID = 0;
+#pragma warning disable 0649 // Field 'x' is never assigned to, and will always have its default value
+        private uint _SystemUpdateID;
         private string _ContainerUpdateIDs = String.Empty;
         private string _ShareListRefreshState = String.Empty;
         private string _ShareIndexInProgress = String.Empty;
@@ -45,5 +46,6 @@ namespace Sonority.UPnP
         private string _MasterRadioUpdateID = String.Empty;
         private string _SavedQueuesUpdateID = String.Empty;
         private string _ShareListUpdateID = String.Empty;
+#pragma warning restore 0649
     }
 }

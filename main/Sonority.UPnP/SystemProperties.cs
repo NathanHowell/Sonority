@@ -35,12 +35,12 @@ namespace Sonority.UPnP
             StateVariables.Initialize(this, this);
         }
 
-        void SetString(string name, string value)
+        public void SetString(string name, string value)
         {
             UPnP.InvokeAction(_service, "SetString", name, value);
         }
 
-        string GetString(string name)
+        public string GetString(string name)
         {
             return UPnP.InvokeAction<String>(_service, "GetString", name);
         }

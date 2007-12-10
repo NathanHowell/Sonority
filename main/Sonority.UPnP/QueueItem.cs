@@ -23,6 +23,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using System.Xml.XPath;
 using System.Web;
@@ -51,7 +52,7 @@ namespace Sonority.UPnP
             _album_value = SelectSingleNode<string>(nav, "upnp:album");
         }
 
-        private T SelectSingleNode<T>(XPathNavigator nav, string xpath)
+        private static T SelectSingleNode<T>(XPathNavigator nav, string xpath)
         {
             XPathNavigator node = nav.SelectSingleNode(xpath, XPath.Globals.Manager);
             if (node == null || String.IsNullOrEmpty(node.Value))
@@ -62,6 +63,30 @@ namespace Sonority.UPnP
             {
                 return (T)node.ValueAs(typeof(T));
             }
+        }
+
+        public static bool operator ==(QueueItem lhs, QueueItem rhs)
+        {
+            IComparable<QueueItem> qi = lhs;
+            return qi.CompareTo(rhs) == 0;
+        }
+
+        public static bool operator !=(QueueItem lhs, QueueItem rhs)
+        {
+            IComparable<QueueItem> qi = lhs;
+            return qi.CompareTo(rhs) != 0;
+        }
+
+        public static bool operator <(QueueItem lhs, QueueItem rhs)
+        {
+            IComparable<QueueItem> qi = lhs;
+            return qi.CompareTo(rhs) < 0;
+        }
+        
+        public static bool operator >(QueueItem lhs, QueueItem rhs)
+        {
+            IComparable<QueueItem> qi = lhs;
+            return qi.CompareTo(rhs) > 0;
         }
 
         int IComparable<QueueItem>.CompareTo(QueueItem other)
@@ -118,7 +143,7 @@ namespace Sonority.UPnP
             }
         }
 
-        public string ItemID
+        public string ItemId
         {
             get
             {
@@ -126,11 +151,11 @@ namespace Sonority.UPnP
             }
         }
 
-        public int NumericID
+        public int NumericId
         {
             get
             {
-                return Convert.ToInt32(_item_id.Substring(_item_parentID.Length + 1));
+                return Convert.ToInt32(_item_id.Substring(_item_parentID.Length + 1), CultureInfo.InvariantCulture);
             }
         }
 
@@ -154,15 +179,15 @@ namespace Sonority.UPnP
             return Res.ToString();
         }
 
-        private string _item_id;
-        private string _item_parentID;
+        private string _item_id = String.Empty;
+        private string _item_parentID = String.Empty;
         private bool _item_restricted;
-        private string _res_protocolInfo;
+        private string _res_protocolInfo = String.Empty;
         private Uri _res_value;
-        private string _albumArtUri_value;
-        private string _title_value;
-        private string _class_value;
-        private string _creator_value;
-        private string _album_value;
+        private string _albumArtUri_value = String.Empty;
+        private string _title_value = String.Empty;
+        private string _class_value = String.Empty;
+        private string _creator_value = String.Empty;
+        private string _album_value = String.Empty;
     }
 }

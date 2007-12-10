@@ -2,11 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:wpf"
-    xmlns:sonority="clr-namespace:Sonority.UPnP;assembly=Sonority.UPnP" 
-    Title="Sonority" Height="382" Width="776"
-    >
+    Title="Sonority" Height="382" Width="776">
   <Window.Resources>
-    <sonority:Discover x:Key="Discover"/>
     <SolidColorBrush x:Key="SolidBorderBrush" Color="#888" />
     <LinearGradientBrush x:Key="PressedBrush" StartPoint="0,0" EndPoint="0,1">
       <GradientBrush.GradientStops>
@@ -60,15 +57,15 @@
     </Style>
   </Window.Resources>
   <DockPanel>
-    <TabControl Name="tabControl1" DockPanel.Dock="Left" TabStripPlacement="Left" ItemsSource="{Binding Path=Topology, Source={StaticResource Discover}}">
+    <TabControl Name="tabControl1" DockPanel.Dock="Left" TabStripPlacement="Left" ItemsSource="{Binding Path=Discover.Topology, Source={x:Static Application.Current}, IsAsync=True}">
       <TabControl.ContentTemplate>
         <DataTemplate>
-          <local:QueueControl DataContext="{Binding}" />
+          <local:QueueControl DataContext="{Binding IsAsync=True}" />
         </DataTemplate>
       </TabControl.ContentTemplate>
       <TabControl.ItemTemplate>
         <DataTemplate>
-          <local:SonosControl DockPanel.Dock="Left" DataContext="{Binding}"/>
+          <local:SonosControl DockPanel.Dock="Left" DataContext="{Binding IsAsync=True}"/>
         </DataTemplate>
       </TabControl.ItemTemplate>
       <TabControl.InputBindings>

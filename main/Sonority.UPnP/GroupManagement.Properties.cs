@@ -27,9 +27,11 @@ namespace Sonority.UPnP
     public sealed partial class GroupManagement
     {
         public bool GroupCoordinatorIsLocal { get { return _GroupCoordinatorIsLocal; } }
-        public string LocalGroupUUID { get { return _LocalGroupUUID; } }
+        public string LocalGroupUuid { get { return _LocalGroupUUID; } }
 
-        private bool _GroupCoordinatorIsLocal = false;
+#pragma warning disable 0649 // Field 'x' is never assigned to, and will always have its default value
+        private bool _GroupCoordinatorIsLocal;
         private string _LocalGroupUUID = String.Empty;
+#pragma warning restore 0649
     }
 }

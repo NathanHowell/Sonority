@@ -27,7 +27,7 @@ using UPNPLib;
 
 namespace Sonority.UPnP
 {
-    public class UPnPServiceBase : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
+    public abstract class UPnPServiceBase : DispatcherObject, IUPnPServiceCallback, INotifyPropertyChanged
     {
         internal UPnPServiceBase(UPnPService service)
         {
@@ -41,10 +41,10 @@ namespace Sonority.UPnP
             // ignore for now
         }
 
-        void IUPnPServiceCallback.StateVariableChanged(UPnPService pus, string stateVariable, object value)
+        void IUPnPServiceCallback.StateVariableChanged(UPnPService pus, string pcwszStateVarName, object vaValue)
         {
-            StateVariables.Changed(this, pus, stateVariable, value);
-            PropertyChanged(this, new PropertyChangedEventArgs(stateVariable));
+            StateVariables.Changed(this, pus, pcwszStateVarName, vaValue);
+            PropertyChanged(this, new PropertyChangedEventArgs(pcwszStateVarName));
         }
 
         internal void RaisePropertyChangedEvent(PropertyChangedEventArgs e)

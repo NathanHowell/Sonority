@@ -22,6 +22,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
@@ -34,14 +35,20 @@ namespace Sonority.UPnP
 {
     public sealed class AudioInputAttributes
     {
-        public string CurrentName;
-        public string CurrentIcon;
+        public string CurrentName { get { return _currentName; } }
+        public string CurrentIcon { get { return _currentIcon; } }
+
+        internal string _currentName;
+        internal string _currentIcon;
     }
 
     public sealed class LineInLevel
     {
-        public int CurrentLeftLineInLevel;
-        public int CurrentRightLineInLevel;
+        public int CurrentLeftLineInLevel { get { return _currentLeftLineInLevel; } }
+        public int CurrentRightLineInLevel { get { return _currentRightLineInLevel; } }
+
+        internal int _currentLeftLineInLevel;
+        internal int _currentRightLineInLevel;
     }
 
     public sealed partial class AudioIn : UPnPServiceBase
@@ -50,14 +57,14 @@ namespace Sonority.UPnP
         {
         }
 
-        public string StartTransmissionToGroup(string coordinatorID)
+        public string StartTransmissionToGroup(string coordinatorId)
         {
-            return UPnP.InvokeAction<string>(_service, "StartTransmissionToGroup", coordinatorID);
+            return UPnP.InvokeAction<string>(_service, "StartTransmissionToGroup", coordinatorId);
         }
 
-        public void StopTransmissionToGroup(string coordinatorID)
+        public void StopTransmissionToGroup(string coordinatorId)
         {
-            UPnP.InvokeAction(_service, "StopTransmissionToGroup", coordinatorID);
+            UPnP.InvokeAction(_service, "StopTransmissionToGroup", coordinatorId);
         }
 
         public void SetAudioInputAttributes(string desiredName, string desiredIcon)
@@ -65,12 +72,13 @@ namespace Sonority.UPnP
             UPnP.InvokeAction(_service, "SetAudioInputAttributes", desiredName, desiredIcon);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification="Modeling UPnP APIs, this is a method not a property")]
         public AudioInputAttributes GetAudioInputAttributes()
         {
             object[] ret = UPnP.InvokeAction(_service, "GetAudioInputAttributes");
             AudioInputAttributes aia = new AudioInputAttributes();
-            aia.CurrentName = Convert.ToString(ret[0], CultureInfo.InvariantCulture);
-            aia.CurrentIcon = Convert.ToString(ret[1], CultureInfo.InvariantCulture);
+            aia._currentName = Convert.ToString(ret[0], CultureInfo.InvariantCulture);
+            aia._currentIcon = Convert.ToString(ret[1], CultureInfo.InvariantCulture);
             return aia;
         }
 
@@ -79,12 +87,13 @@ namespace Sonority.UPnP
             UPnP.InvokeAction(_service, "SetLineInLevel", desiredLeftLineInLevel, desiredRightLineInLevel);
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024", Justification = "Modeling UPnP APIs, this is a method not a property")]
         public LineInLevel GetLineInLevel()
         {
             object[] ret = UPnP.InvokeAction(_service, "GetLineInLevel");
             LineInLevel lil = new LineInLevel();
-            lil.CurrentLeftLineInLevel = Convert.ToInt32(ret[0], CultureInfo.InvariantCulture);
-            lil.CurrentRightLineInLevel = Convert.ToInt32(ret[1], CultureInfo.InvariantCulture);
+            lil._currentLeftLineInLevel = Convert.ToInt32(ret[0], CultureInfo.InvariantCulture);
+            lil._currentRightLineInLevel = Convert.ToInt32(ret[1], CultureInfo.InvariantCulture);
             return lil;
         }
     }

@@ -46,9 +46,14 @@ namespace Sonority.UPnP
             return UPnP.InvokeAction<string>(_service, "CheckForUpdate", updateType, cachedOnly, version);
         }
 
-        public void BeginSoftwareUpdate(string updateUrl, uint flags)
+        public void BeginSoftwareUpdate(Uri updateUrl, uint flags)
         {
-            UPnP.InvokeAction(_service, "BeginSoftwareUpdate", updateUrl, flags);
+            if (updateUrl == null || updateUrl.IsAbsoluteUri == false)
+            {
+                throw new ArgumentException("Need absolute uri", "updateUrl");
+            }
+
+            UPnP.InvokeAction(_service, "BeginSoftwareUpdate", updateUrl.ToString(), flags);
         }
 
         // Remove || VerifyThenRemoveSystemwide

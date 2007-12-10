@@ -42,10 +42,12 @@ namespace Sonority.UPnP
         public string SettingsReplicationState { get { return _SettingsReplicationState; } }
         public bool IsZoneBridge { get { return _IsZoneBridge; } }
 
+#pragma warning disable 0649 // Field 'x' is never assigned to, and will always have its default value
         private string _ZoneName = String.Empty;
         private string _Icon = String.Empty;
-        private bool _Invisible = false;
+        private bool _Invisible;
         private string _SettingsReplicationState = String.Empty;
-        private bool _IsZoneBridge = false;
+        private bool _IsZoneBridge;
+#pragma warning restore 0649
     }
 }

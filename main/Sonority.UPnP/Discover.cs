@@ -204,7 +204,7 @@ namespace Sonority.UPnP
         private ObservableCollection<ZonePlayer> _zonePlayers = new ObservableCollection<ZonePlayer>();
         private ObservableCollection<ZoneGroup> _topology = new ObservableCollection<ZoneGroup>();
         private int _findData;
-        private bool _topologyHandled = false;
+        private bool _topologyHandled;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
     }

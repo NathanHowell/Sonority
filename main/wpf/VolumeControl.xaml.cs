@@ -36,7 +36,7 @@ namespace wpf
     /// Interaction logic for VolumeControl.xaml
     /// </summary>
 
-    public partial class VolumeControl : UserControl, IDisposable
+    public sealed partial class VolumeControl : UserControl, IDisposable
     {
         public VolumeControl()
         {

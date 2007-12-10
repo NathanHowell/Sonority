@@ -71,11 +71,11 @@ namespace wpf
                 return;
             }
 
-            if (zp.AVTransport.AVTransportURI == zp.QueueUri)
+            if (zp.AVTransport.AVTransportUri == zp.QueueUri)
             {
                 e.CanExecute = zp.AVTransport.NumberOfTracks > 0;
             }
-            else if (zp.AVTransport.AVTransportURI != null)
+            else if (zp.AVTransport.AVTransportUri != null)
             {
                 e.CanExecute = zp.AVTransport.TransportState != TransportState.TRANSITIONING;
             }

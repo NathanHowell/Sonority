@@ -27,7 +27,7 @@ namespace Sonority.UPnP
 {
     public sealed partial class AVTransport
     {
-        public uint InstanceID { get { return _InstanceID; } }
+        public uint InstanceId { get { return _InstanceID; } }
         public TransportState TransportState { get { return _TransportState; } }
         public string TransportStatus { get { return _TransportStatus; } }
         public string PlaybackStorageMedium { get { return _PlaybackStorageMedium; } }
@@ -45,20 +45,20 @@ namespace Sonority.UPnP
         public string CurrentMediaDuration { get { return _CurrentMediaDuration; } }
         public XPathNavigator CurrentTrackMetaData { get { return CreateXmlProperty(_CurrentTrackMetaData); } }
         public string CurrentSection { get { return _CurrentSection; } }
-        public Uri CurrentTrackURI { get { return CreateUri(_CurrentTrackURI); } }
-        public Uri NextTrackURI { get { return CreateUri(_NextTrackURI); } }
+        public Uri CurrentTrackUri { get { return CreateUri(_CurrentTrackURI); } }
+        public Uri NextTrackUri { get { return CreateUri(_NextTrackURI); } }
         public XPathNavigator NextTrackMetaData { get { return CreateXmlProperty(_NextTrackMetaData); } }
-        public Uri EnqueuedTransportURI { get { return CreateUri(_EnqueuedTransportURI); } }
-        public XPathNavigator EnqueuedTransportURIMetaData { get { return CreateXmlProperty(_EnqueuedTransportURIMetaData); } }
-        public Uri AVTransportURI { get { return CreateUri(_AVTransportURI); } }
-        public XPathNavigator AVTransportURIMetaData { get { return CreateXmlProperty(_AVTransportURIMetaData); } }
+        public Uri EnqueuedTransportUri { get { return CreateUri(_EnqueuedTransportURI); } }
+        public XPathNavigator EnqueuedTransportUriMetaData { get { return CreateXmlProperty(_EnqueuedTransportURIMetaData); } }
+        public Uri AVTransportUri { get { return CreateUri(_AVTransportURI); } }
+        public XPathNavigator AVTransportUriMetaData { get { return CreateXmlProperty(_AVTransportURIMetaData); } }
         public string CurrentTransportActions { get { return _CurrentTransportActions; } }
         public string SleepTimerGeneration { get { return _SleepTimerGeneration; } }
         public string AlarmRunning { get { return _AlarmRunning; } }
         public string SnoozeRunning { get { return _SnoozeRunning; } }
         public string RestartPending { get { return _RestartPending; } }
-        public Uri NextAVTransportURI { get { return CreateUri(_NextAVTransportURI); } }
-        public XPathNavigator NextAVTransportURIMetaData { get { return CreateXmlProperty(_NextAVTransportURIMetaData); } }
+        public Uri NextAVTransportUri { get { return CreateUri(_NextAVTransportURI); } }
+        public XPathNavigator NextAVTransportUriMetaData { get { return CreateXmlProperty(_NextAVTransportURIMetaData); } }
         public string LastChange { get { return _LastChange; } }
 
         private static XPathNavigator CreateXmlProperty(string xml)
@@ -78,6 +78,7 @@ namespace Sonority.UPnP
         private TimeSpan _RelTime = TimeSpan.MinValue;
         private TimeSpan _TrackDuration = TimeSpan.MinValue;
 
+#pragma warning disable 0649 // Field 'x' is never assigned to, and will always have its default value
         private const uint _InstanceID = 0;
         private TransportState _TransportState = TransportState.TRANSITIONING;
         private string _TransportStatus = String.Empty;
@@ -90,8 +91,8 @@ namespace Sonority.UPnP
         private string _RecordMediumWriteStatus = String.Empty;
         private string _CurrentRecordQualityMode = String.Empty;
         private string _PossibleRecordQualityModes = String.Empty;
-        private uint _NumberOfTracks = 0u;
-        private uint _CurrentTrack = 0u;
+        private uint _NumberOfTracks;
+        private uint _CurrentTrack;
         private string _CurrentTrackDuration = String.Empty;
         private string _CurrentMediaDuration = String.Empty;
         private string _CurrentTrackMetaData = String.Empty;
@@ -111,5 +112,6 @@ namespace Sonority.UPnP
         private string _NextAVTransportURI = String.Empty;
         private string _NextAVTransportURIMetaData = String.Empty;
         private string _LastChange = String.Empty;
+#pragma warning restore 0649
     }
 }

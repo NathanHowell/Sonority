@@ -258,7 +258,7 @@ namespace Sonority.UPnP
             {
                 if (_queueUri == null)
                 {
-                    _queueUri = new Uri(String.Format("x-rincon-queue{0}#0", UniqueDeviceName.Substring(UniqueDeviceName.IndexOf(':'))));
+                    _queueUri = new Uri(String.Format(CultureInfo.InvariantCulture, "x-rincon-queue{0}#0", UniqueDeviceName.Substring(UniqueDeviceName.IndexOf(':'))));
                 }
 
                 return _queueUri;
@@ -286,7 +286,7 @@ namespace Sonority.UPnP
                 {
                     if (index < _queue.Count)
                     {
-                        if (_queue[index].NumericID == qi.NumericID && _queue[index].Res == qi.Res)
+                        if (_queue[index].NumericId == qi.NumericId && _queue[index].Res == qi.Res)
                         {
                             _queue.RemoveAt(index);
                             _queue.Insert(index, qi);
@@ -357,6 +357,30 @@ namespace Sonority.UPnP
             return UniqueDeviceName.GetHashCode();
         }
 
+        public static bool operator ==(ZonePlayer lhs, ZonePlayer rhs)
+        {
+            IComparable<ZonePlayer> ic = lhs;
+            return ic.CompareTo(rhs) == 0;
+        }
+
+        public static bool operator !=(ZonePlayer lhs, ZonePlayer rhs)
+        {
+            IComparable<ZonePlayer> ic = lhs;
+            return ic.CompareTo(rhs) != 0;
+        }
+
+        public static bool operator <(ZonePlayer lhs, ZonePlayer rhs)
+        {
+            IComparable<ZonePlayer> ic = lhs;
+            return ic.CompareTo(rhs) < 0;
+        }
+        
+        public static bool operator >(ZonePlayer lhs, ZonePlayer rhs)
+        {
+            IComparable<ZonePlayer> ic = lhs;
+            return ic.CompareTo(rhs) > 0;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         private UPnPDevice _device;
@@ -376,11 +400,11 @@ namespace Sonority.UPnP
         private Uri _queueUri;
         private string _udn;
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             if (_avTransport != null)
             {
-                ((IDisposable)_avTransport).Dispose();
+                _avTransport.Dispose();
             }
         }
     }
