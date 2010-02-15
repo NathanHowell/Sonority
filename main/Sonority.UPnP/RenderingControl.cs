@@ -23,6 +23,7 @@
 using System;
 using System.ComponentModel;
 using System.Collections;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -108,6 +109,12 @@ namespace Sonority.UPnP
             foreach (XPathNavigator node in nav.Select(XPath.Expressions.RenderingValueElements))
             {
                 FieldInfo fi = GetField(node);
+                if (fi == null)
+                {
+                    Debug.WriteLine(String.Format("Missing field: {0}.{1}", this.GetType().Name, node.Name));
+                    continue;
+                }
+
                 object oldValue = fi.GetValue(this);
                 object newValue = node.SelectSingleNode(XPath.Expressions.ValueAttributes).ValueAs(fi.FieldType);
 

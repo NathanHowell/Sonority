@@ -38,6 +38,7 @@ namespace Sonority.UPnP
         public bool SupportsOutputFixed { get { return _SupportsOutputFixed; } }
         public bool OutputFixed { get { return _OutputFixed; } }
         public string PresetNameList { get { return _PresetNameList; } }
+        public bool HeadphoneConnected { get { return _HeadphoneConnected; } }
 
 #pragma warning disable 0649 // Field 'x' is never assigned to, and will always have its default value
         private const uint _InstanceID = 0;
@@ -51,6 +52,7 @@ namespace Sonority.UPnP
         private bool _SupportsOutputFixed;
         private bool _OutputFixed;
         private string _PresetNameList = String.Empty;
+        private bool _HeadphoneConnected;
 #pragma warning restore 0649
     }
 }
