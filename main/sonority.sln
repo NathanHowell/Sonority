@@ -10,24 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wpf", "wpf\wpf.csproj", "{F18C9378-CA34-4AC6-BB69-14FF7F70B000}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs03.codeplex.com/
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = Sonority.UPnP\\Sonority.UPnP.csproj
-		SccProjectName1 = Sonority.UPnP
-		SccLocalPath1 = Sonority.UPnP
-		SccProjectUniqueName2 = Sonority.ESE\\Sonority.ESE.vcproj
-		SccProjectName2 = Sonority.ESE
-		SccLocalPath2 = Sonority.ESE
-		SccProjectUniqueName3 = Sonority.Test\\Sonority.Test.csproj
-		SccProjectName3 = Sonority.Test
-		SccLocalPath3 = Sonority.Test
-		SccProjectUniqueName4 = wpf\\wpf.csproj
-		SccProjectName4 = wpf
-		SccLocalPath4 = wpf
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms

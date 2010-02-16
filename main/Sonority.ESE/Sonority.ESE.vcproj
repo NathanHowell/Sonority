@@ -5,10 +5,6 @@
 	Name="Sonority.ESE"
 	ProjectGUID="{69460E43-5C5B-4028-A2E7-2B0E6C634536}"
 	RootNamespace="SonorityESE"
-	SccProjectName="SAK"
-	SccAuxPath="SAK"
-	SccLocalPath="SAK"
-	SccProvider="SAK"
 	Keyword="ManagedCProj"
 	TargetFrameworkVersion="131072"
 	>
